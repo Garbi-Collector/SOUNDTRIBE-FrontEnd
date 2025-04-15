@@ -1,0 +1,329 @@
+/* Estilos de temas - theme.css */
+
+/* Variables de colores del logo */
+:root {
+  /* Colores base */
+  --color-pink: #ff34d2;
+  --color-purple: #a64dff;
+  --color-blue: #34b0ff;
+  --color-cyan: #00c6ff;
+
+  /* Tema Oscuro (por defecto) */
+  --dark-bg-primary: #0d0d14;
+  --dark-bg-secondary: #080810;
+  --dark-border: rgba(128, 128, 255, 0.15);
+  --dark-text: #ffffff;
+  --dark-text-secondary: rgba(255, 255, 255, 0.7);
+  --dark-component-bg: rgba(255, 255, 255, 0.07);
+  --dark-hover: rgba(166, 77, 255, 0.15);
+
+  /* Tema Claro */
+  --light-bg-primary: #f0f2f5;
+  --light-bg-secondary: #ffffff;
+  --light-border: rgba(128, 128, 255, 0.3);
+  --light-text: #121212;
+  --light-text-secondary: #555555;
+  --light-component-bg: rgba(166, 77, 255, 0.05);
+  --light-hover: rgba(166, 77, 255, 0.1);
+
+  /* Gradientes */
+  --gradient-primary: linear-gradient(45deg, var(--color-pink), var(--color-blue));
+  --gradient-purple: linear-gradient(45deg, var(--color-pink), var(--color-purple));
+  --gradient-blue: linear-gradient(45deg, var(--color-purple), var(--color-blue));
+
+  /* Sombras */
+  --shadow-soft: 0 5px 15px rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Estilos del tema oscuro */
+body.dark-theme {
+  background-color: var(--dark-bg-primary);
+  color: var(--dark-text);
+}
+
+body.dark-theme .navbar-dark.bg-dark {
+  background-color: var(--dark-bg-secondary) !important;
+  border-bottom: 1px solid var(--dark-border);
+}
+
+body.dark-theme .navbar.fixed-bottom {
+  background-color: var(--dark-bg-secondary) !important;
+  border-top: 1px solid var(--dark-border);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-theme main {
+  background-color: var(--dark-bg-primary);
+}
+
+body.dark-theme .router-outlet-active {
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--dark-border);
+}
+
+body.dark-theme .mat-form-field-appearance-outline .mat-form-field-outline {
+  background-color: var(--dark-component-bg);
+}
+
+body.dark-theme .mat-form-field-label {
+  color: var(--dark-text-secondary);
+}
+
+body.dark-theme .mat-input-element {
+  color: var(--dark-text);
+}
+
+body.dark-theme .mat-icon {
+  color: var(--dark-text-secondary);
+}
+
+body.dark-theme .content-card {
+  background-color: var(--dark-bg-secondary);
+  border: 1px solid var(--dark-border);
+}
+
+/* Estilos del tema claro */
+body.light-theme {
+  background-color: var(--light-bg-primary);
+  color: var(--light-text);
+}
+
+body.light-theme .navbar-dark.bg-dark {
+  background-color: var(--light-bg-secondary) !important;
+  border-bottom: 1px solid var(--light-border);
+  box-shadow: var(--shadow-soft);
+  color: var(--light-text);
+}
+
+body.light-theme .navbar-dark .navbar-brand,
+body.light-theme .navbar-dark .navbar-nav .nav-link {
+  color: var(--light-text);
+}
+
+body.light-theme .navbar.fixed-bottom {
+  background-color: var(--light-bg-secondary) !important;
+  border-top: 1px solid var(--light-border);
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
+}
+
+body.light-theme main {
+  background-color: var(--light-bg-primary);
+}
+
+body.light-theme .router-outlet-active {
+  background-color: var(--light-bg-secondary);
+  border: 1px solid var(--light-border);
+  box-shadow: var(--shadow-soft);
+}
+
+body.light-theme .mat-form-field-appearance-outline .mat-form-field-outline {
+  background-color: var(--light-component-bg);
+  color: var(--light-text-secondary);
+}
+
+body.light-theme .mat-form-field-appearance-outline .mat-form-field-outline-thick {
+  color: rgba(128, 128, 255, 0.5);
+}
+
+body.light-theme .mat-form-field-label {
+  color: var(--light-text-secondary);
+}
+
+body.light-theme .mat-input-element {
+  color: var(--light-text);
+}
+
+body.light-theme .mat-icon {
+  color: var(--light-text-secondary);
+}
+
+body.light-theme .nav-btn {
+  color: var(--light-text);
+}
+
+body.light-theme .content-card {
+  background-color: var(--light-bg-secondary);
+  border: 1px solid var(--light-border);
+  box-shadow: var(--shadow-soft);
+}
+
+/* Estilos comunes para ambos temas */
+.nav-btn {
+  width: 100%;
+  opacity: 0.7;
+  transition: all 0.3s ease;
+}
+
+.nav-btn:hover {
+  opacity: 0.9;
+}
+
+.nav-btn.active, .nav-btn:focus {
+  opacity: 1;
+}
+
+.nav-btn.active span, .nav-btn:focus span {
+  color: transparent !important;
+  background-image: var(--gradient-primary);
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+.nav-btn.active mat-icon, .nav-btn:focus mat-icon {
+  color: var(--color-blue);
+}
+
+.nav-btn mat-icon {
+  margin-bottom: 4px;
+  transition: all 0.3s ease;
+}
+
+.nav-btn span {
+  font-size: 12px;
+}
+
+/* Estilos para el logo */
+.navbar-brand img {
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.navbar-brand img:hover {
+  animation: glow 2s infinite;
+}
+
+/* Botón de cambio de tema */
+.theme-toggle {
+  position: relative;
+  width: 40px;
+  height: 20px;
+  margin-right: 10px;
+}
+
+.theme-toggle-track {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 20px;
+  border-radius: 20px;
+  background: var(--gradient-blue);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.theme-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: white;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.theme-toggle.light .theme-toggle-thumb {
+  transform: translateX(20px);
+}
+
+.theme-toggle-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 10px;
+  color: #333;
+}
+
+/* Efectos de iluminación */
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 5px rgba(255, 52, 210, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(52, 176, 255, 0.7);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(255, 52, 210, 0.5);
+  }
+}
+
+/* Personalizar scrollbar para ambos temas */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+body.dark-theme::-webkit-scrollbar-track {
+  background: var(--dark-bg-secondary);
+}
+
+body.dark-theme::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--color-pink), var(--color-blue));
+  border-radius: 4px;
+}
+
+body.light-theme::-webkit-scrollbar-track {
+  background: var(--light-bg-secondary);
+}
+
+body.light-theme::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--color-pink), var(--color-blue));
+  border-radius: 4px;
+}
+
+/* Adaptaciones de Material para modo oscuro/claro */
+.mat-form-field-appearance-outline .mat-form-field-infix {
+  padding: 0.5em 0;
+}
+
+.search-container {
+  width: 70%;
+  max-width: 400px;
+}
+
+.search-field {
+  width: 100%;
+  margin-bottom: -1.25em;
+}
+
+/* Para evitar conflictos con los estilos de Material */
+::ng-deep .mat-form-field-wrapper {
+  padding-bottom: 0;
+}
+
+/* Estilos para el contenido principal */
+main {
+  margin-bottom: 70px; /* Para evitar que el contenido quede detrás de la barra inferior */
+  min-height: calc(100vh - 140px);
+  transition: background-color 0.3s ease;
+}
+
+.router-outlet-active {
+  padding: 15px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+/* Estilos para tarjetas de contenido */
+.content-card {
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+}
+
+/* Barra de navegación inferior */
+.navbar.fixed-bottom {
+  height: 60px;
+  transition: all 0.3s ease;
+}

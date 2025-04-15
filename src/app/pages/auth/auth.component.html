@@ -1,0 +1,17 @@
+<!-- auth.component.html -->
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-tabs">
+            <div class="auth-tab" [class.active]="activeTab === 'login'" (click)="setActiveTab('login')">
+                Iniciar Sesión
+            </div>
+            <div class="auth-tab" [class.active]="activeTab === 'register'" (click)="setActiveTab('register')">
+                Crear Cuenta
+            </div>
+        </div>
+
+        <div class="auth-content">
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+</div>

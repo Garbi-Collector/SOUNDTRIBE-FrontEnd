@@ -8,11 +8,12 @@ export interface RegisterRequestDto {
   email: string;
   username: string;
   password: string;
-  rol: string;  // "OYENTE" o "ARTISTA"
+  rol: string;
 }
 
+
 export interface LoginRequestDto {
-  emailOrUsername: string;
+  email: string;
   password: string;
 }
 
@@ -45,13 +46,15 @@ export class AuthService {
 
   constructor(private http: HttpClient) { }
 
-  // Método para registrar un nuevo usuario
+  // Méto-do para registrar un nuevo usuario
   signup(userData: RegisterRequestDto, file?: File): Observable<string> {
     const formData = new FormData();
-    const userBlob = new Blob([JSON.stringify(userData)], { type: 'application/json' });
 
+    // Create a blob with the user data and append it as the 'user' part
+    const userBlob = new Blob([JSON.stringify(userData)], { type: 'application/json' });
     formData.append('user', userBlob);
 
+    // Still append the file if it exists
     if (file) {
       formData.append('file', file);
     }
@@ -62,7 +65,8 @@ export class AuthService {
       );
   }
 
-  // Método para iniciar sesión
+
+  // Méto-do para iniciar sesión
   login(loginData: LoginRequestDto): Observable<JwtLoginResponseDto> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
@@ -137,4 +141,5 @@ export class AuthService {
     const rol = this.getCurrentUserRole();
     return rol === 'OYENTE';
   }
+
 }

@@ -21,7 +21,7 @@ export class AuthInicioComponent implements OnInit {
     private router: Router
   ) {
     this.loginForm = this.fb.group({
-      emailOrUsername: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]]
     });
   }
@@ -42,9 +42,10 @@ export class AuthInicioComponent implements OnInit {
     this.errorMessage = '';
 
     const loginData: LoginRequestDto = {
-      emailOrUsername: this.loginForm.value.emailOrUsername,
-      password: this.loginForm.value.password
+      email: this.loginForm.get('email')?.value,
+      password: this.loginForm.get('password')?.value
     };
+
 
     console.log('Enviando solicitud de login:', {
       url: 'http://localhost:8080/auth/login',
@@ -66,7 +67,7 @@ export class AuthInicioComponent implements OnInit {
           if (error.status === 403) {
             this.errorMessage = 'Acceso denegado. Verifica que tu cuenta esté habilitada y que las credenciales sean correctas.';
           } else if (error.status === 401) {
-            this.errorMessage = 'Credenciales incorrectas. Por favor, verifica tu email/usuario y contraseña.';
+            this.errorMessage = 'Credenciales incorrectas. Por favor, verifica tu email y contraseña.';
           } else if (error.status === 0) {
             this.errorMessage = 'No se pudo conectar con el servidor. Por favor, verifica tu conexión a internet.';
           } else {

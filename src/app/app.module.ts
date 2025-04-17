@@ -4,17 +4,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-
-// Angular Material
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSelectModule } from '@angular/material/select';
-import { MatTabsModule } from '@angular/material/tabs';
+import { CommonModule } from '@angular/common';
 
 // Componentes
 import { AppComponent } from './app.component';
@@ -26,26 +16,20 @@ import { AuthComponent } from './pages/auth/auth.component';
 // Servicios
 import { ThemeService } from './theme.service';
 
-// Interceptor para añadir el token a las peticiones
-
 // Layout Components
 import { HeaderComponent } from "./layouts/header/header.component";
 import { FooterComponent } from "./layouts/footer/footer.component";
 import { AuthInicioComponent } from "./pages/models/auth-inicio/auth-inicio.component";
 import { AuthCrearComponent } from "./pages/models/auth-crear/auth-crear.component";
-import {AuthInterceptor} from "./AuthInterceptor";
+import { AuthInterceptor } from "./AuthInterceptor";
+import { NotfoundComponent } from './pages/not-found/notfound.component';
 
 // Definir las rutas
 const routes: Routes = [
-  {
-    path: '',
-    children: [
-      { path: '', redirectTo: 'inicio', pathMatch: 'full' },
-      { path: 'inicio', component: InicioComponent },
-      { path: 'explorar', component: ExplorarComponent },
-      { path: 'biblioteca', component: BibliotecaComponent }
-    ]
-  },
+  { path: '', redirectTo: 'inicio', pathMatch: 'full' },
+  { path: 'inicio', component: InicioComponent },
+  { path: 'explorar', component: ExplorarComponent },
+  { path: 'biblioteca', component: BibliotecaComponent },
   {
     path: 'auth',
     component: AuthComponent,
@@ -55,8 +39,10 @@ const routes: Routes = [
       { path: 'crear', component: AuthCrearComponent }
     ]
   },
-  { path: '**', redirectTo: '' }
+  { path: 'not-found', component: NotfoundComponent },
+  { path: '**', redirectTo: 'not-found' }
 ];
+
 
 @NgModule({
   declarations: [
@@ -69,23 +55,16 @@ const routes: Routes = [
     FooterComponent,
     AuthInicioComponent,
     AuthCrearComponent,
+    NotfoundComponent
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    HttpClientModule,  // Añadido HttpClientModule
-    FormsModule,       // Añadido FormsModule
+    HttpClientModule,
+    FormsModule,
     ReactiveFormsModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatButtonModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatMenuModule,
-    MatProgressSpinnerModule,
-    MatSelectModule,
-    MatTabsModule,
-    RouterModule.forRoot(routes)
+    CommonModule,
+    RouterModule.forRoot(routes),
   ],
   providers: [
     ThemeService,

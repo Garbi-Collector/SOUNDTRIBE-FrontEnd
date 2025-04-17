@@ -1,27 +1,29 @@
 <nav class="navbar navbar-dark bg-dark">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">
+    <a class="navbar-brand " href="#" [routerLink]="'/inicio'">
       <img src="assets/logo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
     </a>
     <div class="d-flex justify-content-center flex-grow-1">
       <div class="search-container">
-        <mat-form-field appearance="outline" class="search-field">
-          <mat-icon matPrefix>search</mat-icon>
-          <input matInput placeholder="Buscar...">
-        </mat-form-field>
+        <div class="input-group">
+          <span class="input-group-text bg-dark border-secondary">
+            <i class="bi bi-search text-light"></i>
+          </span>
+          <input type="text" class="form-control bg-dark text-light border-secondary" placeholder="Buscar...">
+        </div>
       </div>
     </div>
     <div class="d-flex align-items-center">
       <div class="theme-toggle" [class.light]="isLightTheme" (click)="toggleTheme()">
         <div class="theme-toggle-track"></div>
         <div class="theme-toggle-thumb">
-          <mat-icon *ngIf="isLightTheme" class="theme-toggle-icon" fontIcon="light_mode"></mat-icon>
-          <mat-icon *ngIf="!isLightTheme" class="theme-toggle-icon" fontIcon="dark_mode"></mat-icon>
+          <i *ngIf="isLightTheme" class="bi bi-brightness-high theme-toggle-icon"></i>
+          <i *ngIf="!isLightTheme" class="bi bi-moon theme-toggle-icon"></i>
         </div>
       </div>
 
-      <button mat-icon-button class="profile-button" [routerLink]="'/auth'">
-        <mat-icon>account_circle</mat-icon>
+      <button class="btn btn-link text-light ms-2" [routerLink]="'/auth'">
+        <i class="bi bi-person-circle fs-4"></i>
       </button>
     </div>
   </div>

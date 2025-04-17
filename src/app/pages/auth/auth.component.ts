@@ -34,7 +34,7 @@ export class AuthComponent implements OnInit {
     this.activeTab = tab;
 
     // Navegar a la ruta correspondiente
-    const route = tab === 'login' ? '/auth/iniciar' : '/auth/crear';
+    const route = tab === 'login' ? 'auth/iniciar' : 'auth/crear';
     this.router.navigate([route]);
   }
 }

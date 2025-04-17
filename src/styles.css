@@ -1,16 +1,18 @@
 /* You can add global styles to this file, and also import other style files */
 
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-
-/* Estilos generales */
 body {
-  background-color: #0d0d14;
   margin: 0;
   padding: 0;
   font-family: 'Roboto', sans-serif;
+  background-color: #0d0d14;
   color: #ffffff;
+  min-height: 100vh;
+  position: relative;
+  padding-bottom: 60px; /* Para el footer */
 }
+
+
 
 /* Variables de colores del logo */
 :root {
@@ -117,22 +119,6 @@ main {
   transition: all 0.3s ease;
 }
 
-.nav-btn:hover {
-  background: rgba(166, 77, 255, 0.15);
-}
-
-.nav-btn.active, .nav-btn:focus {
-  opacity: 1;
-  color: transparent;
-  background-clip: text;
-  -webkit-background-clip: text;
-  background-image: var(--gradient-primary);
-}
-
-.nav-btn.active mat-icon, .nav-btn:focus mat-icon {
-  color: var(--color-blue);
-}
-
 .nav-btn mat-icon {
   margin-bottom: 4px;
   transition: all 0.3s ease;
@@ -183,13 +169,6 @@ main {
 .router-outlet-active {
   padding: 15px;
   background-color: rgba(255, 255, 255, 0.03);
-  border-radius: 12px;
-}
-
-.nav-btn.active,
-.nav-btn:focus,
-.nav-btn:hover {
-  animation: glow 2s infinite;
   border-radius: 12px;
 }
 
@@ -299,4 +278,34 @@ h2 {
 .mat-spinner {
   display: inline-block;
   margin-right: 8px;
+}
+
+
+/* Asegúrate de que el contenedor de overlay tenga mayor índice z que el footer */
+.cdk-overlay-container {
+  z-index: 1500 !important; /* Valor más alto que el z-index del footer */
+}
+
+/* Ajusta cómo se muestra el panel del mat-select */
+.mat-select-panel {
+  margin-top: 30px !important;
+  transform: translateY(-30px) !important;
+}
+.nav-btn.active,
+.nav-btn:focus,
+.nav-btn:hover {
+  animation: glow 2s infinite;
+  border-radius: 12px;
+  background: rgba(166, 77, 255, 0.15);
+  opacity: 1;
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+  background-image: var(--gradient-primary);
+}
+
+
+.nav-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(166, 77, 255, 0.2);
 }

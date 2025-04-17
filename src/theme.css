@@ -44,112 +44,112 @@ body {
 }
 
 /* Estilos del tema oscuro */
-body.dark-theme {
+body.dark-theme .auth-container {
   background-color: var(--dark-bg-primary);
   color: var(--dark-text);
 }
 
-body.dark-theme .navbar-dark.bg-dark {
+body.dark-theme .auth-container .navbar-dark.bg-dark {
   background-color: var(--dark-bg-secondary) !important;
   border-bottom: 1px solid var(--dark-border);
 }
 
-body.dark-theme .navbar.fixed-bottom {
+body.dark-theme .auth-container .navbar.fixed-bottom {
   background-color: var(--dark-bg-secondary) !important;
   border-top: 1px solid var(--dark-border);
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
 }
 
-body.dark-theme main {
+body.dark-theme .auth-container main {
   background-color: var(--dark-bg-primary);
 }
 
-body.dark-theme .router-outlet-active {
+body.dark-theme .auth-container .router-outlet-active {
   background-color: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--dark-border);
 }
 
-body.dark-theme .mat-form-field-appearance-outline .mat-form-field-outline {
+body.dark-theme .auth-container .mat-form-field-appearance-outline .mat-form-field-outline {
   background-color: var(--dark-component-bg);
 }
 
-body.dark-theme .mat-form-field-label {
+body.dark-theme .auth-container .mat-form-field-label {
   color: var(--dark-text-secondary);
 }
 
-body.dark-theme .mat-input-element {
+body.dark-theme .auth-container .mat-input-element {
   color: var(--dark-text);
 }
 
-body.dark-theme .mat-icon {
+body.dark-theme .auth-container .mat-icon {
   color: var(--dark-text-secondary);
 }
 
-body.dark-theme .content-card {
+body.dark-theme .auth-container .content-card {
   background-color: var(--dark-bg-secondary);
   border: 1px solid var(--dark-border);
 }
 
 /* Estilos del tema claro */
-body.light-theme {
+body.light-theme .auth-container {
   background-color: var(--light-bg-primary);
   color: var(--light-text);
 }
 
-body.light-theme .navbar-dark.bg-dark {
+body.light-theme .auth-container .navbar-dark.bg-dark {
   background-color: var(--light-bg-secondary) !important;
   border-bottom: 1px solid var(--light-border);
   box-shadow: var(--shadow-soft);
   color: var(--light-text);
 }
 
-body.light-theme .navbar-dark .navbar-brand,
-body.light-theme .navbar-dark .navbar-nav .nav-link {
+body.light-theme .auth-container .navbar-dark .navbar-brand,
+body.light-theme .auth-container .navbar-dark .navbar-nav .nav-link {
   color: var(--light-text);
 }
 
-body.light-theme .navbar.fixed-bottom {
+body.light-theme .auth-container .navbar.fixed-bottom {
   background-color: var(--light-bg-secondary) !important;
   border-top: 1px solid var(--light-border);
   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
 }
 
-body.light-theme main {
+body.light-theme .auth-container main {
   background-color: var(--light-bg-primary);
 }
 
-body.light-theme .router-outlet-active {
+body.light-theme .auth-container .router-outlet-active {
   background-color: var(--light-bg-secondary);
   border: 1px solid var(--light-border);
   box-shadow: var(--shadow-soft);
 }
 
-body.light-theme .mat-form-field-appearance-outline .mat-form-field-outline {
+body.light-theme .auth-container .mat-form-field-appearance-outline .mat-form-field-outline {
   background-color: var(--light-component-bg);
   color: var(--light-text-secondary);
 }
 
-body.light-theme .mat-form-field-appearance-outline .mat-form-field-outline-thick {
+body.light-theme .auth-container .mat-form-field-appearance-outline .mat-form-field-outline-thick {
   color: rgba(128, 128, 255, 0.5);
 }
 
-body.light-theme .mat-form-field-label {
+body.light-theme .auth-container .mat-form-field-label {
   color: var(--light-text-secondary);
 }
 
-body.light-theme .mat-input-element {
+body.light-theme .auth-container .mat-input-element {
   color: var(--light-text);
 }
 
-body.light-theme .mat-icon {
+body.light-theme .auth-container .mat-icon {
   color: var(--light-text-secondary);
 }
 
-body.light-theme .nav-btn {
+body.light-theme .auth-container .nav-btn {
   color: var(--light-text);
 }
 
-body.light-theme .content-card {
+body.light-theme .auth-container .content-card {
   background-color: var(--light-bg-secondary);
   border: 1px solid var(--light-border);
   box-shadow: var(--shadow-soft);
@@ -263,20 +263,20 @@ body.light-theme .content-card {
   width: 8px;
 }
 
-body.dark-theme::-webkit-scrollbar-track {
+body.dark-theme .auth-container::-webkit-scrollbar-track {
   background: var(--dark-bg-secondary);
 }
 
-body.dark-theme::-webkit-scrollbar-thumb {
+body.dark-theme .auth-container::-webkit-scrollbar-thumb {
   background: linear-gradient(var(--color-pink), var(--color-blue));
   border-radius: 4px;
 }
 
-body.light-theme::-webkit-scrollbar-track {
+body.light-theme .auth-container::-webkit-scrollbar-track {
   background: var(--light-bg-secondary);
 }
 
-body.light-theme::-webkit-scrollbar-thumb {
+body.light-theme .auth-container::-webkit-scrollbar-thumb {
   background: linear-gradient(var(--color-pink), var(--color-blue));
   border-radius: 4px;
 }
@@ -326,4 +326,95 @@ main {
 .navbar.fixed-bottom {
   height: 60px;
   transition: all 0.3s ease;
+}
+/* Estilos específicos para el tema claro en el footer */
+body.light-theme .auth-container .navbar-dark.bg-dark {
+  background-color: var(--light-bg-secondary) !important;
+  border-bottom: 1px solid var(--light-border);
+}
+
+body.light-theme .auth-container .navbar.fixed-bottom {
+  background-color: var(--light-bg-secondary) !important;
+  border-top: 1px solid var(--light-border);
+}
+
+/* Corregir colores de texto en el tema claro */
+body.light-theme .auth-container .text-light,
+body.light-theme .auth-container .btn-link.text-light,
+body.light-theme .auth-container .navbar-dark .navbar-brand,
+body.light-theme .auth-container .navbar-dark .nav-btn,
+body.light-theme .auth-container .bi-search.text-light {
+  color: var(--light-text) !important;
+}
+
+/* Estilos para el buscador en tema claro */
+body.light-theme .auth-container .input-group-text.bg-dark,
+body.light-theme .auth-container .form-control.bg-dark {
+  background-color: var(--light-component-bg) !important;
+  color: var(--light-text) !important;
+  border-color: var(--light-border) !important;
+}
+
+/* Estilos para los botones de navegación en tema claro */
+body.light-theme .auth-container .nav-btn {
+  color: var(--light-text) !important;
+}
+
+body.light-theme .auth-container .nav-btn.active,
+body.light-theme .auth-container .nav-btn:focus,
+body.light-theme .auth-container .nav-btn:hover {
+  animation: glow 2s infinite;
+  border-radius: 12px;
+  background: var(--light-hover);
+  opacity: 1;
+}
+
+body.light-theme .auth-container .nav-btn.active i,
+body.light-theme .auth-container .nav-btn:focus i,
+body.light-theme .auth-container .nav-btn:hover i {
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+  background-image: var(--gradient-primary);
+}
+
+/* Corregir el ícono del usuario en tema claro */
+body.light-theme .auth-container .bi-person-circle {
+  color: var(--light-text) !important;
+}
+/* Tema Oscuro */
+body.dark-theme .auth-container {
+  background-color: var(--dark-bg-primary);
+  color: var(--dark-text);
+}
+
+body.dark-theme .auth-card {
+  background-color: var(--dark-component-bg);
+  border: 1px solid var(--dark-border);
+  box-shadow: var(--shadow-medium);
+}
+
+/* Tema Claro */
+body.light-theme .auth-container {
+  background-color: var(--light-bg-primary);
+  color: var(--light-text);
+}
+
+body.light-theme .auth-card {
+  background-color: var(--light-bg-secondary);
+  border: 1px solid var(--light-border);
+  box-shadow: var(--shadow-soft);
+}
+body.dark-theme input,
+body.dark-theme label {
+  background-color: var(--dark-component-bg);
+  color: var(--dark-text);
+  border: 1px solid var(--dark-border);
+}
+
+body.light-theme input,
+body.light-theme label {
+  background-color: var(--light-component-bg);
+  color: var(--light-text);
+  border: 1px solid var(--light-border);
 }

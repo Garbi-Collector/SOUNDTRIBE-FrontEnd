@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
+import { RoutesBack } from '../routes-back';
 
 // DTOs (mantener las interfaces existentes)
 export interface RegisterRequestDto {
@@ -10,7 +11,6 @@ export interface RegisterRequestDto {
   password: string;
   rol: string;
 }
-
 
 export interface LoginRequestDto {
   email: string;
@@ -42,19 +42,16 @@ export interface FotoModel {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080'; // Ajusta esto a la URL de tu backend
+  private apiUrl = RoutesBack.userServiceUrl; // Usamos la clase RoutesBack para la URL base
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
-  // Méto-do para registrar un nuevo usuario
+  // Método para registrar un nuevo usuario
   signup(userData: RegisterRequestDto, file?: File): Observable<string> {
     const formData = new FormData();
-
-    // Create a blob with the user data and append it as the 'user' part
     const userBlob = new Blob([JSON.stringify(userData)], { type: 'application/json' });
     formData.append('user', userBlob);
 
-    // Still append the file if it exists
     if (file) {
       formData.append('file', file);
     }
@@ -65,8 +62,7 @@ export class AuthService {
       );
   }
 
-
-  // Méto-do para iniciar sesión
+  // Método para iniciar sesión
   login(loginData: LoginRequestDto): Observable<JwtLoginResponseDto> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
@@ -76,7 +72,6 @@ export class AuthService {
       .pipe(
         tap(response => {
           console.log('Respuesta de login recibida:', response);
-          // Almacenar el token y datos de usuario en localStorage
           localStorage.setItem('auth_token', response.token);
           localStorage.setItem('username', response.username);
           localStorage.setItem('email', response.email);
@@ -141,5 +136,4 @@ export class AuthService {
     const rol = this.getCurrentUserRole();
     return rol === 'OYENTE';
   }
-
 }

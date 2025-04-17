@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthService } from './auth.service';
+import { RoutesBack } from '../routes-back';
 
 export interface UserGet {
   id: number;
@@ -27,7 +28,7 @@ export interface GetAll {
   providedIn: 'root'
 })
 export class UserExperienceService {
-  private apiUrl = 'http://localhost:8080/api/user';
+  private apiUrl = `${RoutesBack.userServiceUrl}/api/user`; // Usamos la clase RoutesBack para la URL base
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 

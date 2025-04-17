@@ -1,0 +1,107 @@
+/* Estilos para el header fijo */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  height: 68px; /* Altura fija para el navbar */
+}
+
+/* Estilos para el buscador y los resultados */
+.search-container {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+}
+
+.search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1050; /* Mayor que el navbar para aparecer encima */
+  background-color: #343a40;
+  border: 1px solid #495057;
+  border-radius: 0 0 6px 6px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  margin-top: 2px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.search-item {
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.search-item:hover {
+  background-color: #495057;
+}
+
+.search-item:not(:last-child) {
+  border-bottom: 1px solid #495057;
+}
+
+.user-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  min-width: 36px; /* Asegura que el avatar no se comprima */
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Estilos para el toggle de tema */
+.theme-toggle {
+  position: relative;
+  width: 50px;
+  height: 24px;
+  background-color: #495057;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.theme-toggle.light {
+  background-color: #6c757d;
+}
+
+.theme-toggle-track {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+}
+
+.theme-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background-color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s;
+}
+
+.theme-toggle.light .theme-toggle-thumb {
+  transform: translateX(26px);
+}
+
+.theme-toggle-icon {
+  font-size: 12px;
+  color: #343a40;
+}
+
+/* Estilos para evitar que el contenido se mueva al mostrar resultados */
+.input-group {
+  position: relative;
+  z-index: 1050; /* Mismo z-index que los resultados para mantener coherencia */
+}

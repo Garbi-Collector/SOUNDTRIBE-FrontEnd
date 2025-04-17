@@ -24,6 +24,7 @@ import { AuthCrearComponent } from "./pages/models/auth-crear/auth-crear.compone
 import { AuthInterceptor } from "./AuthInterceptor";
 import { NotfoundComponent } from './pages/not-found/notfound.component';
 
+
 // Definir las rutas
 const routes: Routes = [
   { path: '', redirectTo: 'inicio', pathMatch: 'full' },
@@ -55,7 +56,7 @@ const routes: Routes = [
     FooterComponent,
     AuthInicioComponent,
     AuthCrearComponent,
-    NotfoundComponent
+    NotfoundComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import {map, Observable, throwError} from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthService } from './auth.service';
-import { RoutesBack } from '../routes-back';
+import { RoutesBackService } from '../../routes-back.service';
 
 export interface UserGet {
   id: number;
@@ -28,15 +28,19 @@ export interface GetAll {
   providedIn: 'root'
 })
 export class UserExperienceService {
-  private apiUrl = `${RoutesBack.userServiceUrl}/api/user`; // Usamos la clase RoutesBack para la URL base
+  private apiUrl: string;
 
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService,
+    private routesBack: RoutesBackService
+  ) {
+    this.apiUrl = `${this.routesBack.userServiceUrl}/api/user`;
+  }
 
   private getAuthHeaders(): HttpHeaders {
     const token = this.authService.getToken();
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
+    return new HttpHeaders({ 'Authorization': `Bearer ${token}` });
   }
 
   followUser(idToFollow: number): Observable<string> {
@@ -64,8 +68,17 @@ export class UserExperienceService {
   getAuthenticatedUser(): Observable<UserGet> {
     const headers = this.getAuthHeaders();
     return this.http.get<UserGet>(`${this.apiUrl}/me`, { headers })
-      .pipe(catchError(this.handleError));
+      .pipe(
+        map(user => {
+          if (user.urlFoto) {
+            user.urlFoto = `${this.routesBack.userServiceUrl}/fotos/image/${user.urlFoto}`;
+          }
+          return user;
+        }),
+        catchError(this.handleError)
+      );
   }
+
 
   private handleError(error: any): Observable<never> {
     console.error('UserExperienceService error:', error);

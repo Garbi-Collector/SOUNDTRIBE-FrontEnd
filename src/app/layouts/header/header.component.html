@@ -1,6 +1,6 @@
 <nav class="navbar navbar-dark bg-dark">
   <div class="container-fluid">
-    <a class="navbar-brand " href="#" [routerLink]="'/inicio'">
+    <a class="navbar-brand" href="#" [routerLink]="'/inicio'">
       <img src="assets/logo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
     </a>
     <div class="d-flex justify-content-center flex-grow-1">
@@ -9,7 +9,22 @@
           <span class="input-group-text bg-dark border-secondary">
             <i class="bi bi-search text-light"></i>
           </span>
-          <input type="text" class="form-control bg-dark text-light border-secondary" placeholder="Buscar...">
+          <input type="text" class="form-control bg-dark text-light border-secondary" placeholder="Buscar..." [(ngModel)]="searchQuery" (input)="filterUsers()" (click)="$event.stopPropagation()">
+        </div>
+        <!-- Resultados de búsqueda como overlay -->
+        <div *ngIf="filteredUsers.length > 0" class="search-results">
+          <ul class="list-unstyled m-0">
+            <li *ngFor="let user of filteredUsers" class="search-item d-flex align-items-center" (click)="navigateToUserProfile(user.id)">
+              <div class="user-avatar">
+                <img *ngIf="user.urlFoto" [src]="getImageUrl(user.urlFoto)" alt="Foto de usuario" class="rounded-circle" width="36" height="36">
+                <i *ngIf="!user.urlFoto" class="bi bi-person-circle fs-4 text-light"></i>
+              </div>
+              <div class="ms-2 user-info">
+                <strong class="text-light">{{ user.username }}</strong>
+                <div class="text-muted small">Ver perfil</div>
+              </div>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
@@ -22,9 +37,21 @@
         </div>
       </div>
 
-      <button class="btn btn-link text-light ms-2" [routerLink]="'/auth'">
-        <i class="bi bi-person-circle fs-4"></i>
-      </button>
+      <div *ngIf="isAuthenticated; else loggedOut">
+        <button class="btn btn-link text-light ms-2" [routerLink]="'/mi-perfil'">
+          <img *ngIf="userFotoUrl" [src]="userFotoUrl" alt="Foto de perfil" class="rounded-circle" width="30" height="30">
+          <i *ngIf="!userFotoUrl" class="bi bi-person-circle fs-4"></i>
+        </button>
+        <button class="btn btn-link text-light ms-2" (click)="logout()">
+          <i class="bi bi-box-arrow-right fs-4"></i>
+        </button>
+      </div>
+
+      <ng-template #loggedOut>
+        <button class="btn btn-link text-light ms-2" [routerLink]="'/auth'">
+          <i class="bi bi-person-circle fs-4"></i>
+        </button>
+      </ng-template>
     </div>
   </div>
 </nav>

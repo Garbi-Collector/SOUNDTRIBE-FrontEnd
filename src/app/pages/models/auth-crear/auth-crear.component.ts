@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { debounceTime, switchMap, of, catchError } from 'rxjs';
-import { AuthService, RegisterRequestDto } from '../../../Usuario/auth.service';
+import { AuthService, RegisterRequestDto } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-auth-crear',

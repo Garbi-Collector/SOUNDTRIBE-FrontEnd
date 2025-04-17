@@ -14,7 +14,7 @@ import { InicioComponent } from './pages/inicio/inicio.component';
 import { AuthComponent } from './pages/auth/auth.component';
 
 // Servicios
-import { ThemeService } from './theme.service';
+import { ThemeService } from './services/theme.service';
 
 // Layout Components
 import { HeaderComponent } from "./layouts/header/header.component";

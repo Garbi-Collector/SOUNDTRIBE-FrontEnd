@@ -1,13 +1,18 @@
-import { Component, OnInit, HostListener, AfterViewInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
-import { UserExperienceService } from '../../services/user-experience.service';
-import { ThemeService } from "../../services/theme.service";
-import { UserGet } from '../../services/user-experience.service';
-import { RoutesBackService } from '../../../routes-back.service';
+import {AfterViewInit, Component, HostListener, OnInit} from '@angular/core';
+import {UserGet} from "../../dtos/users.dto";
+import {ModalService} from "../../services/modal.service";
+import {ThemeService} from "../../services/theme.service";
+import {AuthService} from "../../services/auth.service";
+import {UserService} from "../../services/user.service";
+import {Router, RouterLink} from "@angular/router";
+import {BackEndRoutesService} from "../../back-end.routes.service";
+
+
 
 // Importa el tipo Dropdown de Bootstrap si lo tienes instalado
 declare var bootstrap: any;
+
+
 
 @Component({
   selector: 'app-header',
@@ -27,22 +32,13 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   isMobile: boolean = false;
   searchActive: boolean = true; // Por defecto activo en desktop
 
-  toggleDropdown(event: Event) {
-    event.preventDefault();
-    event.stopPropagation();
-    this.dropdownOpen = !this.dropdownOpen;
-  }
-
-  closeDropdown() {
-    this.dropdownOpen = false;
-  }
-
   constructor(
+    private modalService: ModalService,
     private themeService: ThemeService,
     private authService: AuthService,
-    private userExperienceService: UserExperienceService,
+    private userExperienceService: UserService,
     private router: Router,
-    private routesBack: RoutesBackService
+    private routesBack: BackEndRoutesService
   ) {
     this.themeService.theme$.subscribe(theme => {
       this.isLightTheme = theme === 'light';
@@ -52,7 +48,135 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     this.checkScreenSize();
   }
 
-  // Modifica el listener de document:click existente para incluir el cierre del dropdown
+
+
+  //  logo  - theme mode
+
+  /**
+   * Se ejecuta al hacer clic en el logo. Cambia el tema y previene navegación.
+   * @param event Evento del clic
+   */
+  onLogoClick(event: Event): void {
+    event.preventDefault(); // evita la navegación
+    this.toggleTheme();     // cambia el tema
+  }
+
+  /**
+   * cambia el tema de la app
+   */
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
+  }
+
+
+
+  //  Buscador
+
+  /**
+   * filtra la lista de usuarios segun lo ingresado
+   */
+  filterUsers() {
+    if (this.searchQuery.trim() === '') {
+      this.filteredUsers = [];
+    } else {
+      this.filteredUsers = this.userList.filter(user =>
+        user.username.toLowerCase().includes(this.searchQuery.toLowerCase())
+      ).slice(0, 5); // Limitar a 5 resultados
+    }
+  }
+
+  /**
+   * redirige al perfil del usuario seleccionado
+   */
+  navigateToUserProfile(user: UserGet) {
+    if (user && user.slug) {
+      this.router.navigate(['/perfil', user.slug]);
+    } else if (user && user.id) {
+      // Fallback por si no hay slug
+      this.router.navigate(['/perfil', user.id]);
+    }
+    this.clearSearch();
+    if (this.isMobile) {
+      this.searchActive = false;
+    }
+  }
+
+  /**
+   * limpia el input y los resultados de busqueda
+   */
+  clearSearch() {
+    this.searchQuery = '';
+    this.filteredUsers = [];
+  }
+
+  /**
+   * alterna el buscador visible en moviles
+   */
+  toggleSearchMobile(event: Event): void {
+    event.stopPropagation();
+    this.searchActive = !this.searchActive;
+    if (this.searchActive) {
+      setTimeout(() => {
+        const searchInput = document.querySelector('.search-container input');
+        if (searchInput) {
+          (searchInput as HTMLElement).focus();
+        }
+      }, 100);
+    } else {
+      this.clearSearch();
+    }
+  }
+
+  /**
+   * Genera la url completa de la imagen del usuario
+   */
+  getImageUrl(filename: string): string {
+    // Verificar si la URL ya incluye la ruta completa
+    if (filename.startsWith('http')) {
+      return filename;
+    }
+    return `${this.routesBack.userServiceUrl}/fotos/image/${filename}`;
+  }
+
+
+  //    Perfil  - Autenticacion
+
+  /**
+   * abre o cierra el menu del usuario
+   */
+  toggleDropdown(event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.dropdownOpen = !this.dropdownOpen;
+  }
+
+  /**
+   * cierra el menu del usuario
+   */
+  closeDropdown() {
+    this.dropdownOpen = false;
+  }
+
+  /**
+   * cierra la sesion y redirige al inicio
+   */
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/inicio']);
+  }
+
+  /**
+   * abre el modal de Auth
+   */
+  openAuthModal() {
+    this.modalService.openModal();  // Abre el modal
+  }
+
+  //    Responsive  -   UI general
+
+  /**
+   * Detecta clics fuera del dropdown o buscador para cerrarlos
+   */
   @HostListener('document:click', ['$event'])
   onClick(event: MouseEvent) {
     // Cerrar el dropdown si está abierto y se hace clic fuera
@@ -86,12 +210,17 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     }
   }
 
-  // Detectar cambios en el tamaño de la pantalla
+  /**
+   * Detecta cambio de tamaño de pantalla
+   */
   @HostListener('window:resize', ['$event'])
   onResize() {
     this.checkScreenSize();
   }
 
+  /**
+   * Establece si el dispositivo es móvil y ajusta visibilidad del buscador
+   */
   checkScreenSize() {
     this.isMobile = window.innerWidth < 768;
     if (!this.isMobile) {
@@ -99,44 +228,11 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     }
   }
 
-  ngOnInit() {
-    // Suscribirse al tema actual
-    this.themeService.currentTheme().subscribe(isLight => {
-      this.isLightTheme = isLight;
-    });
-    this.authService.isAuthenticated$.subscribe(isAuth => {
-      this.isAuthenticated = isAuth;
-      if (isAuth) {
-        // Obtener los detalles del usuario autenticado
-        this.userExperienceService.getAuthenticatedUser().subscribe(user => {
-          this.userFotoUrl = user.urlFoto;
-          this.userSlug = user.slug;
-          this.currentUser = user;
-        });
+  //    Inicialización Bootstrap
 
-        // Obtener todos los usuarios con JWT solo si el usuario está autenticado
-        this.userExperienceService.getAllUsersWithJwt().subscribe(response => {
-          this.userList = response.usuarios;
-        });
-      } else {
-        // Limpiar foto cuando el usuario cierra sesión
-        this.userFotoUrl = undefined;
-        this.userSlug = undefined;
-        this.currentUser = null;
-
-        // Obtener todos los usuarios sin JWT si el usuario no está autenticado
-        this.userExperienceService.getAllUsers().subscribe(response => {
-          this.userList = response.usuarios;
-        });
-      }
-    });
-  }
-
-  ngAfterViewInit() {
-    // Inicializar dropdowns después de que la vista se haya cargado
-    this.initBootstrapDropdowns();
-  }
-
+  /**
+   * Inicializa manualmente los dropdowns de Bootstrap si no están disponibles globalmente
+   */
   initBootstrapDropdowns() {
     // Inicializar los dropdowns de Bootstrap 5
     if (typeof document !== 'undefined' && typeof bootstrap !== 'undefined') {
@@ -171,67 +267,52 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     }
   }
 
-  toggleTheme(): void {
-    this.themeService.toggleTheme();
+  //    Ciclos de Vida Angular
+
+  /**
+   * se subscribe al tema.
+   * se subscribe al estado de autenticacion y carga los datos del usuario y la lista de usuarios
+   */
+  ngOnInit() {
+    // Suscribirse al tema actual
+    this.themeService.currentTheme().subscribe(isLight => {
+      this.isLightTheme = isLight;
+    });
+    this.authService.isAuthenticated$.subscribe(isAuth => {
+      this.isAuthenticated = isAuth;
+      if (isAuth) {
+        // Obtener los detalles del usuario autenticado
+        this.userExperienceService.getAuthenticatedUser().subscribe(user => {
+          this.userFotoUrl = user.urlFoto;
+          this.userSlug = user.slug;
+          this.currentUser = user;
+        });
+
+        // Obtener todos los usuarios con JWT solo si el usuario está autenticado
+        this.userExperienceService.getAllUsersWithJwt().subscribe(response => {
+          this.userList = response.usuarios;
+        });
+      } else {
+        // Limpiar foto cuando el usuario cierra sesión
+        this.userFotoUrl = undefined;
+        this.userSlug = undefined;
+        this.currentUser = null;
+
+        // Obtener todos los usuarios sin JWT si el usuario no está autenticado
+        this.userExperienceService.getAllUsers().subscribe(response => {
+          this.userList = response.usuarios;
+        });
+      }
+    });
   }
 
-  logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/inicio']);
+  /**
+   * Inicializa el dropdown de Bootstrap al terminar de renderizar la vista
+   */
+  ngAfterViewInit() {
+    // Inicializar dropdowns después de que la vista se haya cargado
+    this.initBootstrapDropdowns();
   }
 
-  toggleSearchMobile(event: Event): void {
-    event.stopPropagation();
-    this.searchActive = !this.searchActive;
-    if (this.searchActive) {
-      setTimeout(() => {
-        const searchInput = document.querySelector('.search-container input');
-        if (searchInput) {
-          (searchInput as HTMLElement).focus();
-        }
-      }, 100);
-    } else {
-      this.clearSearch();
-    }
-  }
 
-  // Filtrar usuarios basado en la búsqueda
-  filterUsers() {
-    if (this.searchQuery.trim() === '') {
-      this.filteredUsers = [];
-    } else {
-      this.filteredUsers = this.userList.filter(user =>
-        user.username.toLowerCase().includes(this.searchQuery.toLowerCase())
-      ).slice(0, 5); // Limitar a 5 resultados
-    }
-  }
-
-  // Navegar al perfil del usuario seleccionado utilizando el slug
-  navigateToUserProfile(user: UserGet) {
-    if (user && user.slug) {
-      this.router.navigate(['/perfil', user.slug]);
-    } else if (user && user.id) {
-      // Fallback por si no hay slug
-      this.router.navigate(['/perfil', user.id]);
-    }
-    this.clearSearch();
-    if (this.isMobile) {
-      this.searchActive = false;
-    }
-  }
-
-  // Limpiar la búsqueda
-  clearSearch() {
-    this.searchQuery = '';
-    this.filteredUsers = [];
-  }
-
-  // Obtener la URL completa de la imagen
-  getImageUrl(filename: string): string {
-    // Verificar si la URL ya incluye la ruta completa
-    if (filename.startsWith('http')) {
-      return filename;
-    }
-    return `${this.routesBack.userServiceUrl}/fotos/image/${filename}`;
-  }
 }

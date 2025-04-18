@@ -1,18 +1,25 @@
-<!-- header.component.html-->
+<!--  header.component.html   -->
 <nav class="navbar navbar-dark bg-dark">
   <div class="container-fluid">
-    <!-- Logo que controla el tema -->
-    <a class="navbar-brand logo-theme-toggle" (click)="toggleTheme()" [routerLink]="[]" [queryParams]="{}" (click)="$event.preventDefault()">
+
+    <!--  Logo que controla el tema   -->
+    <a
+      class="navbar-brand logo-theme-toggle"
+      (click)="onLogoClick($event)"
+      [routerLink]="[]"
+      [queryParams]="{}">
       <div class="logo-container">
         <img src="assets/logo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
-        <div class="theme-indicator">
-          <i *ngIf="isLightTheme" class="bi bi-brightness-high text-warning"></i>
-          <i *ngIf="!isLightTheme" class="bi bi-moon-stars text-light"></i>
-        </div>
       </div>
     </a>
 
-    <!-- Buscador -->
+
+
+
+    <!--    Buscador    -->
+
+
+
     <div class="search-wrapper" [class.active]="searchActive">
       <div class="search-container">
         <div class="input-group">
@@ -53,6 +60,9 @@
       <i class="bi bi-search fs-5"></i>
     </button>
 
+
+
+
     <!-- Perfil de usuario con menú desplegable PERSONALIZADO -->
     <div class="dropdown user-menu" *ngIf="isAuthenticated; else loggedOut" (click)="$event.stopPropagation()">
       <button class="btn btn-link text-light user-dropdown-btn" type="button"
@@ -80,9 +90,12 @@
 
     <!-- Botón de login para usuarios no autenticados -->
     <ng-template #loggedOut>
-      <button class="btn btn-link text-light" [routerLink]="'/auth'">
+      <button class="btn btn-link text-light" (click)="openAuthModal()">
         <i class="bi bi-person-circle fs-4"></i>
       </button>
     </ng-template>
+
+
+
   </div>
 </nav>

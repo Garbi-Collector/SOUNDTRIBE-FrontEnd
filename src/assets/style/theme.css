@@ -90,70 +90,10 @@ body.dark-theme .auth-container .content-card {
   border: 1px solid var(--dark-border);
 }
 
-/* Estilos del tema claro */
-body.light-theme .auth-container {
-  background-color: var(--light-bg-primary);
-  color: var(--light-text);
-}
 
-body.light-theme .auth-container .navbar-dark.bg-dark {
-  background-color: var(--light-bg-secondary) !important;
-  border-bottom: 1px solid var(--light-border);
-  box-shadow: var(--shadow-soft);
-  color: var(--light-text);
-}
 
-body.light-theme .auth-container .navbar-dark .navbar-brand,
-body.light-theme .auth-container .navbar-dark .navbar-nav .nav-link {
-  color: var(--light-text);
-}
 
-body.light-theme .auth-container .navbar.fixed-bottom {
-  background-color: var(--light-bg-secondary) !important;
-  border-top: 1px solid var(--light-border);
-  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
-}
 
-body.light-theme .auth-container main {
-  background-color: var(--light-bg-primary);
-}
-
-body.light-theme .auth-container .router-outlet-active {
-  background-color: var(--light-bg-secondary);
-  border: 1px solid var(--light-border);
-  box-shadow: var(--shadow-soft);
-}
-
-body.light-theme .auth-container .mat-form-field-appearance-outline .mat-form-field-outline {
-  background-color: var(--light-component-bg);
-  color: var(--light-text-secondary);
-}
-
-body.light-theme .auth-container .mat-form-field-appearance-outline .mat-form-field-outline-thick {
-  color: rgba(128, 128, 255, 0.5);
-}
-
-body.light-theme .auth-container .mat-form-field-label {
-  color: var(--light-text-secondary);
-}
-
-body.light-theme .auth-container .mat-input-element {
-  color: var(--light-text);
-}
-
-body.light-theme .auth-container .mat-icon {
-  color: var(--light-text-secondary);
-}
-
-body.light-theme .auth-container .nav-btn {
-  color: var(--light-text);
-}
-
-body.light-theme .auth-container .content-card {
-  background-color: var(--light-bg-secondary);
-  border: 1px solid var(--light-border);
-  box-shadow: var(--shadow-soft);
-}
 
 /* Estilos comunes para ambos temas */
 .nav-btn {
@@ -200,50 +140,6 @@ body.light-theme .auth-container .content-card {
   animation: glow 2s infinite;
 }
 
-/* Botón de cambio de tema */
-.theme-toggle {
-  position: relative;
-  width: 40px;
-  height: 20px;
-  margin-right: 10px;
-}
-
-.theme-toggle-track {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 40px;
-  height: 20px;
-  border-radius: 20px;
-  background: var(--gradient-blue);
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.theme-toggle-thumb {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: white;
-  transition: all 0.3s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-}
-
-.theme-toggle.light .theme-toggle-thumb {
-  transform: translateX(20px);
-}
-
-.theme-toggle-icon {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 10px;
-  color: #333;
-}
 
 /* Efectos de iluminación */
 @keyframes glow {
@@ -272,14 +168,7 @@ body.dark-theme .auth-container::-webkit-scrollbar-thumb {
   border-radius: 4px;
 }
 
-body.light-theme .auth-container::-webkit-scrollbar-track {
-  background: var(--light-bg-secondary);
-}
 
-body.light-theme .auth-container::-webkit-scrollbar-thumb {
-  background: linear-gradient(var(--color-pink), var(--color-blue));
-  border-radius: 4px;
-}
 
 /* Adaptaciones de Material para modo oscuro/claro */
 .mat-form-field-appearance-outline .mat-form-field-infix {
@@ -327,61 +216,10 @@ main {
   height: 60px;
   transition: all 0.3s ease;
 }
-/* Estilos específicos para el tema claro en el footer */
-body.light-theme .auth-container .navbar-dark.bg-dark {
-  background-color: var(--light-bg-secondary) !important;
-  border-bottom: 1px solid var(--light-border);
-}
 
-body.light-theme .auth-container .navbar.fixed-bottom {
-  background-color: var(--light-bg-secondary) !important;
-  border-top: 1px solid var(--light-border);
-}
 
-/* Corregir colores de texto en el tema claro */
-body.light-theme .auth-container .text-light,
-body.light-theme .auth-container .btn-link.text-light,
-body.light-theme .auth-container .navbar-dark .navbar-brand,
-body.light-theme .auth-container .navbar-dark .nav-btn,
-body.light-theme .auth-container .bi-search.text-light {
-  color: var(--light-text) !important;
-}
 
-/* Estilos para el buscador en tema claro */
-body.light-theme .auth-container .input-group-text.bg-dark,
-body.light-theme .auth-container .form-control.bg-dark {
-  background-color: var(--light-component-bg) !important;
-  color: var(--light-text) !important;
-  border-color: var(--light-border) !important;
-}
 
-/* Estilos para los botones de navegación en tema claro */
-body.light-theme .auth-container .nav-btn {
-  color: var(--light-text) !important;
-}
-
-body.light-theme .auth-container .nav-btn.active,
-body.light-theme .auth-container .nav-btn:focus,
-body.light-theme .auth-container .nav-btn:hover {
-  animation: glow 2s infinite;
-  border-radius: 12px;
-  background: var(--light-hover);
-  opacity: 1;
-}
-
-body.light-theme .auth-container .nav-btn.active i,
-body.light-theme .auth-container .nav-btn:focus i,
-body.light-theme .auth-container .nav-btn:hover i {
-  color: transparent;
-  background-clip: text;
-  -webkit-background-clip: text;
-  background-image: var(--gradient-primary);
-}
-
-/* Corregir el ícono del usuario en tema claro */
-body.light-theme .auth-container .bi-person-circle {
-  color: var(--light-text) !important;
-}
 /* Tema Oscuro */
 body.dark-theme .auth-container {
   background-color: var(--dark-bg-primary);
@@ -394,27 +232,10 @@ body.dark-theme .auth-card {
   box-shadow: var(--shadow-medium);
 }
 
-/* Tema Claro */
-body.light-theme .auth-container {
-  background-color: var(--light-bg-primary);
-  color: var(--light-text);
-}
 
-body.light-theme .auth-card {
-  background-color: var(--light-bg-secondary);
-  border: 1px solid var(--light-border);
-  box-shadow: var(--shadow-soft);
-}
 body.dark-theme input,
 body.dark-theme label {
   background-color: var(--dark-component-bg);
   color: var(--dark-text);
   border: 1px solid var(--dark-border);
-}
-
-body.light-theme input,
-body.light-theme label {
-  background-color: var(--light-component-bg);
-  color: var(--light-text);
-  border: 1px solid var(--light-border);
 }

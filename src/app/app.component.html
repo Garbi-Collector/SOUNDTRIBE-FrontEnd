@@ -1,12 +1,13 @@
+<!-- app.component.html -->
 <div class="container-fluid p-0 app-container">
-  <!-- Header -->
   <app-header></app-header>
 
-  <!-- Contenido principal - Cambia la estructura -->
   <main class="container-fluid py-3 main-content">
     <router-outlet></router-outlet>
   </main>
 
-  <!-- Footer -->
   <app-footer></app-footer>
+
+  <!-- Modal -->
+  <app-auth-modal *ngIf="modalOpen"></app-auth-modal>
 </div>

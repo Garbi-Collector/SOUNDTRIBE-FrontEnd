@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ThemeService} from "./services/theme.service";
+import {ModalService} from "./services/modal.service";
 
 @Component({
   selector: 'app-root',
@@ -8,8 +8,17 @@ import {ThemeService} from "./services/theme.service";
 })
 export class AppComponent implements OnInit{
   title = 'SOUNDTRIBE-FrontEnd';
-  constructor(private themeService: ThemeService) {}
-  ngOnInit(): void {
-    // El servicio ya se encarga de aplicar el tema inicial
+
+  modalOpen = false;
+
+  constructor(private modalService: ModalService) {
+    this.modalService.modalOpen$.subscribe(isOpen => {
+      this.modalOpen = isOpen;
+    });
   }
+  ngOnInit() {
+    document.body.classList.add('dark-theme');
+    document.body.classList.remove('light-theme');
+  }
+
 }

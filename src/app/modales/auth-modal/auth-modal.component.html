@@ -1,0 +1,203 @@
+<!-- auth-modal.component.html -->
+<div class="modal-backdrop" (click)="closeModal()">
+  <div class="auth-container">
+    <div class="auth-card" (click)="$event.stopPropagation()">
+      <!-- Botón de cerrar -->
+      <button class="close-modal-btn" (click)="closeModal()">
+        <i class="bi bi-x"></i>
+      </button>
+
+      <!-- Pestañas de navegación -->
+      <ul class="nav nav-tabs auth-tabs">
+        <li class="nav-item">
+          <a class="nav-link" [class.active]="activeTab === 'login'" (click)="setActiveTab('login')">
+            Iniciar Sesión
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [class.active]="activeTab === 'register'" (click)="setActiveTab('register')">
+            Crear Cuenta
+          </a>
+        </li>
+      </ul>
+
+      <!-- Contenido del modal -->
+      <div class="auth-content">
+        <!-- Formulario de Login -->
+        <div *ngIf="activeTab === 'login'" class="login-container">
+          <h2>Iniciar Sesión</h2>
+
+          <form [formGroup]="loginForm" (ngSubmit)="onLoginSubmit()">
+            <div class="form-group mb-3">
+              <label for="login-email" class="form-label">Correo electrónico</label>
+              <div class="input-group">
+                <input id="login-email" type="text" class="form-control" formControlName="email"
+                       [ngClass]="{'is-invalid': loginForm.get('email')?.invalid && loginForm.get('email')?.touched}">
+                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                <div *ngIf="loginForm.get('email')?.hasError('required') && loginForm.get('email')?.touched" class="invalid-feedback">
+                  Este campo es obligatorio
+                </div>
+                <div *ngIf="loginForm.get('email')?.hasError('email') && loginForm.get('email')?.touched" class="invalid-feedback">
+                  Ingrese un correo electrónico válido
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group mb-3">
+              <label for="login-password" class="form-label">Contraseña</label>
+              <div class="input-group">
+                <input id="login-password" [type]="hideLoginPassword ? 'password' : 'text'" class="form-control" formControlName="password"
+                       [ngClass]="{'is-invalid': loginForm.get('password')?.invalid && loginForm.get('password')?.touched}">
+                <button type="button" class="input-group-text toggle-password" (click)="hideLoginPassword = !hideLoginPassword">
+                  <i class="bi" [ngClass]="hideLoginPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                </button>
+                <div *ngIf="loginForm.get('password')?.hasError('required') && loginForm.get('password')?.touched" class="invalid-feedback">
+                  Este campo es obligatorio
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="loginErrorMessage" class="alert alert-danger">
+              {{ loginErrorMessage }}
+            </div>
+
+            <div class="form-actions">
+              <button class="btn btn-gradient" type="submit" [disabled]="loginForm.invalid || loginLoading">
+                <span *ngIf="loginLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                <span *ngIf="!loginLoading">Iniciar Sesión</span>
+              </button>
+            </div>
+
+            <div class="auth-links mt-3">
+              <a href="javascript:void(0)" (click)="setActiveTab('register')">¿No tienes cuenta? Regístrate</a>
+            </div>
+          </form>
+        </div>
+
+        <!-- Formulario de Registro -->
+        <div *ngIf="activeTab === 'register'" class="register-container">
+          <h2>Crear Cuenta</h2>
+
+          <form [formGroup]="registerForm" (ngSubmit)="onRegisterSubmit()">
+            <div class="photo-upload-container">
+              <div class="photo-preview" [class.has-image]="previewUrl">
+                <img *ngIf="previewUrl" [src]="previewUrl" alt="Preview" class="preview-image">
+                <i *ngIf="!previewUrl" class="bi bi-person-circle"></i>
+              </div>
+              <div class="photo-actions">
+                <button class="btn btn-outline-gradient" type="button" (click)="fileInput.click()">
+                  <i class="bi bi-camera "></i>
+                  <span class="ms-2">Subir Foto</span>
+                </button>
+                <button *ngIf="previewUrl" class="btn btn-outline-danger btn-icon ms-2" type="button" (click)="removeFile()">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+              <input #fileInput type="file" accept="image/*" style="display:none" (change)="onFileSelected($event)">
+            </div>
+
+            <div class="form-group mb-3">
+              <label for="username" class="form-label">Nombre de usuario</label>
+              <div class="input-group">
+                <input id="username" type="text" class="form-control" formControlName="username"
+                       [ngClass]="{'is-invalid': registerForm.get('username')?.invalid && registerForm.get('username')?.touched}">
+                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                <div *ngIf="registerForm.get('username')?.hasError('required') && registerForm.get('username')?.touched" class="invalid-feedback">
+                  Este campo es obligatorio
+                </div>
+                <div *ngIf="registerForm.get('username')?.hasError('minlength') && registerForm.get('username')?.touched" class="invalid-feedback">
+                  El nombre de usuario debe tener al menos 3 caracteres
+                </div>
+                <div *ngIf="registerForm.get('username')?.hasError('usernameExists')" class="invalid-feedback">
+                  Este nombre de usuario ya está en uso
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group mb-3">
+              <label for="register-email" class="form-label">Correo electrónico</label>
+              <div class="input-group">
+                <input id="register-email" type="email" class="form-control" formControlName="email"
+                       [ngClass]="{'is-invalid': registerForm.get('email')?.invalid && registerForm.get('email')?.touched}">
+                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                <div *ngIf="registerForm.get('email')?.hasError('required') && registerForm.get('email')?.touched" class="invalid-feedback">
+                  Este campo es obligatorio
+                </div>
+                <div *ngIf="registerForm.get('email')?.hasError('email') && registerForm.get('email')?.touched" class="invalid-feedback">
+                  Ingrese un correo electrónico válido
+                </div>
+                <div *ngIf="registerForm.get('email')?.hasError('emailExists')" class="invalid-feedback">
+                  Este correo electrónico ya está registrado
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group mb-3">
+              <label for="register-password" class="form-label">Contraseña</label>
+              <div class="input-group">
+                <input id="register-password" [type]="hideRegisterPassword ? 'password' : 'text'" class="form-control" formControlName="password"
+                       [ngClass]="{'is-invalid': registerForm.get('password')?.invalid && registerForm.get('password')?.touched}">
+                <button type="button" class="input-group-text toggle-password" (click)="hideRegisterPassword = !hideRegisterPassword">
+                  <i class="bi" [ngClass]="hideRegisterPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                </button>
+                <div *ngIf="registerForm.get('password')?.hasError('required') && registerForm.get('password')?.touched" class="invalid-feedback">
+                  Este campo es obligatorio
+                </div>
+                <div *ngIf="registerForm.get('password')?.hasError('minlength') && registerForm.get('password')?.touched" class="invalid-feedback">
+                  La contraseña debe tener al menos 6 caracteres
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group mb-3">
+              <label for="confirmPassword" class="form-label">Confirmar contraseña</label>
+              <div class="input-group">
+                <input id="confirmPassword" [type]="hideConfirmPassword ? 'password' : 'text'" class="form-control" formControlName="confirmPassword"
+                       [ngClass]="{'is-invalid': registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched}">
+                <button type="button" class="input-group-text toggle-password" (click)="hideConfirmPassword = !hideConfirmPassword">
+                  <i class="bi" [ngClass]="hideConfirmPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                </button>
+                <div *ngIf="registerForm.get('confirmPassword')?.hasError('required') && registerForm.get('confirmPassword')?.touched" class="invalid-feedback">
+                  Este campo es obligatorio
+                </div>
+                <div *ngIf="registerForm.get('confirmPassword')?.hasError('passwordMismatch')" class="invalid-feedback">
+                  Las contraseñas no coinciden
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group mb-3">
+              <label for="rol" class="form-label">Tipo de usuario</label>
+              <div class="input-group">
+                <select id="rol" class="form-select" formControlName="rol">
+                  <option class="text-black" value="OYENTE">Oyente</option>
+                  <option class="text-black" value="ARTISTA">Artista</option>
+                </select>
+                <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
+              </div>
+            </div>
+
+            <div *ngIf="registerErrorMessage" class="alert alert-danger">
+              {{ registerErrorMessage }}
+            </div>
+
+            <div *ngIf="registerSuccessMessage" class="alert alert-success">
+              {{ registerSuccessMessage }}
+            </div>
+
+            <div class="form-actions">
+              <button class="btn btn-gradient" type="submit" [disabled]="registerForm.invalid || registerLoading">
+                <span *ngIf="registerLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                <span *ngIf="!registerLoading">Crear Cuenta</span>
+              </button>
+            </div>
+
+            <div class="auth-links mt-3">
+              <a href="javascript:void(0)" (click)="setActiveTab('login')">¿Ya tienes cuenta? Inicia sesión</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,30 +1,22 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { RoutesBackService } from '../../routes-back.service';
-import { AuthService } from './auth.service';
-
-export interface FotoModel {
-  id: number;
-  fileName: string;
-  fileType: string;
-  fileUrl: string;
-  createdAt: string;
-}
+import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {AuthService} from "./auth.service";
+import {BackEndRoutesService} from "../back-end.routes.service";
+import {catchError, Observable, throwError} from "rxjs";
+import {FotoModel} from "../dtos/fotos.dto";
 
 @Injectable({
   providedIn: 'root'
 })
-export class FotosService {
+export class FotoService {
   private apiUrl: string;
 
   constructor(
     private http: HttpClient,
-    private routesBack: RoutesBackService,
+    private backEndRoutes: BackEndRoutesService,
     private authService: AuthService
   ) {
-    this.apiUrl = `${this.routesBack.userServiceUrl}/fotos`;
+    this.apiUrl = `${this.backEndRoutes.userServiceUrl}/fotos`;
   }
 
   private getAuthHeaders(): HttpHeaders {

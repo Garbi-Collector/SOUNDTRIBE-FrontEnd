@@ -1,0 +1,84 @@
+<div class="container mt-4">
+  <!-- Loading spinner -->
+  <div *ngIf="loading" class="text-center my-5">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <!-- Error message -->
+  <div *ngIf="error && !loading" class="alert alert-danger">
+    Ocurrió un error al cargar el perfil. Por favor, inténtalo de nuevo.
+  </div>
+
+  <!-- User profile information -->
+  <div *ngIf="userProfile && !loading" class="row">
+    <!-- Profile header -->
+    <div class="col-12 mb-4">
+      <div class="card">
+        <div class="card-body d-flex flex-column flex-md-row align-items-center">
+          <!-- Profile picture -->
+          <div class="profile-image me-md-4 mb-3 mb-md-0 text-center">
+            <img [src]="userProfile.urlimage || 'assets/images/default-profile.png'"
+                 alt="Foto de perfil de {{userProfile.username}}"
+                 class="rounded-circle"
+                 width="120" height="120">
+          </div>
+
+          <!-- Profile info -->
+          <div class="profile-info flex-grow-1">
+            <div class="d-flex justify-content-between align-items-center">
+              <h2 class="mb-1">{{userProfile.username}}</h2>
+              <button class="btn btn-primary" (click)="followUser()">
+                Seguir
+              </button>
+            </div>
+            <p class="text-muted mb-2">{{userProfile.rol}}</p>
+            <p class="mb-2">{{userProfile.description}}</p>
+            <p class="text-muted small">Se unió: {{userProfile.createdAt | date}}</p>
+
+            <!-- Stats -->
+            <div class="d-flex mt-3">
+              <div class="me-4">
+                <strong>{{userProfile.ArtistasSeguidos?.length || 0}}</strong> siguiendo
+              </div>
+              <div>
+                <strong>{{userProfile.followersCount || 0}}</strong> seguidores
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Following section -->
+    <div class="col-12 mt-3">
+      <h3 class="mb-3">Siguiendo</h3>
+      <div *ngIf="userProfile.ArtistasSeguidos?.length === 0" class="alert alert-light">
+        Este usuario no sigue a nadie todavía.
+      </div>
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+        <div class="col" *ngFor="let artist of userProfile.ArtistasSeguidos">
+          <div class="card h-100">
+            <div class="text-center pt-3">
+              <img [src]="artist.urlFoto || 'assets/images/default-profile.png'"
+                   class="rounded-circle"
+                   width="80" height="80"
+                   alt="{{artist.username}}">
+            </div>
+            <div class="card-body text-center">
+              <h5 class="card-title">
+                <a [routerLink]="['/', artist.slug]" class="text-decoration-none">
+                  {{artist.username}}
+                </a>
+              </h5>
+              <p class="text-muted">
+                {{artist.followersCount}} seguidores
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

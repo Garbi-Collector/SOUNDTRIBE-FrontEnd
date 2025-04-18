@@ -5,8 +5,8 @@ import { Injectable } from '@angular/core';
 })
 export class RoutesBackService {
   // 👉 Cambiá este string según el entorno
-  private readonly baseUrl: string = 'http://localhost';
-  // private readonly baseUrl: string = 'https://soundtribe.art';
+  private readonly baseUrl: string = 'http://soundtribe.art';
+  // private readonly baseUrl: string = 'http://soundtribe.art';
 
   get userServiceUrl(): string {
     return `${this.baseUrl}:8080`;
@@ -26,9 +26,5 @@ export class RoutesBackService {
 
   get searchAnalyticsServiceUrl(): string {
     return `${this.baseUrl}:8084`;
-  }
-
-  get frontEndUrl(): string {
-    return `${this.baseUrl}:4200`;
   }
 }

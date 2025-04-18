@@ -83,6 +83,11 @@ export class AuthService {
     return this.http.get<boolean>(`${this.apiUrl}/auth/email-exists`, { params })
       .pipe(catchError(this.handleError));
   }
+  checkUsernameExists(username: string): Observable<boolean> {
+    const params = new HttpParams().set('username', username);
+    return this.http.get<boolean>(`${this.apiUrl}/auth/username-exists`, { params })
+      .pipe(catchError(this.handleError));
+  }
 
   isAuthenticated(): boolean {
     return localStorage.getItem('auth_token') !== null;

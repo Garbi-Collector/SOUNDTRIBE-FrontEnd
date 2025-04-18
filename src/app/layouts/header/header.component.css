@@ -1,16 +1,54 @@
-/* Estilos para el header fijo */
+/*header.component.css*/
+
+
+/* Estilos base para la barra de navegación */
 .navbar {
   position: sticky;
   top: 0;
   z-index: 1000;
-  height: 68px; /* Altura fija para el navbar */
+  min-height: 68px;
+  padding: 8px 16px;
+}
+
+/* Estilos para el logo con indicador de tema */
+.logo-theme-toggle {
+  cursor: pointer;
+  position: relative;
+}
+
+.logo-container {
+  position: relative;
+  display: inline-block;
+}
+
+.theme-indicator {
+  position: absolute;
+  bottom: -6px;
+  right: -6px;
+  background-color: rgba(52, 58, 64, 0.8);
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 /* Estilos para el buscador y los resultados */
+.search-wrapper {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  transition: all 0.3s ease;
+  margin: 0 1rem;
+}
+
 .search-container {
   position: relative;
   width: 100%;
-  max-width: 400px;
+  max-width: 600px; /* Aumentado para escritorio */
 }
 
 .search-results {
@@ -18,7 +56,7 @@
   top: 100%;
   left: 0;
   right: 0;
-  z-index: 1050; /* Mayor que el navbar para aparecer encima */
+  z-index: 1050;
   background-color: #343a40;
   border: 1px solid #495057;
   border-radius: 0 0 6px 6px;
@@ -48,7 +86,7 @@
   justify-content: center;
   width: 36px;
   height: 36px;
-  min-width: 36px; /* Asegura que el avatar no se comprima */
+  min-width: 36px;
 }
 
 .user-info {
@@ -56,52 +94,137 @@
   flex-direction: column;
 }
 
-/* Estilos para el toggle de tema */
-.theme-toggle {
+/* Estilos para el dropdown del usuario */
+.user-menu {
   position: relative;
-  width: 50px;
-  height: 24px;
-  background-color: #495057;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: background-color 0.3s;
 }
 
-.theme-toggle.light {
-  background-color: #6c757d;
-}
-
-.theme-toggle-track {
-  width: 100%;
-  height: 100%;
-  border-radius: 12px;
-}
-
-.theme-toggle-thumb {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 20px;
-  height: 20px;
-  background-color: #fff;
-  border-radius: 50%;
+.user-dropdown-btn {
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.3s;
+  text-decoration: none;
 }
 
-.theme-toggle.light .theme-toggle-thumb {
-  transform: translateX(26px);
-}
-
-.theme-toggle-icon {
-  font-size: 12px;
-  color: #343a40;
-}
-
-/* Estilos para evitar que el contenido se mueva al mostrar resultados */
-.input-group {
+.user-avatar-container {
   position: relative;
-  z-index: 1050; /* Mismo z-index que los resultados para mantener coherencia */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Añadimos la flecha dropdown personalizada */
+.user-avatar-container::after {
+  content: '';
+  display: inline-block;
+  margin-left: 8px;
+  border-top: 4px solid #fff;
+  border-right: 4px solid transparent;
+  border-bottom: 0;
+  border-left: 4px solid transparent;
+}
+
+.dropdown-menu-dark {
+  background-color: #343a40;
+  border-color: #495057;
+  width: 180px; /* Establecer un ancho fijo para el menú desplegable */
+}
+
+.dropdown-item {
+  color: #fff;
+  padding: 8px 16px;
+  transition: background-color 0.2s;
+}
+
+.dropdown-item:hover {
+  background-color: #495057;
+}
+
+/* Estilos para menú dropdown */
+.dropdown-menu {
+  position: absolute;
+  right: 0;
+  left: auto;
+  margin-top: 0.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.dropdown-menu.show {
+  display: block;
+}
+
+/* Estilos específicos para móvil */
+@media (max-width: 767.98px) {
+  .search-wrapper {
+    position: fixed;
+    top: 68px;
+    left: 0;
+    right: 0;
+    padding: 10px;
+    background-color: #343a40;
+    z-index: 999;
+    border-top: 1px solid #495057;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 0;
+    display: none;
+  }
+
+  .search-wrapper.active {
+    display: flex;
+  }
+
+  .search-container {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .search-results {
+    position: fixed;
+    top: 128px;
+    left: 10px;
+    right: 10px;
+    z-index: 998;
+    max-height: calc(100vh - 140px);
+  }
+
+  .container-fluid {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .navbar-brand img {
+    width: 40px;
+    height: 40px;
+  }
+
+  .theme-indicator {
+    width: 16px;
+    height: 16px;
+    font-size: 10px;
+  }
+}
+
+/* Pantallas muy pequeñas */
+@media (max-width: 359.98px) {
+  .navbar-brand {
+    margin-right: 8px;
+  }
+
+  .navbar-brand img {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* Animación para el botón de búsqueda en móvil */
+.search-toggle-btn {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Transición suave para el modo oscuro/claro */
+@media (prefers-reduced-motion: no-preference) {
+  .navbar, .search-results, .dropdown-menu-dark {
+    transition: background-color 0.3s ease;
+  }
 }

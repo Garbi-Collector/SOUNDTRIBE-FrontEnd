@@ -31,6 +31,9 @@
         <div *ngIf="registerForm.get('username')?.hasError('minlength') && registerForm.get('username')?.touched" class="invalid-feedback">
           El nombre de usuario debe tener al menos 3 caracteres
         </div>
+        <div *ngIf="registerForm.get('username')?.hasError('usernameExists')" class="invalid-feedback">
+          Este nombre de usuario ya está en uso
+        </div>
       </div>
     </div>
 

@@ -33,6 +33,24 @@ export class AuthCrearComponent implements OnInit {
       rol: ['OYENTE', Validators.required] // Por defecto 'OYENTE'
     }, { validators: this.passwordMatchValidator });
 
+    // Verificar si el username ya existe
+    this.registerForm.get('username')?.valueChanges
+      .pipe(
+        debounceTime(500),
+        switchMap(username => {
+          if (username && this.registerForm.get('username')?.valid) {
+            return this.authService.checkUsernameExists(username)
+              .pipe(catchError(() => of(false)));
+          }
+          return of(false);
+        })
+      )
+      .subscribe(exists => {
+        if (exists) {
+          this.registerForm.get('username')?.setErrors({ usernameExists: true });
+        }
+      });
+
     // Verificar si el email ya existe
     this.registerForm.get('email')?.valueChanges
       .pipe(

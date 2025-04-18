@@ -23,9 +23,10 @@ import { AuthInicioComponent } from "./pages/models/auth-inicio/auth-inicio.comp
 import { AuthCrearComponent } from "./pages/models/auth-crear/auth-crear.component";
 import { AuthInterceptor } from "./AuthInterceptor";
 import { NotfoundComponent } from './pages/not-found/notfound.component';
+import { MiPerfilComponent } from './pages/mi-perfil/mi-perfil.component';
+import { PerfilComponent } from './pages/perfil/perfil.component';
 
 
-// Definir las rutas
 const routes: Routes = [
   { path: '', redirectTo: 'inicio', pathMatch: 'full' },
   { path: 'inicio', component: InicioComponent },
@@ -40,9 +41,12 @@ const routes: Routes = [
       { path: 'crear', component: AuthCrearComponent }
     ]
   },
+  { path: 'mi-perfil', component: MiPerfilComponent },
   { path: 'not-found', component: NotfoundComponent },
+  { path: 'perfil/:userhash', component: PerfilComponent },
   { path: '**', redirectTo: 'not-found' }
 ];
+
 
 
 @NgModule({
@@ -57,6 +61,8 @@ const routes: Routes = [
     AuthInicioComponent,
     AuthCrearComponent,
     NotfoundComponent,
+    MiPerfilComponent,
+    PerfilComponent,
   ],
   imports: [
     BrowserModule,

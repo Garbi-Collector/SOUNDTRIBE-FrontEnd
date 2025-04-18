@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -8,23 +9,25 @@ export class ThemeService {
   private themeSubject = new BehaviorSubject<string>(this.getInitialTheme());
   theme$ = this.themeSubject.asObservable();
 
+  // Observable que emite un booleano: true para light, false para dark
+  isLightTheme$ = this.theme$.pipe(
+    map(theme => theme === 'light')
+  );
+
   constructor() {
     this.applyTheme(this.themeSubject.value);
   }
 
   private getInitialTheme(): string {
-    // Intenta obtener el tema guardado en localStorage
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark')) {
       return savedTheme;
     }
 
-    // Si no hay tema guardado, comprueba la preferencia del sistema
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
       return 'light';
     }
 
-    // Por defecto, devuelve el tema oscuro
     return 'dark';
   }
 
@@ -33,6 +36,17 @@ export class ThemeService {
     this.themeSubject.next(newTheme);
     localStorage.setItem('theme', newTheme);
     this.applyTheme(newTheme);
+  }
+
+  setTheme(theme: string): void {
+    if (theme !== 'light' && theme !== 'dark') return;
+    this.themeSubject.next(theme);
+    localStorage.setItem('theme', theme);
+    this.applyTheme(theme);
+  }
+
+  currentTheme(): Observable<boolean> {
+    return this.isLightTheme$;
   }
 
   private applyTheme(theme: string): void {

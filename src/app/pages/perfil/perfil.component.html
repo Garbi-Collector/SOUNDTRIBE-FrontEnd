@@ -1,0 +1,106 @@
+<!--        perfil.component.html       -->
+<div class="container profile-container">
+  <!-- Loading spinner and error message -->
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger" role="alert">
+    {{ error }}
+  </div>
+
+  <!-- Profile content -->
+  <div *ngIf="!isLoading && !error && userProfile" class="profile-content">
+
+    <!-- Profile header -->
+    <div class="profile-header">
+      <div class="row align-items-center">
+        <div class="col-md-3 text-center">
+          <div class="profile-image-container">
+            <img *ngIf="userProfile.urlimage" [src]="userProfile.urlimage" alt="Foto de perfil" class="profile-image">
+            <div *ngIf="!userProfile.urlimage" class="profile-image-placeholder">
+              <i class="bi bi-person-circle"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-9">
+          <div class="profile-info">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <h2 class="profile-username">{{ userProfile.username }}</h2>
+
+              <!-- Follow/Unfollow button (only shown for other users' profiles when authenticated) -->
+              <button *ngIf="!isOwnProfile" class="btn follow-btn"
+                      [class.btn-primary]="!isFollowing"
+                      [class.btn-outline-primary]="isFollowing"
+                      [disabled]="isFollowingLoading"
+                      (click)="toggleFollow()">
+                <span *ngIf="isFollowingLoading" class="spinner-border spinner-border-sm me-1" role="status"></span>
+                <i *ngIf="!isFollowingLoading" class="bi"
+                   [class.bi-person-plus]="!isFollowing"
+                   [class.bi-person-dash]="isFollowing"></i>
+                {{ isFollowing ? 'Dejar de seguir' : 'Seguir' }}
+              </button>
+            </div>
+
+            <div class="profile-meta mb-3">
+              <span class="badge rounded-pill bg-info me-2">{{ userProfile.rol }}</span>
+              <small class="text-light">Se unió el {{ userProfile.createdAt }}</small>
+            </div>
+
+            <!-- Stats -->
+            <div class="profile-stats mb-3">
+              <div class="stat-item">
+                <span class="stat-value">{{ numbersService.shortenNumber(userProfile.followersCount) }}</span>
+                <span class="stat-label">seguidores</span>
+              </div>
+
+              <div class="stat-item">
+                <span class="stat-value">{{ numbersService.shortenNumber(userProfile.followedsCount) }}</span>
+                <span class="stat-label">seguidos</span>
+              </div>
+
+              <div class="stat-item" *ngIf="userProfile.artistasSeguidos">
+                <span class="stat-value">{{ userProfile.artistasSeguidos.length }}</span>
+                <span class="stat-label">artistas seguidos</span>
+              </div>
+            </div>
+
+            <!-- Description -->
+            <div class="profile-description">
+              <p>{{ userProfile.description || 'Este usuario no tiene descripción.' }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Followed artists section -->
+    <div class="followed-artists-section mt-5" *ngIf="userProfile.artistasSeguidos && userProfile.artistasSeguidos.length > 0">
+      <h3 class="section-title mb-4">Artistas seguidos</h3>
+
+      <div class="row row-cols-2 row-cols-md-4 row-cols-lg-5 g-3">
+        <div class="col" *ngFor="let artist of userProfile.artistasSeguidos">
+          <div class="artist-card" (click)="goToArtistProfile(artist.slug)">
+            <div class="artist-image">
+              <img *ngIf="artist.urlFoto" [src]="artist.urlFoto" alt="{{ artist.username }}">
+              <div *ngIf="!artist.urlFoto" class="artist-image-placeholder">
+                <i class="bi bi-person-circle"></i>
+              </div>
+            </div>
+            <div class="artist-info">
+              <h5 class="artist-name">{{ artist.username }}</h5>
+              <span class="artist-followers">{{ numbersService.shortenNumber(artist.followersCount) }} seguidores</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="no-artists-message text-center py-4" *ngIf="!userProfile.artistasSeguidos || userProfile.artistasSeguidos.length === 0">
+      <p class="text-light-emphasis">Este usuario no sigue a ningún artista todavía.</p>
+    </div>
+  </div>
+</div>

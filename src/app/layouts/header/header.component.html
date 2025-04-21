@@ -75,7 +75,7 @@
       </button>
       <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" [class.show]="dropdownOpen">
         <li>
-          <a class="dropdown-item" routerLink="/mi-perfil" (click)="closeDropdown()">
+          <a class="dropdown-item" [routerLink]="['/perfil', userSlug]" (click)="closeDropdown()">
             <i class="bi bi-person me-2"></i>Mi Perfil
           </a>
         </li>

@@ -5,6 +5,8 @@ import {BackEndRoutesService} from "../back-end.routes.service";
 import {catchError, Observable, throwError} from 'rxjs';
 import {GetAll, UserDescription, UserGet} from "../dtos/users.dto";
 import {map} from "rxjs/operators";
+import { FechasService } from './fechas.service';
+
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +17,8 @@ export class UserService {
   constructor(
     private http: HttpClient,
     private authService: AuthService,
-    private backEndRoutes: BackEndRoutesService
+    private backEndRoutes: BackEndRoutesService,
+    public fechasService: FechasService
   ) {
     this.apiUrl = `${this.backEndRoutes.userServiceUrl}/user`;
   }
@@ -40,6 +43,26 @@ export class UserService {
       .post(`${this.apiUrl}/follow/${idToFollow}`, null, { headers, responseType: 'text' })
       .pipe(catchError(this.handleError));
   }
+
+  isFollowing(idToCheck: number): Observable<boolean> {
+    const headers = this.getAuthHeaders();
+    return this.http
+      .get<boolean>(`${this.apiUrl}/is-following/${idToCheck}`, { headers })
+      .pipe(catchError(this.handleError));
+  }
+
+  /**
+   * Envía una petición DELETE al backend para dejar de seguir a un usuario específico (por su ID).
+   * Requiere autenticación (token JWT en headers).
+   * El backend devuelve un mensaje de texto ("Has dejado de seguir al usuario").
+   */
+  unfollowUser(idToUnfollow: number): Observable<string> {
+    const headers = this.getAuthHeaders();
+    return this.http
+      .delete(`${this.apiUrl}/unfollow/${idToUnfollow}`, { headers, responseType: 'text' })
+      .pipe(catchError(this.handleError));
+  }
+
 
   /**
    * Trae todos los usuarios disponibles desde el endpoint público (/all).
@@ -72,8 +95,13 @@ export class UserService {
   getUserDescription(id: number): Observable<UserDescription> {
     return this.http
       .get<UserDescription>(`${this.apiUrl}/perfil/${id}`)
-      .pipe(catchError(this.handleError));
+      .pipe(
+        map(user => this.mapUserDescription(user)),
+        catchError(this.handleError)
+      );
   }
+
+
 
   /**
    * Obtiene la descripción del usuario autenticado.
@@ -82,16 +110,28 @@ export class UserService {
    */
   getMyDescription(): Observable<UserDescription> {
     const headers = this.getAuthHeaders();
+
+    // Agregar log para depuración
+    console.log('Headers for getMyDescription:', headers);
+    console.log('URL for getMyDescription:', `${this.apiUrl}/mi-perfil`);
+
     return this.http
       .get<UserDescription>(`${this.apiUrl}/mi-perfil`, { headers })
-      .pipe(catchError(this.handleError));
+      .pipe(
+        map(user => {
+          console.log('Raw user data received:', user); // Ver los datos tal como llegan
+          // Resto del código...
+          return this.mapUserDescription(user);
+        }),
+        catchError(error => {
+          console.error('Error in getMyDescription:', error);
+          return throwError(() => error);
+        })
+      );
   }
 
-  /**
-   * Busca el perfil de un usuario usando su slug en lugar de su ID.
-   * Además, si las imágenes de perfil o de artistas seguidos vienen sin URL absoluta, las completa con la ruta al backend.
-   * Útil para mostrar perfiles en rutas como /perfil/:slug.
-   */
+
+
   getUserDescriptionBySlug(slug: string): Observable<UserDescription> {
     return this.http
       .get<UserDescription>(`${this.apiUrl}/perfil/slug/${slug}`)
@@ -100,20 +140,25 @@ export class UserService {
           if (user.urlimage && !user.urlimage.startsWith('http')) {
             user.urlimage = `${this.backEndRoutes.userServiceUrl}/fotos/image/${user.urlimage}`;
           }
-          // También procesamos las imágenes de los artistas seguidos
-          if (user.ArtistasSeguidos) {
-            user.ArtistasSeguidos = user.ArtistasSeguidos.map(artist => {
+
+          if (user.artistasSeguidos) {
+            user.artistasSeguidos = user.artistasSeguidos.map(artist => {
               if (artist.urlFoto && !artist.urlFoto.startsWith('http')) {
                 artist.urlFoto = `${this.backEndRoutes.userServiceUrl}/fotos/image/${artist.urlFoto}`;
               }
               return artist;
             });
           }
-          return user;
+
+          return this.mapUserDescription(user);
         }),
         catchError(this.handleError)
       );
   }
+
+
+
+
 
   /**
    * Obtiene una versión reducida del perfil del usuario autenticado (id, username, urlFoto, etc).
@@ -144,5 +189,31 @@ export class UserService {
     console.error('UserExperienceService error:', error);
     return throwError(() => error);
   }
+
+
+  /**
+   * Normaliza y formatea el campo createdAt del UserDescription.
+   */
+  private mapUserDescription(user: UserDescription): UserDescription {
+    if (Array.isArray(user.createdAt)) {
+      const date = new Date(
+        user.createdAt[0],
+        user.createdAt[1] - 1,
+        user.createdAt[2],
+        user.createdAt[3],
+        user.createdAt[4],
+        user.createdAt[5],
+        user.createdAt[6]
+      );
+      user.createdAt = this.fechasService.formatearFechaDiaDeMesYAnio(date.toISOString());
+    } else if (typeof user.createdAt === 'string') {
+      user.createdAt = this.fechasService.formatearFechaDiaDeMesYAnio(user.createdAt);
+    }
+
+    return user;
+  }
+
+
+
 
 }

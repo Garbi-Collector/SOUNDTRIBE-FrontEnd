@@ -15,6 +15,7 @@ import { AuthModalComponent } from './modales/auth-modal/auth-modal.component';
 import {AppRoutingModule} from "./AppRoutingModule";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {HttpClientModule} from "@angular/common/http";
+import { PerfilComponent } from './pages/perfil/perfil.component';
 
 // Módulos
 
@@ -27,7 +28,7 @@ import {HttpClientModule} from "@angular/common/http";
     NotFoundComponent,
     HeaderComponent,  // Asegúrate de que esté declarado aquí
     FooterComponent,  // Asegúrate de que esté declarado aquí
-    AuthModalComponent // Asegúrate de que esté declarado aquí
+    AuthModalComponent, PerfilComponent // Asegúrate de que esté declarado aquí
   ],
   imports: [
     BrowserModule,

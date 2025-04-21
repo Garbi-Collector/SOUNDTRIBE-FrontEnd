@@ -14,8 +14,9 @@ export interface UserDescription {
   urlimage: string;
   slug: string;
   createdAt: string;
-  ArtistasSeguidos: UserGet[];
   followersCount: number;
+  followedsCount: number;
+  artistasSeguidos: UserGet[];
 }
 
 

@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, HostListener, OnInit} from '@angular/core';
 import {UserGet} from "../../dtos/users.dto";
-import {ModalService} from "../../services/modal.service";
+import {ModalService, ModalType} from "../../services/modal.service";
 import {ThemeService} from "../../services/theme.service";
 import {AuthService} from "../../services/auth.service";
 import {UserService} from "../../services/user.service";
@@ -169,7 +169,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
    * abre el modal de Auth
    */
   openAuthModal() {
-    this.modalService.openModal();  // Abre el modal
+    this.modalService.openModal(ModalType.Auth);
   }
 
   //    Responsive  -   UI general

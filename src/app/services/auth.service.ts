@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {BehaviorSubject, catchError, Observable, tap, throwError} from "rxjs";
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {BackEndRoutesService} from "../back-end.routes.service";
-import {JwtLoginResponseDto, LoginRequestDto, RegisterRequestDto} from "../dtos/auth.dto";
+import {ChangePasswordRequestDto, JwtLoginResponseDto, LoginRequestDto, RegisterRequestDto} from "../dtos/auth.dto";
 
 @Injectable({
   providedIn: 'root'
@@ -55,6 +55,24 @@ export class AuthService {
         catchError(this.handleError)
       );
   }
+
+
+  /**
+   * Cambia la contraseña del usuario autenticado
+   * @param changePasswordData Datos para cambiar la contraseña
+   */
+  changePassword(changePasswordData: ChangePasswordRequestDto): Observable<string> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${this.getToken()}`
+    });
+
+    return this.http.put(`${this.apiUrl}/auth/change-password`, changePasswordData, {
+      headers,
+      responseType: 'text'
+    }).pipe(catchError(this.handleError));
+  }
+
 
   /**
    * Verifica si el correo electrónico ya está registrado
@@ -152,3 +170,4 @@ export class AuthService {
     return throwError(() => error);
   }
 }
+

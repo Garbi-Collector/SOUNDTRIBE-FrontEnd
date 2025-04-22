@@ -310,4 +310,42 @@
     font-size: 0.8rem;
     color: #aaa;
   }
+  /* Estilos para los botones de acciones de perfil */
+  .profile-actions {
+    z-index: 10;
+    margin-top: 10px;
+    margin-right: 10px;
+  }
+
+  .profile-actions .btn {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .profile-actions .dropdown-menu {
+    min-width: 200px;
+  }
+
+  .profile-actions .dropdown-item {
+    padding: 8px 16px;
+  }
+
+  /* Asegurar que el menú desplegable se muestre correctamente */
+  .settings-dropdown .dropdown-menu.show {
+    transform: translate3d(0px, 45px, 0px) !important;
+  }
+
+  /* Estilos para el toast de compartir */
+  #shareToast {
+    background-color: rgba(25, 135, 84, 0.9) !important;
+  }
+
+  #shareToast .toast-body {
+    font-weight: 500;
+  }
 }

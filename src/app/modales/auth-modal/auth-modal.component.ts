@@ -13,6 +13,12 @@ import { RegisterRequestDto, LoginRequestDto } from '../../dtos/auth.dto';
   styleUrls: ['./auth-modal.component.css']
 })
 export class AuthModalComponent implements OnInit {
+
+  // Métodos del modal
+  closeModal(): void {
+    this.modalService.closeModal();
+  }
+
   // Control de pestañas
   activeTab: 'login' | 'register' = 'login';
 
@@ -100,10 +106,7 @@ export class AuthModalComponent implements OnInit {
       });
   }
 
-  // Métodos del modal
-  closeModal(): void {
-    this.modalService.closeModal();
-  }
+
 
   // Métodos de navegación entre pestañas
   setActiveTab(tab: 'login' | 'register'): void {

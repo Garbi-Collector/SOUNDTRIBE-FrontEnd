@@ -8,6 +8,7 @@
 
   <app-footer></app-footer>
 
-  <!-- Modal -->
-  <app-auth-modal *ngIf="modalOpen"></app-auth-modal>
+  <!-- Modales -->
+  <app-auth-modal *ngIf="modalType === ModalType.Auth"></app-auth-modal>
+  <app-change-password *ngIf="modalType === ModalType.ChangePassword"></app-change-password>
 </div>

@@ -17,6 +17,11 @@ export interface JwtLoginResponseDto {
   rol?: string;
 }
 
+export interface ChangePasswordRequestDto {
+  currentPassword: string;
+  newPassword: string;
+}
+
 export interface PerfilUsuarioDto {
   username: string;
   fotoUrl: string;

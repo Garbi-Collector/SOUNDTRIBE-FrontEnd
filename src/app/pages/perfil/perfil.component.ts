@@ -2,10 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service';
-import { ModalService } from '../../services/modal.service';
+import { ModalService, ModalType } from '../../services/modal.service';
 import { NumbersService } from '../../services/numbers.service';
 import { UserDescription } from '../../dtos/users.dto';
 import { switchMap, tap, of, catchError } from "rxjs";
+import { DOCUMENT } from '@angular/common';
+import { Inject } from '@angular/core';
+
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-perfil',
@@ -21,6 +25,8 @@ export class PerfilComponent implements OnInit {
   slug: string | null = null;
   isFollowing = false;
   isFollowingLoading = false;
+  settingsDropdownOpen = false;
+  shareToast: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -28,7 +34,8 @@ export class PerfilComponent implements OnInit {
     private userService: UserService,
     private authService: AuthService,
     private modalService: ModalService,
-    public numbersService: NumbersService
+    public numbersService: NumbersService,
+    @Inject(DOCUMENT) private document: Document
   ) {}
 
   ngOnInit(): void {
@@ -51,6 +58,11 @@ export class PerfilComponent implements OnInit {
         }
       });
     });
+
+    // Inicializar el toast para compartir
+    setTimeout(() => {
+      this.shareToast = new bootstrap.Toast(document.getElementById('shareToast'));
+    }, 200);
   }
 
   // Nuevo método para redireccionar al perfil propio usando el slug del usuario autenticado
@@ -99,6 +111,68 @@ export class PerfilComponent implements OnInit {
     });
   }
 
+  // Métodos para el botón de configuración
+  toggleSettingsDropdown(event: Event): void {
+    event.stopPropagation();
+    this.settingsDropdownOpen = !this.settingsDropdownOpen;
+
+    // Cerrar dropdown al hacer clic fuera
+    if (this.settingsDropdownOpen) {
+      setTimeout(() => {
+        this.document.addEventListener('click', this.closeSettingsDropdownOnOutsideClick);
+      });
+    } else {
+      this.document.removeEventListener('click', this.closeSettingsDropdownOnOutsideClick);
+    }
+  }
+
+  closeSettingsDropdownOnOutsideClick = (): void => {
+    this.settingsDropdownOpen = false;
+    this.document.removeEventListener('click', this.closeSettingsDropdownOnOutsideClick);
+  };
+
+  closeSettingsDropdown(): void {
+    this.settingsDropdownOpen = false;
+    this.document.removeEventListener('click', this.closeSettingsDropdownOnOutsideClick);
+  }
+
+  // Métodos para abrir modales
+  openChangePasswordModal() {
+    this.modalService.openModal(ModalType.ChangePassword);
+  }
+
+  openChangeSlugModal() {
+    this.modalService.openModal(ModalType.ChangeSlug);
+  }
+
+
+  // Método para compartir perfil (copiar URL al portapapeles)
+  shareProfile(): void {
+    const currentUrl = this.document.location.href;
+
+    navigator.clipboard.writeText(currentUrl)
+      .then(() => {
+        // Mostrar toast de confirmación
+        if (this.shareToast) {
+          this.shareToast.show();
+        }
+      })
+      .catch(err => {
+        console.error('Error al copiar la URL: ', err);
+        // Alternativa en caso de error
+        const tempInput = document.createElement('input');
+        tempInput.value = currentUrl;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+
+        if (this.shareToast) {
+          this.shareToast.show();
+        }
+      });
+  }
+
   // El resto de los métodos quedan igual
   checkFollowingStatus(profileId: number): void {
     this.userService.isFollowing(profileId).subscribe({
@@ -112,9 +186,13 @@ export class PerfilComponent implements OnInit {
     });
   }
 
+  openAuthModal() {
+    this.modalService.openModal(ModalType.Auth);
+  }
+
   followUser(): void {
     if (!this.isAuthenticated) {
-      this.modalService.openModal();
+      this.openAuthModal();
       return;
     }
 

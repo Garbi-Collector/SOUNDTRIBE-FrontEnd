@@ -1,4 +1,3 @@
-<!--        perfil.component.html       -->
 <div class="container profile-container">
   <!-- Loading spinner and error message -->
   <div *ngIf="isLoading" class="text-center py-5">
@@ -26,7 +25,34 @@
           </div>
         </div>
 
-        <div class="col-md-9">
+        <div class="col-md-9 position-relative">
+          <!-- Botones en la esquina superior derecha -->
+          <div class="position-absolute top-0 end-0 profile-actions">
+            <!-- Botón de compartir perfil (visible para todos) -->
+            <button class="btn btn-outline-secondary me-2" (click)="shareProfile()">
+              <i class="bi bi-share"></i>
+            </button>
+
+            <!-- Botón de configuración (solo visible en perfil propio) -->
+            <div class="dropdown settings-dropdown d-inline-block" *ngIf="isOwnProfile" (click)="$event.stopPropagation()">
+              <button class="btn btn-outline-secondary" type="button" (click)="toggleSettingsDropdown($event)">
+                <i class="bi bi-gear"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" [class.show]="settingsDropdownOpen">
+                <li>
+                  <a class="dropdown-item" href="#" (click)="openChangePasswordModal(); closeSettingsDropdown(); $event.preventDefault()">
+                    <i class="bi bi-key me-2"></i>Cambiar contraseña
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="#" (click)="openChangeSlugModal(); closeSettingsDropdown(); $event.preventDefault()">
+                    <i class="bi bi-pencil me-2"></i>Cambiar nombre clave
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
           <div class="profile-info">
             <div class="d-flex align-items-center justify-content-between mb-2">
               <h2 class="profile-username">{{ userProfile.username }}</h2>
@@ -77,6 +103,7 @@
       </div>
     </div>
 
+
     <!-- Followed artists section -->
     <div class="followed-artists-section mt-5" *ngIf="userProfile.artistasSeguidos && userProfile.artistasSeguidos.length > 0">
       <h3 class="section-title mb-4">Artistas seguidos</h3>
@@ -101,6 +128,18 @@
 
     <div class="no-artists-message text-center py-4" *ngIf="!userProfile.artistasSeguidos || userProfile.artistasSeguidos.length === 0">
       <p class="text-light-emphasis">Este usuario no sigue a ningún artista todavía.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Toast para notificación de URL copiada -->
+<div class="position-fixed bottom-0 end-0 p-3">
+  <div id="shareToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body">
+        <i class="bi bi-check-circle me-2"></i> URL del perfil copiada al portapapeles
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>
   </div>
 </div>

@@ -16,6 +16,8 @@ import {AppRoutingModule} from "./AppRoutingModule";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {HttpClientModule} from "@angular/common/http";
 import { PerfilComponent } from './pages/perfil/perfil.component';
+import { ChangePasswordComponent } from './modales/change-password/change-password.component';
+import { ChangeSlugComponent } from './modales/change-slug/change-slug.component';
 
 // Módulos
 
@@ -28,7 +30,7 @@ import { PerfilComponent } from './pages/perfil/perfil.component';
     NotFoundComponent,
     HeaderComponent,  // Asegúrate de que esté declarado aquí
     FooterComponent,  // Asegúrate de que esté declarado aquí
-    AuthModalComponent, PerfilComponent // Asegúrate de que esté declarado aquí
+    AuthModalComponent, PerfilComponent, ChangePasswordComponent, ChangeSlugComponent // Asegúrate de que esté declarado aquí
   ],
   imports: [
     BrowserModule,

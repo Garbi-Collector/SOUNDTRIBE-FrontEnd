@@ -17,5 +17,5 @@ app.use(express.static(angularDist));
 
 const PORT = 4200;
 app.listen(PORT, () => {
-  console.log(`Servidor escuchando en http://localhost:${PORT}`);
+  console.log(`Servidor escuchando en http://soundtribe.art:${PORT}`);
 });

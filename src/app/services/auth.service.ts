@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {BehaviorSubject, catchError, Observable, tap, throwError} from "rxjs";
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {BackEndRoutesService} from "../back-end.routes.service";
 import {ChangePasswordRequestDto, JwtLoginResponseDto, LoginRequestDto, RegisterRequestDto} from "../dtos/auth.dto";
+import {jwtDecode} from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root'
@@ -34,27 +35,62 @@ export class AuthService {
       .pipe(catchError(this.handleError));
   }
 
+    /**
+     * inicia sesion a un usuario
+     * @param loginData
+     */
+    login(loginData: LoginRequestDto): Observable<JwtLoginResponseDto> {
+      const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+      return this.http.post<JwtLoginResponseDto>(`${this.apiUrl}/auth/login`, loginData, { headers })
+        .pipe(
+          tap(response => {
+            // Usar el nuevo méto do para decodificar y almacenar el token
+            this.decodeAndStoreToken(response.token);
+          }),
+          catchError(this.handleError)
+        );
+    }
+
+
+
   /**
-   * inicia sesion a un usuario
-   * @param loginData
+   * Decodifica el token JWT y almacena los datos relevantes en localStorage
+   * @param token El token JWT a decodificar
    */
-  login(loginData: LoginRequestDto): Observable<JwtLoginResponseDto> {
-    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  decodeAndStoreToken(token: string): void {
+    try {
+      // Decodificar el token
+      const decodedToken: any = jwtDecode(token);
 
-    return this.http.post<JwtLoginResponseDto>(`${this.apiUrl}/auth/login`, loginData, { headers })
-      .pipe(
-        tap(response => {
-          localStorage.setItem('auth_token', response.token);
-          localStorage.setItem('username', response.username);
-          localStorage.setItem('email', response.email);
-          if (response.rol) localStorage.setItem('rol', response.rol);
+      // Almacenar datos relevantes en localStorage
+      localStorage.setItem('auth_token', token);
 
-          // Emitir el nuevo estado de autenticación
-          this.isAuthenticatedSubject.next(true);
-        }),
-        catchError(this.handleError)
-      );
+      if (decodedToken.username) {
+        localStorage.setItem('username', decodedToken.username);
+      }
+
+      if (decodedToken.email) {
+        localStorage.setItem('email', decodedToken.email);
+      }
+
+      if (decodedToken.role) {
+        localStorage.setItem('rol', decodedToken.role);
+      }
+
+      // Puedes almacenar otras propiedades del token según sea necesario
+      console.log('Token decodificado correctamente:', decodedToken);
+
+      // Actualizar el estado de autenticación
+      this.isAuthenticatedSubject.next(true);
+    } catch (error) {
+      console.error('Error al decodificar el token:', error);
+      this.isAuthenticatedSubject.next(false);
+    }
   }
+
+
+
 
 
   /**
@@ -127,6 +163,8 @@ export class AuthService {
     return localStorage.getItem('username');
   }
 
+
+
   /**
    * Obtiene el rol del usuario actual desde localStorage
    */
@@ -134,24 +172,25 @@ export class AuthService {
     return localStorage.getItem('rol');
   }
 
+
   /**
    * Verifica si el usuario tiene el rol de "ARTISTA"
    */
   isArtista(): boolean {
-    return this.getCurrentUserRole() === 'ARTISTA';
+    return this.getCurrentUserRole() === 'ROLE_ARTISTA';
   }
 
   /**
    * Verifica si el usuario tiene el rol de "OYENTE"
    */
   isOyente(): boolean {
-    return this.getCurrentUserRole() === 'OYENTE';
+    return this.getCurrentUserRole() === 'ROLE_OYENTE';
   }
   /**
    * Verifica si el usuario tiene el rol de "ADMIN"
    */
   isAdmin(): boolean {
-    return this.getCurrentUserRole() === 'ADMIN';
+    return this.getCurrentUserRole() === 'ROLE_ADMIN';
   }
 
   /**

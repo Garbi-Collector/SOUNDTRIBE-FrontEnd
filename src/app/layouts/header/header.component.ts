@@ -20,6 +20,8 @@ declare var bootstrap: any;
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit, AfterViewInit {
+  isUserArtist: boolean = false;
+
   dropdownOpen = false;
   isLightTheme = false;
   isAuthenticated = false;
@@ -30,7 +32,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   userList: UserGet[] = [];
   filteredUsers: UserGet[] = [];
   isMobile: boolean = false;
-  searchActive: boolean = true; // Por defecto activo en desktop
+  searchActive: boolean = false; // Por defecto activo en desktop
 
   constructor(
     private modalService: ModalService,
@@ -286,6 +288,9 @@ export class HeaderComponent implements OnInit, AfterViewInit {
           this.userFotoUrl = user.urlFoto;
           this.userSlug = user.slug;
           this.currentUser = user;
+
+          // Verificar si el usuario es artista
+          this.isUserArtist = this.authService.isArtista();
         });
 
         // Obtener todos los usuarios con JWT solo si el usuario está autenticado
@@ -297,6 +302,8 @@ export class HeaderComponent implements OnInit, AfterViewInit {
         this.userFotoUrl = undefined;
         this.userSlug = undefined;
         this.currentUser = null;
+        this.isUserArtist = false; // Reiniciar la bandera cuando el usuario cierra sesión
+
 
         // Obtener todos los usuarios sin JWT si el usuario no está autenticado
         this.userExperienceService.getAllUsers().subscribe(response => {

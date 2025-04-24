@@ -79,6 +79,12 @@
             <i class="bi bi-person me-2"></i>Mi Perfil
           </a>
         </li>
+        <!-- Añade esta opción para artistas -->
+        <li *ngIf="isUserArtist">
+          <a class="dropdown-item" [routerLink]="['/subir-musica']" (click)="closeDropdown()">
+            <i class="bi bi-cloud-arrow-up me-2"></i>Subir música
+          </a>
+        </li>
         <li><hr class="dropdown-divider"></li>
         <li>
           <a class="dropdown-item" href="#" (click)="logout(); closeDropdown(); $event.preventDefault()">

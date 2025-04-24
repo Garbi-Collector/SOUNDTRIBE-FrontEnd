@@ -27,7 +27,7 @@
 
         <div class="col-md-9 position-relative">
           <!-- Botones en la esquina superior derecha -->
-          <div class="position-absolute top-0 end-0 profile-actions">
+          <div class="profile-actions">
             <!-- Botón de compartir perfil (visible para todos) -->
             <button class="btn btn-outline-secondary me-2" (click)="shareProfile()">
               <i class="bi bi-share"></i>
@@ -54,11 +54,18 @@
           </div>
 
           <div class="profile-info">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <h2 class="profile-username">{{ userProfile.username }}</h2>
+            <!-- Nombre de usuario -->
+            <h2 class="profile-username mt-3">{{ userProfile.username }}</h2>
 
-              <!-- Follow/Unfollow button (only shown for other users' profiles when authenticated) -->
-              <button *ngIf="!isOwnProfile" class="btn follow-btn"
+            <!-- Rol y fecha -->
+            <div class="profile-meta mb-3">
+              <span class="badge rounded-pill bg-info me-2">{{ userProfile.rol }}</span>
+              <small class="text-light">Se unió el {{ userProfile.createdAt }}</small>
+            </div>
+
+            <!-- Follow/Unfollow button (en una fila separada) -->
+            <div *ngIf="!isOwnProfile" class="follow-btn-container mb-3">
+              <button class="btn follow-btn"
                       [class.btn-primary]="!isFollowing"
                       [class.btn-outline-primary]="isFollowing"
                       [disabled]="isFollowingLoading"
@@ -69,11 +76,6 @@
                    [class.bi-person-dash]="isFollowing"></i>
                 {{ isFollowing ? 'Dejar de seguir' : 'Seguir' }}
               </button>
-            </div>
-
-            <div class="profile-meta mb-3">
-              <span class="badge rounded-pill bg-info me-2">{{ userProfile.rol }}</span>
-              <small class="text-light">Se unió el {{ userProfile.createdAt }}</small>
             </div>
 
             <!-- Stats -->
@@ -102,7 +104,6 @@
         </div>
       </div>
     </div>
-
 
     <!-- Followed artists section -->
     <div class="followed-artists-section mt-5" *ngIf="userProfile.artistasSeguidos && userProfile.artistasSeguidos.length > 0">

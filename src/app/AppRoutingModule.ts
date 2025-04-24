@@ -6,6 +6,9 @@ import { ExplorarComponent } from './pages/explorar/explorar.component';
 import { BibliotecaComponent } from './pages/biblioteca/biblioteca.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { PerfilComponent } from './pages/perfil/perfil.component';
+import { SubirMusicaComponent } from './pages/subir-musica/subir-musica.component';
+import { AuthGuard } from 'src/app/guards/AuthGuard';
+import { RoleGuard } from 'src/app/guards/RoleGuard';
 
 const routes: Routes = [
   { path: '', redirectTo: 'inicio', pathMatch: 'full' },
@@ -13,6 +16,14 @@ const routes: Routes = [
   { path: 'explorar', component: ExplorarComponent },
   { path: 'biblioteca', component: BibliotecaComponent },
   { path: 'perfil/:slug', component: PerfilComponent },
+  {
+    path: 'subir-musica',
+    component: SubirMusicaComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: {
+      expectedRole: 'ARTISTA'
+    }
+  },
   { path: '**', component: NotFoundComponent }
 ];
 

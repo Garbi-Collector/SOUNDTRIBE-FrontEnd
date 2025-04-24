@@ -208,6 +208,20 @@
   flex-direction: column;
   flex-grow: 1;
 }
+.settings-dropdown {
+  position: relative;
+}
+.settings-dropdown .dropdown-menu {
+  right: 0;
+  left: auto;
+}
+
+.settings-dropdown .dropdown-menu.show {
+  /* Ajusta la posición vertical pero mantén la horizontal */
+  transform: translate3d(0, 45px, 0) !important;
+  left: auto !important;
+  right: 0 !important;
+}
 
 .artist-name {
   font-size: 1rem;
@@ -225,9 +239,20 @@
   font-size: 0.8rem;
   opacity: 0.7;
 }
-
+.profile-actions {
+  z-index: 30; /* Aumentar el z-index para asegurar que esté por encima */
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+/* Ajuste para el botón de seguir */
+.follow-btn-container {
+  z-index: 20;
+  position: relative;
+}
 /* Responsive adjustments */
 @media (max-width: 767.98px) {
+
   .profile-image {
     width: 120px;
     height: 120px;
@@ -254,6 +279,8 @@
 
   .profile-info .d-flex {
     flex-direction: column;
+    align-items: center;
+    margin-top: 3rem; /* Dar más espacio para los botones de acción */
   }
 
   .follow-btn {
@@ -312,11 +339,17 @@
   }
   /* Estilos para los botones de acciones de perfil */
   .profile-actions {
-    z-index: 10;
-    margin-top: 10px;
-    margin-right: 10px;
+    z-index: 30; /* Aumentar el z-index para asegurar que esté por encima */
+    position: absolute;
+    top: 0;
+    right: 0;
   }
-
+  .follow-btn-container {
+    margin-top: 1rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
   .profile-actions .btn {
     border-radius: 50%;
     width: 40px;
@@ -335,9 +368,18 @@
     padding: 8px 16px;
   }
 
-  /* Asegurar que el menú desplegable se muestre correctamente */
+  .settings-dropdown .dropdown-menu {
+    /* Elimina las transformaciones forzadas */
+    left: auto !important;
+    right: 0 !important;
+    transform: none !important;
+  }
+
   .settings-dropdown .dropdown-menu.show {
-    transform: translate3d(0px, 45px, 0px) !important;
+    /* Ajusta la posición vertical pero mantén la horizontal */
+    transform: translate3d(0, 45px, 0) !important;
+    left: auto !important;
+    right: 0 !important;
   }
 
   /* Estilos para el toast de compartir */
@@ -348,4 +390,12 @@
   #shareToast .toast-body {
     font-weight: 500;
   }
+  .profile-username {
+    margin-top: 1rem;
+    max-width: 80%;
+  }
+}
+/* Estilos para el dropdown del usuario */
+.user-menu {
+  position: relative;
 }

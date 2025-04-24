@@ -18,6 +18,7 @@ import {HttpClientModule} from "@angular/common/http";
 import { PerfilComponent } from './pages/perfil/perfil.component';
 import { ChangePasswordComponent } from './modales/change-password/change-password.component';
 import { ChangeSlugComponent } from './modales/change-slug/change-slug.component';
+import { SubirMusicaComponent } from './pages/subir-musica/subir-musica.component';
 
 // Módulos
 
@@ -30,7 +31,7 @@ import { ChangeSlugComponent } from './modales/change-slug/change-slug.component
     NotFoundComponent,
     HeaderComponent,  // Asegúrate de que esté declarado aquí
     FooterComponent,  // Asegúrate de que esté declarado aquí
-    AuthModalComponent, PerfilComponent, ChangePasswordComponent, ChangeSlugComponent // Asegúrate de que esté declarado aquí
+    AuthModalComponent, PerfilComponent, ChangePasswordComponent, ChangeSlugComponent, SubirMusicaComponent // Asegúrate de que esté declarado aquí
   ],
   imports: [
     BrowserModule,

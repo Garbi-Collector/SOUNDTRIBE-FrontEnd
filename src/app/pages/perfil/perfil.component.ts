@@ -146,31 +146,43 @@ export class PerfilComponent implements OnInit {
   }
 
 
-  // Método para compartir perfil (copiar URL al portapapeles)
   shareProfile(): void {
     const currentUrl = this.document.location.href;
 
-    navigator.clipboard.writeText(currentUrl)
-      .then(() => {
-        // Mostrar toast de confirmación
-        if (this.shareToast) {
-          this.shareToast.show();
-        }
-      })
-      .catch(err => {
-        console.error('Error al copiar la URL: ', err);
-        // Alternativa en caso de error
-        const tempInput = document.createElement('input');
-        tempInput.value = currentUrl;
-        document.body.appendChild(tempInput);
-        tempInput.select();
-        document.execCommand('copy');
-        document.body.removeChild(tempInput);
+    // Check if clipboard API is available
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(currentUrl)
+        .then(() => {
+          if (this.shareToast) {
+            this.shareToast.show();
+          }
+        })
+        .catch(err => {
+          console.error('Error al copiar la URL: ', err);
+          this.useFallbackCopy(currentUrl);
+        });
+    } else {
+      // Use fallback for non-secure contexts
+      this.useFallbackCopy(currentUrl);
+    }
+  }
+  private useFallbackCopy(text: string): void {
+    try {
+      const tempInput = document.createElement('input');
+      tempInput.style.position = 'absolute';
+      tempInput.style.left = '-9999px';
+      tempInput.value = text;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
 
-        if (this.shareToast) {
-          this.shareToast.show();
-        }
-      });
+      if (this.shareToast) {
+        this.shareToast.show();
+      }
+    } catch (err) {
+      console.error('Fallback copy failed:', err);
+    }
   }
 
   // El resto de los métodos quedan igual

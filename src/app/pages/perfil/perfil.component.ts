@@ -4,7 +4,7 @@ import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service';
 import { ModalService, ModalType } from '../../services/modal.service';
 import { NumbersService } from '../../services/numbers.service';
-import { UserDescription } from '../../dtos/users.dto';
+import { UserDescription } from '../../dtos/usuarios/users.dto';
 import { switchMap, tap, of, catchError } from "rxjs";
 import { DOCUMENT } from '@angular/common';
 import { Inject } from '@angular/core';

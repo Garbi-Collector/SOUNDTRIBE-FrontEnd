@@ -3,7 +3,7 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {AuthService} from "./auth.service";
 import {BackEndRoutesService} from "../back-end.routes.service";
 import {catchError, Observable, throwError} from "rxjs";
-import {FotoModel} from "../dtos/fotos.dto";
+import {FotoModel} from "../dtos/usuarios/fotos.dto";
 
 @Injectable({
   providedIn: 'root'

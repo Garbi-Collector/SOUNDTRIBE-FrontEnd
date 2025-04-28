@@ -3,7 +3,7 @@ import {AuthService} from "./auth.service";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {BackEndRoutesService} from "../back-end.routes.service";
 import {catchError, Observable, throwError} from 'rxjs';
-import {GetAll, UserDescription, UserGet} from "../dtos/users.dto";
+import {GetAll, UserDescription, UserGet} from "../dtos/usuarios/users.dto";
 import {map} from "rxjs/operators";
 import { FechasService } from './fechas.service';
 
@@ -214,6 +214,13 @@ export class UserService {
   }
 
 
+
+  getMutualArtistFriends(): Observable<UserGet[]> {
+    const headers = this.getAuthHeaders();
+    return this.http
+      .get<UserGet[]>(`${this.apiUrl}/mutual-artist-friends`, { headers })
+      .pipe(catchError(this.handleError));
+  }
 
 
 }

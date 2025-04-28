@@ -5,7 +5,7 @@ import { debounceTime, switchMap, of, catchError } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { ModalService } from '../../services/modal.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { RegisterRequestDto, LoginRequestDto } from '../../dtos/auth.dto';
+import { RegisterRequestDto, LoginRequestDto } from '../../dtos/usuarios/auth.dto';
 
 @Component({
   selector: 'app-auth-modal',

@@ -19,6 +19,20 @@ import { PerfilComponent } from './pages/perfil/perfil.component';
 import { ChangePasswordComponent } from './modales/change-password/change-password.component';
 import { ChangeSlugComponent } from './modales/change-slug/change-slug.component';
 import { SubirMusicaComponent } from './pages/subir-musica/subir-musica.component';
+import { VerificarCuentaComponent } from './pages/verificar-cuenta/verificar-cuenta.component';
+import {MatIconModule} from "@angular/material/icon";
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import {MatStepperModule} from "@angular/material/stepper";
+import {MatInputModule} from "@angular/material/input";
+import {MatSelectModule} from "@angular/material/select";
+import {MatExpansionModule} from "@angular/material/expansion";
+import {MatProgressBarModule} from "@angular/material/progress-bar";
+import {MatButtonModule} from "@angular/material/button";
+
+
+
+
+
 
 // Módulos
 
@@ -31,7 +45,7 @@ import { SubirMusicaComponent } from './pages/subir-musica/subir-musica.componen
     NotFoundComponent,
     HeaderComponent,  // Asegúrate de que esté declarado aquí
     FooterComponent,  // Asegúrate de que esté declarado aquí
-    AuthModalComponent, PerfilComponent, ChangePasswordComponent, ChangeSlugComponent, SubirMusicaComponent // Asegúrate de que esté declarado aquí
+    AuthModalComponent, PerfilComponent, ChangePasswordComponent, ChangeSlugComponent, SubirMusicaComponent, VerificarCuentaComponent // Asegúrate de que esté declarado aquí
   ],
   imports: [
     BrowserModule,
@@ -39,6 +53,14 @@ import { SubirMusicaComponent } from './pages/subir-musica/subir-musica.componen
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatStepperModule,
+    MatInputModule,
+    MatSelectModule,
+    MatExpansionModule,
+    MatProgressBarModule,
+    MatButtonModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

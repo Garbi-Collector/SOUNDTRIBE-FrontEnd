@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { ModalService } from '../../services/modal.service';
-import { ChangePasswordRequestDto } from '../../dtos/auth.dto';
+import { ChangePasswordRequestDto } from '../../dtos/usuarios/auth.dto';
 
 @Component({
   selector: 'app-change-password',

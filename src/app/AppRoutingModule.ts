@@ -9,8 +9,10 @@ import { PerfilComponent } from './pages/perfil/perfil.component';
 import { SubirMusicaComponent } from './pages/subir-musica/subir-musica.component';
 import { AuthGuard } from 'src/app/guards/AuthGuard';
 import { RoleGuard } from 'src/app/guards/RoleGuard';
+import {VerificarCuentaComponent} from "./pages/verificar-cuenta/verificar-cuenta.component";
 
 const routes: Routes = [
+  { path: 'verificar-cuenta/:token', component: VerificarCuentaComponent },
   { path: '', redirectTo: 'inicio', pathMatch: 'full' },
   { path: 'inicio', component: InicioComponent },
   { path: 'explorar', component: ExplorarComponent },

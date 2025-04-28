@@ -1,1 +1,383 @@
-<p>subir-musica works!</p>
+<div class="content-card">
+  <h2 class="mb-4">Subir Nuevo Álbum</h2>
+
+  <div *ngIf="isLoading" class="text-center my-4">
+    <div class="spinner-border" style="color: var(--color-purple);" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="mt-3" style="color: var(--color-purple);">Cargando...</p>
+  </div>
+
+  <form [formGroup]="albumForm" *ngIf="!isLoading">
+    <!-- Nav tabs para el wizard -->
+    <ul class="nav nav-tabs mb-4" id="albumTabs" role="tablist" style="border-bottom: 1px solid var(--dark-border);">
+      <li class="nav-item" role="presentation">
+        <button [class]="'nav-link ' + (currentStep === 0 ? 'active' : '')"
+                id="album-info-tab"
+                (click)="changeStep(0)"
+                type="button"
+                style="color: var(--dark-text); border: none; position: relative;">
+          <span class="badge rounded-pill me-2" style="background: var(--gradient-primary);">1</span> Información del Álbum
+          <span *ngIf="currentStep === 0" style="position: absolute; bottom: -1px; left: 0; right: 0; height: 3px; background: var(--gradient-primary);"></span>
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button [class]="'nav-link ' + (currentStep === 1 ? 'active' : '')"
+                id="songs-tab"
+                (click)="changeStep(1)"
+                type="button"
+                [disabled]="albumForm.get('albumInfo')?.invalid"
+                style="color: var(--dark-text); border: none; position: relative;">
+          <span class="badge rounded-pill me-2" style="background: var(--gradient-blue);">2</span> Subir Canciones
+          <span *ngIf="currentStep === 1" style="position: absolute; bottom: -1px; left: 0; right: 0; height: 3px; background: var(--gradient-blue);"></span>
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button [class]="'nav-link ' + (currentStep === 2 ? 'active' : '')"
+                id="preview-tab"
+                (click)="changeStep(2)"
+                type="button"
+                [disabled]="albumForm.get('songs')?.invalid"
+                style="color: var(--dark-text); border: none; position: relative;">
+          <span class="badge rounded-pill me-2" style="background: var(--gradient-purple);">3</span> Previsualización
+          <span *ngIf="currentStep === 2" style="position: absolute; bottom: -1px; left: 0; right: 0; height: 3px; background: var(--gradient-purple);"></span>
+        </button>
+      </li>
+    </ul>
+
+    <!-- Contenido de tabs -->
+    <div class="tab-content">
+      <!-- PASO 1: Información del Álbum -->
+      <div [class]="'tab-pane fade ' + (currentStep === 0 ? 'show active' : '')" id="album-info">
+        <div formGroupName="albumInfo" class="step-content">
+          <h3 class="mb-3" style="background: var(--gradient-primary); background-clip: text; -webkit-background-clip: text; color: transparent; font-weight: 600;">Datos del Álbum</h3>
+
+          <div class="mb-3">
+            <label for="album-name" class="form-label" style="color: var(--dark-text-secondary);">Nombre del Álbum</label>
+            <input type="text" class="form-control" id="album-name" formControlName="name" required
+                   style="background-color: var(--dark-component-bg); border: 1px solid var(--dark-border); color: var(--dark-text); border-radius: 8px; padding: 10px 15px;">
+            <div class="invalid-feedback" *ngIf="albumForm.get('albumInfo.name')?.touched && albumForm.get('albumInfo.name')?.hasError('required')"
+                 style="color: var(--color-pink);">
+              El nombre es obligatorio
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="album-description" class="form-label" style="color: var(--dark-text-secondary);">Descripción (opcional)</label>
+            <textarea class="form-control" id="album-description" formControlName="description" rows="3"
+                      style="background-color: var(--dark-component-bg); border: 1px solid var(--dark-border); color: var(--dark-text); border-radius: 8px; padding: 10px 15px;"></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label for="album-type" class="form-label" style="color: var(--dark-text-secondary);">Tipo de Álbum</label>
+            <select class="form-select" id="album-type" formControlName="typeAlbum" required
+                    style="background-color: var(--dark-component-bg); border: 1px solid var(--dark-border); color: var(--dark-text); border-radius: 8px; padding: 10px 15px;">
+              <option value="" disabled selected>Selecciona un tipo</option>
+              <option *ngFor="let option of typeAlbumOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+            <div class="form-text" *ngIf="albumType" style="color: var(--color-cyan);">
+              <ng-container [ngSwitch]="albumType">
+                <span *ngSwitchCase="'SINGLE'">Un Single contiene exactamente 1 canción</span>
+                <span *ngSwitchCase="'EP'">Un EP contiene entre 3 y 6 canciones</span>
+                <span *ngSwitchCase="'LP'">Un LP contiene entre 5 y 12 canciones</span>
+              </ng-container>
+            </div>
+            <div class="invalid-feedback" *ngIf="albumForm.get('albumInfo.typeAlbum')?.touched && albumForm.get('albumInfo.typeAlbum')?.hasError('required')"
+                 style="color: var(--color-pink);">
+              El tipo de álbum es obligatorio
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label" style="color: var(--dark-text-secondary);">Portada del Álbum</label>
+
+            <div class="row align-items-center">
+              <div class="col-md-6">
+                <div class="input-group mb-3">
+                  <button class="btn" type="button" (click)="fileInput.click()"
+                          style="background: var(--gradient-primary); color: white; border: none; border-radius: 8px 0 0 8px;">
+                    <i class="bi bi-image"></i> Seleccionar imagen
+                  </button>
+                  <input type="text" class="form-control" [value]="albumForm.get('albumInfo.portada')?.value?.name || 'Ningún archivo seleccionado'" disabled
+                         style="background-color: var(--dark-component-bg); border: 1px solid var(--dark-border); color: var(--dark-text); border-radius: 0 8px 8px 0;">
+                  <input hidden type="file" accept="image/jpeg,image/png" #fileInput (change)="onPortadaSelected($event)">
+                </div>
+                <div class="text-muted small" style="color: var(--dark-text-secondary);">
+                  Formatos: JPG, PNG. Tamaño máximo: 5MB
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div *ngIf="portadaPreview" class="portada-preview"
+                     style="border: 1px solid var(--dark-border); border-radius: 8px; padding: 8px; box-shadow: var(--shadow-soft);">
+                  <img [src]="portadaPreview" alt="Portada del álbum" class="img-fluid rounded">
+                </div>
+              </div>
+            </div>
+
+            <div class="invalid-feedback d-block" *ngIf="albumForm.get('albumInfo.portada')?.touched && albumForm.get('albumInfo.portada')?.hasError('required')"
+                 style="color: var(--color-pink);">
+              La portada es obligatoria
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end">
+            <button type="button" class="btn" [disabled]="albumForm.get('albumInfo')?.invalid" (click)="changeStep(1)"
+                    style="background: var(--gradient-blue); color: white; border: none; border-radius: 8px; padding: 10px 20px; transition: all 0.3s ease;">
+              Siguiente <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PASO 2: Subir Canciones -->
+      <div [class]="'tab-pane fade ' + (currentStep === 1 ? 'show active' : '')" id="songs">
+        <div class="step-content">
+          <h3 style="background: var(--gradient-blue); background-clip: text; -webkit-background-clip: text; color: transparent; font-weight: 600;">Canciones del Álbum</h3>
+          <p style="color: var(--dark-text-secondary);">
+            <ng-container [ngSwitch]="albumType">
+              <span *ngSwitchCase="'SINGLE'">Sube 1 canción para tu Single</span>
+              <span *ngSwitchCase="'EP'">Sube entre 3 y 6 canciones para tu EP</span>
+              <span *ngSwitchCase="'LP'">Sube entre 5 y 12 canciones para tu LP</span>
+              <span *ngSwitchDefault>Selecciona un tipo de álbum en el paso anterior</span>
+            </ng-container>
+          </p>
+
+          <div formArrayName="songs">
+            <div class="accordion" id="songsAccordion">
+              <div *ngFor="let songForm of songs.controls; let i = index" class="accordion-item"
+                   style="margin-bottom: 1rem; border: 1px solid var(--dark-border); border-radius: 12px; overflow: hidden; background-color: var(--dark-component-bg);">
+                <h2 class="accordion-header" [id]="'heading' + i">
+                  <button class="accordion-button" type="button" data-bs-toggle="collapse" [attr.data-bs-target]="'#collapse' + i"
+                          [attr.aria-expanded]="i === 0" [attr.aria-controls]="'collapse' + i"
+                          style="background-color: var(--dark-component-bg); color: var(--dark-text); border-bottom: 1px solid var(--dark-border);">
+                    <span *ngIf="songForm.get('name')?.value">
+                      {{ songForm.get('name')?.value }}
+                    </span>
+                    <span *ngIf="!songForm.get('name')?.value">
+                      Canción {{ i + 1 }}
+                    </span>
+                  </button>
+                </h2>
+                <div [id]="'collapse' + i" class="accordion-collapse collapse" [ngClass]="{'show': i === 0}"
+                     [attr.aria-labelledby]="'heading' + i" data-bs-parent="#songsAccordion" [formGroupName]="i">
+                  <div class="accordion-body" style="background-color: var(--dark-component-bg);">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="mb-3">
+                          <label [for]="'song-name-' + i" class="form-label" style="color: var(--dark-text-secondary);">Nombre de la canción</label>
+                          <input type="text" class="form-control" [id]="'song-name-' + i" formControlName="name" required
+                                 style="background-color: var(--dark-component-bg); border: 1px solid var(--dark-border); color: var(--dark-text); border-radius: 8px; padding: 10px 15px;">
+                          <div class="invalid-feedback" *ngIf="songForm.get('name')?.touched && songForm.get('name')?.hasError('required')"
+                               style="color: var(--color-pink);">
+                            El nombre es obligatorio
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-md-6">
+                        <div class="mb-3">
+                          <label [for]="'song-description-' + i" class="form-label" style="color: var(--dark-text-secondary);">Descripción (opcional)</label>
+                          <textarea class="form-control" [id]="'song-description-' + i" formControlName="description" rows="1"
+                                    style="background-color: var(--dark-component-bg); border: 1px solid var(--dark-border); color: var(--dark-text); border-radius: 8px; padding: 10px 15px;"></textarea>
+                        </div>
+                      </div>
+
+                      <div class="col-md-4">
+                        <div class="mb-3">
+                          <label [for]="'song-genre-' + i" class="form-label" style="color: var(--dark-text-secondary);">Género Musical</label>
+                          <select class="form-select" [id]="'song-genre-' + i" formControlName="genero" required (change)="onGeneroChange($event, i)"
+                                  style="background-color: var(--dark-component-bg); border: 1px solid var(--dark-border); color: var(--dark-text); border-radius: 8px; padding: 10px 15px;">
+                            <option value="" disabled selected>Selecciona un género</option>
+                            <option *ngFor="let genero of generos" [value]="genero.id">
+                              {{ genero.name }}
+                            </option>
+                          </select>
+                          <div class="invalid-feedback" *ngIf="songForm.get('genero')?.touched && songForm.get('genero')?.hasError('required')"
+                               style="color: var(--color-pink);">
+                            El género es obligatorio
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-md-4">
+                        <div class="mb-3">
+                          <label [for]="'song-subgenre-' + i" class="form-label" style="color: var(--dark-text-secondary);">Subgéneros (opcional)</label>
+                          <select class="form-select" [id]="'song-subgenre-' + i" formControlName="subgenero" multiple
+                                  style="background-color: var(--dark-component-bg); border: 1px solid var(--dark-border); color: var(--dark-text); border-radius: 8px; padding: 10px 15px; min-height: 100px;">
+                            <option *ngFor="let subgenero of subgeneros.get(songForm.get('genero')?.value) || []" [value]="subgenero.id">
+                              {{ subgenero.name }}
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div class="col-md-4">
+                        <div class="mb-3">
+                          <label [for]="'song-style-' + i" class="form-label" style="color: var(--dark-text-secondary);">Estilo</label>
+                          <select class="form-select" [id]="'song-style-' + i" formControlName="estilo" required
+                                  style="background-color: var(--dark-component-bg); border: 1px solid var(--dark-border); color: var(--dark-text); border-radius: 8px; padding: 10px 15px;">
+                            <option value="" disabled selected>Selecciona un estilo</option>
+                            <option *ngFor="let estilo of estilos" [value]="estilo.id">
+                              {{ estilo.name }}
+                            </option>
+                          </select>
+                          <div class="invalid-feedback" *ngIf="songForm.get('estilo')?.touched && songForm.get('estilo')?.hasError('required')"
+                               style="color: var(--color-pink);">
+                            El estilo es obligatorio
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-md-12">
+                        <div class="mb-3">
+                          <label [for]="'song-artists-' + i" class="form-label" style="color: var(--dark-text-secondary);">Artistas invitados (opcional)</label>
+                          <select class="form-select" [id]="'song-artists-' + i" formControlName="artistasFt" multiple
+                                  style="background-color: var(--dark-component-bg); border: 1px solid var(--dark-border); color: var(--dark-text); border-radius: 8px; padding: 10px 15px; min-height: 100px;">
+                            <option *ngFor="let artist of mutualArtistFriends" [value]="artist.id">
+                              {{ artist.username }}
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div class="col-md-12 mb-3">
+                        <label class="form-label" style="color: var(--dark-text-secondary);">Archivo de audio</label>
+                        <div class="row align-items-center">
+                          <div class="col-md-8">
+                            <div class="input-group mb-3">
+                              <button class="btn" type="button" (click)="audioInput.click()"
+                                      style="background: var(--gradient-blue); color: white; border: none; border-radius: 8px 0 0 8px;">
+                                <i class="bi bi-file-music"></i> Seleccionar audio
+                              </button>
+                              <input type="text" class="form-control" [value]="songForm.get('file')?.value?.name || 'Ningún archivo seleccionado'" disabled
+                                     style="background-color: var(--dark-component-bg); border: 1px solid var(--dark-border); color: var(--dark-text); border-radius: 0 8px 8px 0;">
+                              <input hidden type="file" accept="audio/wav" #audioInput (change)="onSongFileSelected($event, i)">
+                            </div>
+                            <div class="text-muted small" style="color: var(--dark-text-secondary);">
+                              Formato: WAV. Tamaño máximo: 45MB
+                            </div>
+                          </div>
+
+                          <div class="col-md-4" *ngIf="audioPreviews.get(i)" style="color: var(--color-cyan);">
+                            <span *ngIf="!songForm.get('file')?.value?.name">
+                              No hay archivo seleccionado
+                            </span>
+                            <span *ngIf="songForm.get('file')?.value?.name">
+                              {{ songForm.get('file')?.value?.name }}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="mt-2 d-flex justify-content-end">
+                      <button *ngIf="songs.length > 1" type="button" class="btn" (click)="removeSong(i)"
+                              style="background-color: rgba(255, 52, 210, 0.1); color: var(--color-pink); border: 1px solid var(--color-pink); border-radius: 8px;">
+                        <i class="bi bi-trash"></i> Eliminar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-3 mb-4">
+              <button type="button" class="btn" (click)="addSong()" *ngIf="canAddMoreSongs()"
+                      style="background-color: rgba(52, 176, 255, 0.1); color: var(--color-blue); border: 1px solid var(--color-blue); border-radius: 8px;">
+                <i class="bi bi-plus-circle"></i> Agregar otra canción
+              </button>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between">
+            <button type="button" class="btn" (click)="changeStep(0)"
+                    style="background-color: var(--dark-component-bg); color: var(--dark-text); border: 1px solid var(--dark-border); border-radius: 8px; padding: 10px 20px;">
+              <i class="bi bi-chevron-left"></i> Anterior
+            </button>
+            <button type="button" class="btn" [disabled]="songs.invalid" (click)="changeStep(2)"
+                    style="background: var(--gradient-purple); color: white; border: none; border-radius: 8px; padding: 10px 20px; transition: all 0.3s ease;">
+              Siguiente <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PASO 3: Previsualización -->
+      <div [class]="'tab-pane fade ' + (currentStep === 2 ? 'show active' : '')" id="preview">
+        <div class="step-content">
+          <h3 class="mb-4" style="background: var(--gradient-purple); background-clip: text; -webkit-background-clip: text; color: transparent; font-weight: 600;">Previsualización del Álbum</h3>
+
+          <div class="row mb-4">
+            <div class="col-md-4">
+              <div class="album-cover" style="border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-medium);">
+                <img [src]="portadaPreview || 'assets/img/default-album.png'" alt="Portada del álbum" class="img-fluid">
+              </div>
+            </div>
+
+            <div class="col-md-8">
+              <h4 class="album-title" style="font-weight: 600; color: var(--dark-text);">{{ albumForm.get('albumInfo.name')?.value || 'Título del álbum' }}</h4>
+              <p class="badge text-bg-primary" style="background: var(--gradient-primary) !important; border: none;">{{ albumType || 'Tipo de álbum' }}</p>
+              <p class="album-description" style="color: var(--dark-text-secondary);">{{ albumForm.get('albumInfo.description')?.value || 'Sin descripción' }}</p>
+            </div>
+          </div>
+
+          <h4 class="mt-4 mb-3" style="color: var(--dark-text);">Lista de canciones</h4>
+          <div class="list-group song-list" style="border-radius: 12px; overflow: hidden;">
+            <div *ngFor="let songForm of songs.controls; let i = index" class="list-group-item list-group-item-action"
+                 style="background-color: var(--dark-component-bg); border: 1px solid var(--dark-border); margin-bottom: 8px; border-radius: 8px; padding: 15px;">
+              <div class="d-flex align-items-center">
+                <button class="btn btn-sm me-3" (click)="playPauseAudio(i)" [disabled]="!audioPreviews.get(i)"
+                        style="background: var(--gradient-primary); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                  <i class="bi" [ngClass]="isAudioPlaying(i) ? 'bi-pause-fill' : 'bi-play-fill'"></i>
+                </button>
+
+                <div class="song-info flex-grow-1">
+                  <div class="song-name" style="font-weight: 500; color: var(--dark-text);">{{ songForm.get('name')?.value || 'Canción ' + (i + 1) }}</div>
+
+                  <div class="song-details">
+                    <span *ngIf="songForm.get('artistasFt')?.value?.length > 0" class="text-muted small" style="color: var(--dark-text-secondary);">
+                      feat.
+                      <ng-container *ngFor="let artistId of songForm.get('artistasFt')?.value; let last = last">
+                        {{ getArtistName(artistId) }}{{ getFormattedDelimiter(!last) }}
+                      </ng-container>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="progress-container flex-grow-1 mx-3" *ngIf="audioPreviews.get(i)">
+                  <div class="progress" style="height: 6px; background-color: var(--dark-border); border-radius: 3px;">
+                    <div class="progress-bar" role="progressbar" [style.width]="getAudioProgressValue(i) + '%'"
+                         [attr.aria-valuenow]="getAudioProgressValue(i)" aria-valuemin="0" aria-valuemax="100"
+                         style="background: var(--gradient-primary);"></div>
+                  </div>
+                  <div class="time-info d-flex justify-content-between mt-1">
+                    <span class="small" style="color: var(--dark-text-secondary);">{{ formatTime(getAudioTime(i, 'currentTime')) }}</span>
+                    <span class="small" style="color: var(--dark-text-secondary);">{{ formatTime(getAudioTime(i, 'duration')) }}</span>
+                  </div>
+                </div>
+
+                <div class="no-audio" *ngIf="!audioPreviews.get(i)" style="color: var(--dark-text-secondary);">
+                  <span>No hay audio para previsualizar</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-5 d-flex justify-content-between">
+            <button type="button" class="btn" (click)="changeStep(1)"
+                    style="background-color: var(--dark-component-bg); color: var(--dark-text); border: 1px solid var(--dark-border); border-radius: 8px; padding: 10px 20px;">
+              <i class="bi bi-chevron-left"></i> Anterior
+            </button>
+            <button type="button" class="btn" (click)="submitAlbum()"
+                    style="background: var(--gradient-primary); color: white; border: none; border-radius: 8px; padding: 10px 20px; transition: all 0.3s ease;">
+              <i class="bi bi-cloud-upload"></i> Publicar Álbum
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

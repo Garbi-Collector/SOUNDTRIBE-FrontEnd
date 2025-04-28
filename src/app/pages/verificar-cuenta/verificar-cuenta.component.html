@@ -1,0 +1,9 @@
+<div class="verificacion-container">
+  <h2>Verificación de cuenta</h2>
+
+  <div *ngIf="estado === 'cargando'">Verificando tu cuenta...</div>
+  <div *ngIf="estado === 'exito'" class="success">{{ mensaje }}</div>
+  <div *ngIf="estado === 'error'" class="error">{{ mensaje }}</div>
+
+  <a *ngIf="estado === 'exito'" routerLink="/inicio">Ir al inicio</a>
+</div>

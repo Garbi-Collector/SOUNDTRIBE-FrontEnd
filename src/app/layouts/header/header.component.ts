@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, HostListener, OnInit} from '@angular/core';
-import {UserGet} from "../../dtos/users.dto";
+import {UserGet} from "../../dtos/usuarios/users.dto";
 import {ModalService, ModalType} from "../../services/modal.service";
 import {ThemeService} from "../../services/theme.service";
 import {AuthService} from "../../services/auth.service";

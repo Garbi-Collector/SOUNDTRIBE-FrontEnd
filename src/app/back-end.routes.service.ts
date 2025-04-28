@@ -5,8 +5,8 @@ import { Injectable } from '@angular/core';
 })
 export class BackEndRoutesService {
 
-  private readonly baseUrl: string = 'http://soundtribe.art'
-  //private readonly baseUrl: string = 'http://localhost'
+  //private readonly baseUrl: string = 'http://soundtribe.art'
+  private readonly baseUrl: string = 'http://localhost'
 
   get userServiceUrl(): string{
     return `${this.baseUrl}:8080`;

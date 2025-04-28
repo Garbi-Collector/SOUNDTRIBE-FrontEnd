@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject, catchError, Observable, tap, throwError} from "rxjs";
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {BackEndRoutesService} from "../back-end.routes.service";
-import {ChangePasswordRequestDto, JwtLoginResponseDto, LoginRequestDto, RegisterRequestDto} from "../dtos/auth.dto";
+import {ChangePasswordRequestDto, JwtLoginResponseDto, LoginRequestDto, RegisterRequestDto} from "../dtos/usuarios/auth.dto";
 import {jwtDecode} from 'jwt-decode';
 
 @Injectable({

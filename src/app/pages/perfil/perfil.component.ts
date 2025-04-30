@@ -2,12 +2,16 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service';
+import { AlbumService } from '../../services/album.service';
 import { ModalService, ModalType } from '../../services/modal.service';
 import { NumbersService } from '../../services/numbers.service';
 import { UserDescription } from '../../dtos/usuarios/users.dto';
 import { switchMap, tap, of, catchError } from "rxjs";
 import { DOCUMENT } from '@angular/common';
 import { Inject } from '@angular/core';
+import { ResponseAlbumDto } from "../../dtos/albumes/musics.response.dto";
+import { SongsService } from '../../services/songs.service';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 declare var bootstrap: any;
 
@@ -28,6 +32,12 @@ export class PerfilComponent implements OnInit {
   settingsDropdownOpen = false;
   shareToast: any;
 
+  // Propiedades para álbumes
+  userAlbums: ResponseAlbumDto[] = [];
+  isLoadingAlbums = false;
+  albumCovers: Map<number, SafeUrl> = new Map();
+  isArtista = false;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -35,6 +45,9 @@ export class PerfilComponent implements OnInit {
     private authService: AuthService,
     private modalService: ModalService,
     public numbersService: NumbersService,
+    private albumService: AlbumService,
+    private songsService: SongsService,
+    private sanitizer: DomSanitizer,
     @Inject(DOCUMENT) private document: Document
   ) {}
 
@@ -65,7 +78,7 @@ export class PerfilComponent implements OnInit {
     }, 200);
   }
 
-  // Nuevo método para redireccionar al perfil propio usando el slug del usuario autenticado
+  // Nuevo méto-do para redireccionar al perfil propio usando el slug del usuario autenticado
   redirectToOwnProfile(): void {
     this.userService.getAuthenticatedUser().subscribe({
       next: (user) => {
@@ -91,6 +104,7 @@ export class PerfilComponent implements OnInit {
     this.userService.getUserDescriptionBySlug(slug).subscribe({
       next: (profile) => {
         this.userProfile = profile;
+        this.isArtista = profile.rol === 'ARTISTA';
 
         // Verificar si es el perfil propio comparando con el username actual
         const currentUsername = this.authService.getCurrentUsername();
@@ -101,6 +115,11 @@ export class PerfilComponent implements OnInit {
           this.checkFollowingStatus(profile.id);
         }
 
+        // Cargar álbumes solo si es un artista
+        if (this.isArtista) {
+          this.loadUserAlbums(profile.id);
+        }
+
         this.isLoading = false;
       },
       error: (err) => {
@@ -109,6 +128,56 @@ export class PerfilComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  // Método para cargar los álbumes del artista
+  loadUserAlbums(artistId: number): void {
+    this.isLoadingAlbums = true;
+
+    this.albumService.getAlbumsByArtist(artistId).subscribe({
+      next: (albums) => {
+        this.userAlbums = albums;
+        this.isLoadingAlbums = false;
+
+        // Cargar las portadas de los álbumes
+        this.loadAlbumCovers();
+      },
+      error: (err) => {
+        console.error('Error cargando álbumes:', err);
+        this.isLoadingAlbums = false;
+      }
+    });
+  }
+
+  // Método para cargar las portadas de los álbumes
+  loadAlbumCovers(): void {
+    this.userAlbums.forEach(album => {
+      this.songsService.obtenerPortadaPorId(album.id).subscribe({
+        next: (blob) => {
+          const objectUrl = URL.createObjectURL(blob);
+          const safeUrl = this.sanitizer.bypassSecurityTrustUrl(objectUrl);
+          this.albumCovers.set(album.id, safeUrl);
+        },
+        error: (err) => {
+          console.error(`Error cargando portada para álbum ${album.id}:`, err);
+        }
+      });
+    });
+  }
+
+  // Méto-do para navegar a la página del álbum
+  navigateToAlbum(album: any): void {
+    if (this.slug) {
+      // Verificar que el álbum tiene un slug
+      if (album && album.slug) {
+        // Navegar usando los slugs del artista y del álbum
+        this.router.navigate(['/', this.slug, album.slug]);
+      } else {
+        // Si no hay slug disponible, crear uno a partir del nombre
+        const albumSlug = album.name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+        this.router.navigate(['/', this.slug, albumSlug]);
+      }
+    }
   }
 
   // Métodos para el botón de configuración
@@ -145,7 +214,6 @@ export class PerfilComponent implements OnInit {
     this.modalService.openModal(ModalType.ChangeSlug);
   }
 
-
   shareProfile(): void {
     const currentUrl = this.document.location.href;
 
@@ -166,6 +234,7 @@ export class PerfilComponent implements OnInit {
       this.useFallbackCopy(currentUrl);
     }
   }
+
   private useFallbackCopy(text: string): void {
     try {
       const tempInput = document.createElement('input');

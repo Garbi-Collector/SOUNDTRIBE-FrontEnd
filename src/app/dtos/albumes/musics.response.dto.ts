@@ -38,8 +38,12 @@ export interface ResponseSongDto {
   genero: ResponseGeneroDto[];
   subgenero: ResponseSubgeneroDto[];
   estilo: ResponseEstiloDto[];
+  slug: string;
   artistasFt: number[];
+  likes: number;  // Número de likes
+  dislikes: number;  // Número de dislikes
 }
+
 
 export interface ResponseAlbumDto {
   id: number;
@@ -49,8 +53,6 @@ export interface ResponseAlbumDto {
   portada: ResponsePortadaDto;
   songs: ResponseSongDto[];
   owner: number;
+  slug: string;
+  likeCount: number;
 }
-
-
-
-

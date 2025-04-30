@@ -1,0 +1,120 @@
+<!-- mini-player.component.html -->
+<div class="mini-player-container" [ngClass]="{'expanded': isExpanded}">
+
+  <!-- Mini Player (Barra inferior) -->
+  <div class="mini-player" *ngIf="!isExpanded">
+    <div class="container-fluid">
+      <div class="row align-items-center">
+        <!-- Información de la canción (izquierda) -->
+        <div class="col-3 d-flex align-items-center song-info">
+          <div class="album-cover">
+            <img src="assets/img/default-album.png" width="100%" height="100%" alt="Portada del álbum" class="img-fluid rounded">
+          </div>
+          <div class="song-details ms-2">
+            <p class="artist-name mb-0">Nombre Artista</p>
+            <p class="song-title mb-0">Título de la canción</p>
+          </div>
+        </div>
+
+        <!-- Controles de reproducción (centro) -->
+        <div class="col-6">
+          <div class="player-controls text-center mb-1">
+            <button class="btn btn-player" (click)="previousTrack()">
+              <i class="bi bi-skip-start-fill"></i>
+            </button>
+            <button class="btn btn-player play-btn" (click)="togglePlay()">
+              <i class="bi" [ngClass]="isPlaying ? 'bi-pause-fill' : 'bi-play-fill'"></i>
+            </button>
+            <button class="btn btn-player" (click)="nextTrack()">
+              <i class="bi bi-skip-end-fill"></i>
+            </button>
+          </div>
+
+          <div class="progress-container d-flex align-items-center">
+            <span class="time-elapsed me-2">{{currentTime}}</span>
+            <div class="progress flex-grow-1">
+              <div class="progress-bar"
+                   role="progressbar"
+                   [style.width]="progressPercentage + '%'"
+                   aria-valuenow="25"
+                   aria-valuemin="0"
+                   aria-valuemax="100"></div>
+            </div>
+            <span class="time-total ms-2">{{totalTime}}</span>
+          </div>
+        </div>
+
+        <!-- Acciones adicionales (derecha) -->
+        <div class="col-3 d-flex justify-content-end">
+          <button class="btn btn-action" (click)="toggleLike()">
+            <i class="bi" [ngClass]="isLiked ? 'bi-heart-fill' : 'bi-heart'"></i>
+          </button>
+          <button class="btn btn-action" (click)="dislike()">
+            <i class="bi bi-heartbreak-fill"></i>
+          </button>
+          <button class="btn btn-action expand-btn" (click)="toggleExpand()">
+            <i class="bi" [ngClass]="isExpanded ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- Modal expandido (cuando se hace clic en el botón de expandir) -->
+    <div class="expanded-player" *ngIf="isExpanded">
+      <div class="container position-relative">
+        <div class="marker-toggle text-center">
+          <button class="btn btn-toggle-marker" (click)="toggleExpand()">
+            <i class="bi bi-chevron-down fs-3"></i>
+          </button>
+        </div>
+        <div class="row justify-content-center">
+          <div class="col-md-8 col-lg-6">
+            <div class="expanded-content text-center">
+              <div class="album-cover-large">
+                <img src="assets/img/default-album.png" width="100%" height="100%" alt="Portada del álbum" class="img-fluid rounded">
+              </div>
+
+              <h2 class="song-title-large mt-4">Título de la canción</h2>
+              <h3 class="artist-name-large mb-4">Nombre Artista</h3>
+
+              <div class="progress-container-large d-flex align-items-center mb-4">
+                <span class="time-elapsed me-2">{{currentTime}}</span>
+                <div class="progress flex-grow-1">
+                  <div class="progress-bar"
+                       role="progressbar"
+                       [style.width]="progressPercentage + '%'"
+                       aria-valuenow="25"
+                       aria-valuemin="0"
+                       aria-valuemax="100"></div>
+                </div>
+                <span class="time-total ms-2">{{totalTime}}</span>
+              </div>
+
+              <div class="player-controls-large mb-4">
+                <button class="btn btn-player-large" (click)="previousTrack()">
+                  <i class="bi bi-skip-start-fill"></i>
+                </button>
+                <button class="btn btn-player-large play-btn-large" (click)="togglePlay()">
+                  <i class="bi" [ngClass]="isPlaying ? 'bi-pause-fill' : 'bi-play-fill'"></i>
+                </button>
+                <button class="btn btn-player-large" (click)="nextTrack()">
+                  <i class="bi bi-skip-end-fill"></i>
+                </button>
+              </div>
+
+              <div class="additional-actions">
+                <button class="btn btn-action-large" (click)="toggleLike()">
+                  <i class="bi" [ngClass]="isLiked ? 'bi-heart-fill' : 'bi-heart'"></i>
+                </button>
+                <button class="btn btn-action-large" (click)="dislike()">
+                  <i class="bi bi-heartbreak-fill"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+</div>

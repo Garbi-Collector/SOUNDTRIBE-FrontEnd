@@ -28,6 +28,8 @@ import {MatSelectModule} from "@angular/material/select";
 import {MatExpansionModule} from "@angular/material/expansion";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {MatButtonModule} from "@angular/material/button";
+import { AlbumComponent } from './pages/album/album.component';
+import { MiniPlayerComponent } from './layouts/mini-player/mini-player.component';
 
 
 
@@ -45,7 +47,14 @@ import {MatButtonModule} from "@angular/material/button";
     NotFoundComponent,
     HeaderComponent,  // Asegúrate de que esté declarado aquí
     FooterComponent,  // Asegúrate de que esté declarado aquí
-    AuthModalComponent, PerfilComponent, ChangePasswordComponent, ChangeSlugComponent, SubirMusicaComponent, VerificarCuentaComponent // Asegúrate de que esté declarado aquí
+    AuthModalComponent,
+    PerfilComponent,
+    ChangePasswordComponent,
+    ChangeSlugComponent,
+    SubirMusicaComponent,
+    VerificarCuentaComponent,
+    AlbumComponent,
+    MiniPlayerComponent, // Asegúrate de que esté declarado aquí
   ],
   imports: [
     BrowserModule,

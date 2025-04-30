@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { BackEndRoutesService } from '../back-end.routes.service';
-import { AuthService } from '../services/auth.service';
 import { ResponseAlbumDto } from '../dtos/albumes/musics.response.dto';
 import { RequestAlbumDto } from '../dtos/albumes/musics.request.dto';
 
@@ -13,8 +12,11 @@ export class AlbumService {
   constructor(
     private http: HttpClient,
     private backEndRoutes: BackEndRoutesService,
-    private authService: AuthService
   ) {}
+
+
+
+
 
   /**
    * Subir un nuevo álbum con su portada y canciones
@@ -68,6 +70,7 @@ export class AlbumService {
       console.log(`Campo '${key}':`, value);
     });
 
+
     // Hacemos la llamada
     return this.http.post<ResponseAlbumDto>(`${this.backEndRoutes.musicServiceUrl}/album/upload`, formData, { headers });
   }
@@ -85,4 +88,5 @@ export class AlbumService {
   getAlbumsByArtist(ownerId: number): Observable<ResponseAlbumDto[]> {
     return this.http.get<ResponseAlbumDto[]>(`${this.backEndRoutes.musicServiceUrl}/album/artist/${ownerId}`);
   }
+
 }

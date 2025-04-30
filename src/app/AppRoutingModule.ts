@@ -7,6 +7,7 @@ import { BibliotecaComponent } from './pages/biblioteca/biblioteca.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { PerfilComponent } from './pages/perfil/perfil.component';
 import { SubirMusicaComponent } from './pages/subir-musica/subir-musica.component';
+import { AlbumComponent } from './pages/album/album.component'; // Asegúrate de importar correctamente el componente
 import { AuthGuard } from 'src/app/guards/AuthGuard';
 import { RoleGuard } from 'src/app/guards/RoleGuard';
 import {VerificarCuentaComponent} from "./pages/verificar-cuenta/verificar-cuenta.component";
@@ -18,6 +19,10 @@ const routes: Routes = [
   { path: 'explorar', component: ExplorarComponent },
   { path: 'biblioteca', component: BibliotecaComponent },
   { path: 'perfil/:slug', component: PerfilComponent },
+  {
+    path: ':artistSlug/:albumSlug',
+    component: AlbumComponent
+  },
   {
     path: 'subir-musica',
     component: SubirMusicaComponent,

@@ -1,0 +1,57 @@
+.album-container {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.album-cover {
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.album-cover-placeholder {
+  width: 100%;
+  aspect-ratio: 1/1;
+  background-color: #e9ecef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 3rem;
+  color: #6c757d;
+}
+
+.album-description {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.song-number {
+  font-weight: bold;
+  color: #6c757d;
+  min-width: 25px;
+}
+
+.list-group-item {
+  transition: background-color 0.2s;
+}
+
+.list-group-item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.song-actions {
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.list-group-item:hover .song-actions {
+  opacity: 1;
+}
+
+.album-type {
+  font-size: 0.8rem;
+  font-weight: normal;
+}

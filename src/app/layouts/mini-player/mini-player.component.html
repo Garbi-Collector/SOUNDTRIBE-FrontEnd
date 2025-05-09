@@ -1,120 +1,158 @@
 <!-- mini-player.component.html -->
-<div class="mini-player-container" [ngClass]="{'expanded': isExpanded}">
 
-  <!-- Mini Player (Barra inferior) -->
-  <div class="mini-player" *ngIf="!isExpanded">
-    <div class="container-fluid">
-      <div class="row align-items-center">
-        <!-- Información de la canción (izquierda) -->
-        <div class="col-3 d-flex align-items-center song-info">
-          <div class="album-cover">
-            <img src="assets/img/default-album.png" width="100%" height="100%" alt="Portada del álbum" class="img-fluid rounded">
-          </div>
-          <div class="song-details ms-2">
-            <p class="artist-name mb-0">Nombre Artista</p>
-            <p class="song-title mb-0">Título de la canción</p>
-          </div>
+<div class="mini-player-container" [ngClass]="{'expanded': isExpanded}" *ngIf="playerState?.currentSong">
+  <!-- Botón para expandir/contraer -->
+  <div class="expand-toggle" (click)="toggleExpand()">
+    <i class="bi" [ngClass]="isExpanded ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
+  </div>
+
+  <!-- Barra de progreso (siempre visible) -->
+  <div class="progress-container" (click)="seekTo($event)">
+    <div class="progress-bar" [style.width.%]="progressPercentage"></div>
+  </div>
+
+  <!-- Reproductor compacto (siempre visible) -->
+  <div class="player-compact">
+    <!-- Información de la canción -->
+    <div class="song-info" (click)="isExpanded ? null : toggleExpand()">
+      <div class="song-cover" [style.background-image]="'url(' + (playerState?.albumCover || 'assets/img/default-album.png') + ')'"></div>
+      <div class="song-cover placeholder" *ngIf="!playerState?.albumCover">
+        <i class="bi bi-music-note"></i>
+      </div>
+      <div class="song-details">
+        <div class="song-title">{{ playerState?.currentSong?.name }}</div>
+        <div class="song-artist" *ngIf="playerState?.owner">
+          <span class="artist-name" (click)="playerState?.owner && goToArtistProfile(playerState?.owner?.slug); $event.stopPropagation()">
+            {{ playerState?.owner?.username || 'Usuario desconocido' }}
+          </span>
+          <span *ngIf="playerState?.currentSong?.artistasFt && playerState?.currentSong?.artistasFt!.length > 0">
+            ft.
+            <ng-container *ngFor="let artistId of playerState?.currentSong?.artistasFt || []; let last = last">
+              <ng-container *ngFor="let artist of playerState?.featuredArtists || []">
+                <span *ngIf="artist.id === artistId" class="feat-artist"
+                      (click)="goToArtistProfile(artist.slug); $event.stopPropagation()">
+                  {{ artist.username }}<ng-container *ngIf="!last">, </ng-container>
+                </span>
+              </ng-container>
+            </ng-container>
+          </span>
         </div>
+      </div>
+    </div>
 
-        <!-- Controles de reproducción (centro) -->
-        <div class="col-6">
-          <div class="player-controls text-center mb-1">
-            <button class="btn btn-player" (click)="previousTrack()">
-              <i class="bi bi-skip-start-fill"></i>
-            </button>
-            <button class="btn btn-player play-btn" (click)="togglePlay()">
-              <i class="bi" [ngClass]="isPlaying ? 'bi-pause-fill' : 'bi-play-fill'"></i>
-            </button>
-            <button class="btn btn-player" (click)="nextTrack()">
-              <i class="bi bi-skip-end-fill"></i>
-            </button>
-          </div>
+    <!-- Controles de reproducción -->
+    <div class="player-controls">
+      <button type="button" class="control-btn previous" (click)="previousTrack()" [disabled]="loading">
+        <i class="bi bi-skip-start-fill"></i>
+      </button>
+      <button type="button" class="control-btn play-pause" (click)="togglePlay()" [disabled]="loading">
+        <i class="bi" [ngClass]="playerState?.isPlaying ? 'bi-pause-circle-fill' : 'bi-play-circle-fill'"></i>
+      </button>
+      <button type="button" class="control-btn next" (click)="nextTrack()" [disabled]="loading">
+        <i class="bi bi-skip-end-fill"></i>
+      </button>
+    </div>
 
-          <div class="progress-container d-flex align-items-center">
-            <span class="time-elapsed me-2">{{currentTime}}</span>
-            <div class="progress flex-grow-1">
-              <div class="progress-bar"
-                   role="progressbar"
-                   [style.width]="progressPercentage + '%'"
-                   aria-valuenow="25"
-                   aria-valuemin="0"
-                   aria-valuemax="100"></div>
-            </div>
-            <span class="time-total ms-2">{{totalTime}}</span>
-          </div>
-        </div>
-
-        <!-- Acciones adicionales (derecha) -->
-        <div class="col-3 d-flex justify-content-end">
-          <button class="btn btn-action" (click)="toggleLike()">
-            <i class="bi" [ngClass]="isLiked ? 'bi-heart-fill' : 'bi-heart'"></i>
-          </button>
-          <button class="btn btn-action" (click)="dislike()">
-            <i class="bi bi-heartbreak-fill"></i>
-          </button>
-          <button class="btn btn-action expand-btn" (click)="toggleExpand()">
-            <i class="bi" [ngClass]="isExpanded ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
-          </button>
-        </div>
+    <!-- Tiempo y acciones adicionales -->
+    <div class="song-time-actions">
+      <div class="song-time">
+        {{ formatTime(playerState?.currentTime || 0) }} / {{ formatTime(playerState?.duration || 0) }}
+      </div>
+      <div class="song-actions">
+        <!-- Botones de like/dislike -->
+        <button type="button" class="action-btn like" [class.active]="hasLiked" [disabled]="voteLoading" (click)="vote(VoteType.LIKE)">
+          <i class="bi" [ngClass]="hasLiked ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-up'"></i>
+          <span class="vote-count" *ngIf="playerState?.currentSong?.likes">{{ playerState?.currentSong?.likes }}</span>
+        </button>
+        <button type="button" class="action-btn dislike" [class.active]="hasDisliked" [disabled]="voteLoading" (click)="vote(VoteType.DISLIKE)">
+          <i class="bi" [ngClass]="hasDisliked ? 'bi-hand-thumbs-down-fill' : 'bi-hand-thumbs-down'"></i>
+          <span class="vote-count" *ngIf="playerState?.currentSong?.dislikes">{{ playerState?.currentSong?.dislikes }}</span>
+        </button>
       </div>
     </div>
   </div>
 
-    <!-- Modal expandido (cuando se hace clic en el botón de expandir) -->
-    <div class="expanded-player" *ngIf="isExpanded">
-      <div class="container position-relative">
-        <div class="marker-toggle text-center">
-          <button class="btn btn-toggle-marker" (click)="toggleExpand()">
-            <i class="bi bi-chevron-down fs-3"></i>
-          </button>
+  <!-- Reproductor expandido (solo visible cuando se expande) -->
+  <div class="player-expanded" *ngIf="isExpanded">
+    <!-- Información detallada de la canción -->
+    <div class="expanded-info">
+      <div class="expanded-cover" *ngIf="playerState?.albumCover" [style.background-image]="'url(' + playerState?.albumCover + ')'"></div>
+      <div class="expanded-cover placeholder" *ngIf="!playerState?.albumCover">
+        <i class="bi bi-music-note-beamed"></i>
+      </div>
+      <div class="expanded-details">
+        <h3 class="expanded-title">{{ playerState?.currentSong?.name }}</h3>
+        <div class="expanded-artist" *ngIf="playerState?.owner">
+          <span (click)="playerState?.owner && goToArtistProfile(playerState?.owner?.slug)" class="artist-link">
+            {{ playerState?.owner?.username }}
+          </span>
         </div>
-        <div class="row justify-content-center">
-          <div class="col-md-8 col-lg-6">
-            <div class="expanded-content text-center">
-              <div class="album-cover-large">
-                <img src="assets/img/default-album.png" width="100%" height="100%" alt="Portada del álbum" class="img-fluid rounded">
-              </div>
-
-              <h2 class="song-title-large mt-4">Título de la canción</h2>
-              <h3 class="artist-name-large mb-4">Nombre Artista</h3>
-
-              <div class="progress-container-large d-flex align-items-center mb-4">
-                <span class="time-elapsed me-2">{{currentTime}}</span>
-                <div class="progress flex-grow-1">
-                  <div class="progress-bar"
-                       role="progressbar"
-                       [style.width]="progressPercentage + '%'"
-                       aria-valuenow="25"
-                       aria-valuemin="0"
-                       aria-valuemax="100"></div>
-                </div>
-                <span class="time-total ms-2">{{totalTime}}</span>
-              </div>
-
-              <div class="player-controls-large mb-4">
-                <button class="btn btn-player-large" (click)="previousTrack()">
-                  <i class="bi bi-skip-start-fill"></i>
-                </button>
-                <button class="btn btn-player-large play-btn-large" (click)="togglePlay()">
-                  <i class="bi" [ngClass]="isPlaying ? 'bi-pause-fill' : 'bi-play-fill'"></i>
-                </button>
-                <button class="btn btn-player-large" (click)="nextTrack()">
-                  <i class="bi bi-skip-end-fill"></i>
-                </button>
-              </div>
-
-              <div class="additional-actions">
-                <button class="btn btn-action-large" (click)="toggleLike()">
-                  <i class="bi" [ngClass]="isLiked ? 'bi-heart-fill' : 'bi-heart'"></i>
-                </button>
-                <button class="btn btn-action-large" (click)="dislike()">
-                  <i class="bi bi-heartbreak-fill"></i>
-                </button>
-              </div>
-            </div>
+        <!-- Artistas invitados -->
+        <div class="expanded-featured" *ngIf="playerState?.currentSong?.artistasFt && playerState?.currentSong?.artistasFt!.length > 0">
+          <span class="feat-label">ft.</span>
+          <ng-container *ngFor="let artistId of playerState?.currentSong?.artistasFt || []; let last = last">
+            <ng-container *ngFor="let artist of playerState?.featuredArtists || []">
+              <span *ngIf="artist.id === artistId" class="feat-artist artist-link" (click)="goToArtistProfile(artist.slug)">
+                {{ artist.username }}<ng-container *ngIf="!last">, </ng-container>
+              </span>
+            </ng-container>
+          </ng-container>
+        </div>
+        <!-- Información adicional como likes/reproducciones -->
+        <div class="song-stats" *ngIf="playerState?.currentSong">
+          <div class="stat-item">
+            <i class="bi bi-hand-thumbs-up"></i>
+            <span>{{ playerState?.currentSong?.likes || 0 }}</span>
+          </div>
+          <div class="stat-item">
+            <i class="bi bi-hand-thumbs-down"></i>
+            <span>{{ playerState?.currentSong?.dislikes || 0 }}</span>
           </div>
         </div>
+        <!-- Botón para ir al álbum -->
+        <button type="button" class="btn btn-sm btn-outline-primary mt-2" (click)="goToAlbum()">
+          <i class="bi bi-disc"></i> Ver álbum
+        </button>
       </div>
     </div>
 
+    <!-- Controles expandidos (opcional) -->
+    <div class="expanded-controls">
+      <div class="expanded-progress">
+        <div class="time-start">{{ formatTime(playerState?.currentTime || 0) }}</div>
+        <div class="progress-expanded" (click)="seekTo($event)">
+          <div class="progress-bar-expanded" [style.width.%]="progressPercentage"></div>
+        </div>
+        <div class="time-end">{{ formatTime(playerState?.duration || 0) }}</div>
+      </div>
+
+      <div class="main-controls">
+        <button type="button" class="control-btn-large" (click)="previousTrack()" [disabled]="loading">
+          <i class="bi bi-skip-start-fill"></i>
+        </button>
+        <button type="button" class="control-btn-large play-pause-large" (click)="togglePlay()" [disabled]="loading">
+          <i class="bi" [ngClass]="playerState?.isPlaying ? 'bi-pause-circle-fill' : 'bi-play-circle-fill'"></i>
+        </button>
+        <button type="button" class="control-btn-large" (click)="nextTrack()" [disabled]="loading">
+          <i class="bi bi-skip-end-fill"></i>
+        </button>
+      </div>
+
+      <!-- Botones de acción adicionales -->
+      <div class="extra-actions">
+        <button type="button" class="action-btn-large" [class.active]="hasLiked" [disabled]="voteLoading" (click)="vote(VoteType.LIKE)">
+          <i class="bi" [ngClass]="hasLiked ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-up'"></i>
+        </button>
+        <button type="button" class="action-btn-large" [class.active]="hasDisliked" [disabled]="voteLoading" (click)="vote(VoteType.DISLIKE)">
+          <i class="bi" [ngClass]="hasDisliked ? 'bi-hand-thumbs-down-fill' : 'bi-hand-thumbs-down'"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mensaje cuando no hay canción reproduciéndose -->
+<div class="no-song-container" *ngIf="!playerState?.currentSong">
+    <i class="bi bi-music-note-beamed"></i>
+    <p>No hay música reproduciéndose</p>
 </div>

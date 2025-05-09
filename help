@@ -6,13 +6,12 @@ import { UserService } from '../../services/user.service';
 import { NumbersService } from '../../services/numbers.service';
 import { ResponseAlbumDto, ResponseSongDto } from '../../dtos/albumes/musics.response.dto';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import {forkJoin, Observable, of, tap} from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, switchMap, map } from 'rxjs/operators';
 import { VoteType, VoteMessage } from '../../dtos/albumes/songs.dto';
 import { AuthService } from '../../services/auth.service';
 import { ModalService, ModalType } from '../../services/modal.service';
 import { UserGet, UserDescription } from '../../dtos/usuarios/users.dto';
-import { PlayerService } from '../../services/player.service';
 
 @Component({
   selector: 'app-album',
@@ -26,15 +25,15 @@ export class AlbumComponent implements OnInit {
   isLoading = true;
   error: string | null = null;
   isAuthenticated = false;
+
   // Propiedades para las imágenes y datos adicionales
   albumCover: SafeUrl | null = null;
   owner: UserDescription | null = null;
   featuredArtists: UserDescription[] = [];
+
   // Estado para los votos de las canciones
   songVotes: Map<number, VoteType | null> = new Map();
   songVotesLoading: Map<number, boolean> = new Map();
-  // Control de reproducción
-  currentPlayingSongId: number | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -45,8 +44,7 @@ export class AlbumComponent implements OnInit {
     private authService: AuthService,
     private modalService: ModalService,
     public numbersService: NumbersService,
-    private sanitizer: DomSanitizer,
-    private playerService: PlayerService
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
@@ -57,6 +55,7 @@ export class AlbumComponent implements OnInit {
     // Obtener el slug del álbum de la URL
     this.route.paramMap.subscribe(params => {
       this.albumSlug = params.get('albumSlug');
+
       if (this.albumSlug) {
         this.loadAlbumBySlug(this.albumSlug);
       } else {
@@ -64,156 +63,92 @@ export class AlbumComponent implements OnInit {
         this.isLoading = false;
       }
     });
-
-    // Suscribirse al estado del player para conocer la canción actual
-    this.playerService.playerState$.subscribe(state => {
-      this.currentPlayingSongId = state.currentSong?.id || null;
-    });
   }
 
-// Cargar album por slug
+  // Cargar album por slug
   loadAlbumBySlug(slug: string): void {
-    console.log(`[loadAlbumBySlug] Iniciando carga del álbum con slug: ${slug}`);
-    console.time('loadAlbumBySlug');
     this.isLoading = true;
     this.error = null;
-    console.log('[loadAlbumBySlug] Solicitando álbum al servicio...');
-    console.time('getAlbumBySlug');
+
     this.albumService.getAlbumBySlug(slug).pipe(
-      tap(() => {
-        console.timeEnd('getAlbumBySlug');
-        console.log('[loadAlbumBySlug] Álbum obtenido del servicio');
-      }),
       switchMap(album => {
-        console.log('[loadAlbumBySlug] Procesando álbum:', album.name, 'ID:', album.id);
         this.album = album;
+
         // Cargar portada del álbum
-        console.log('[loadAlbumBySlug] Solicitando portada del álbum...');
-        console.time('obtenerPortada');
         const coverObservable = this.songsService.obtenerPortadaPorId(album.id).pipe(
-          tap(() => {
-            console.timeEnd('obtenerPortada');
-            console.log('[loadAlbumBySlug] Portada recibida');
-          }),
           map(blob => {
-            console.log('[loadAlbumBySlug] Creando URL para la portada', { blobSize: blob.size });
             const objectUrl = URL.createObjectURL(blob);
             return this.sanitizer.bypassSecurityTrustUrl(objectUrl);
           }),
           catchError(error => {
-            console.error('[loadAlbumBySlug] Error cargando la portada:', error);
+            console.error('Error cargando la portada:', error);
             return of(null);
           })
         );
-        // Cargar información del propietario
-        console.log('[loadAlbumBySlug] Solicitando datos del propietario ID:', album.owner);
-        console.time('getUserDescription');
+
+        // Cargar información del propietario usando getUserDescription en lugar de getUserById
         const ownerObservable = this.userService.getUserDescription(album.owner).pipe(
-          tap(owner => {
-            console.timeEnd('getUserDescription');
-            console.log('[loadAlbumBySlug] Datos del propietario recibidos:', owner?.username);
-          }),
           catchError(error => {
-            console.error('[loadAlbumBySlug] Error cargando datos del artista:', error);
+            console.error('Error cargando datos del artista:', error);
             return of(null);
           })
         );
+
         // Cargar artistas invitados en las canciones
-        console.log('[loadAlbumBySlug] Procesando artistas invitados...');
         const uniqueFeaturedArtistIds = new Set<number>();
         album.songs.forEach(song => {
           if (song.artistasFt && song.artistasFt.length > 0) {
-            console.log(`[loadAlbumBySlug] Canción "${song.name}" tiene ${song.artistasFt.length} artistas invitados`);
             song.artistasFt.forEach(artistId => uniqueFeaturedArtistIds.add(artistId));
           }
         });
-        console.log(`[loadAlbumBySlug] Total de artistas invitados únicos: ${uniqueFeaturedArtistIds.size}`);
-        console.time('getFeaturedArtists');
+
         const featuredArtistsObservables: Observable<UserDescription | null>[] = [];
+
         uniqueFeaturedArtistIds.forEach(artistId => {
-          console.log(`[loadAlbumBySlug] Solicitando datos del artista invitado ID: ${artistId}`);
           featuredArtistsObservables.push(
             this.userService.getUserDescription(artistId).pipe(
-              tap(artist => {
-                console.log(`[loadAlbumBySlug] Datos del artista ${artistId} recibidos:`, artist?.username);
-              }),
               catchError(error => {
-                console.error(`[loadAlbumBySlug] Error cargando artista con ID ${artistId}:`, error);
+                console.error(`Error cargando artista con ID ${artistId}:`, error);
                 return of(null);
               })
             )
           );
         });
+
         // Inicializar mapas de votos
-        console.log('[loadAlbumBySlug] Inicializando mapas de votos para', album.songs.length, 'canciones');
         album.songs.forEach(song => {
           this.songVotes.set(song.id, null);
           this.songVotesLoading.set(song.id, false);
         });
+
         // Si el usuario está autenticado, cargar los votos actuales
         if (this.isAuthenticated) {
-          console.log('[loadAlbumBySlug] Usuario autenticado, cargando votos...');
-          console.time('loadUserVotes');
           this.loadUserVotes(album.songs);
-        } else {
-          console.log('[loadAlbumBySlug] Usuario no autenticado, omitiendo carga de votos');
         }
 
-        // Crea un observable para los artistas invitados que siempre emite (incluso con array vacío)
-        const featuredArtistsObservable = featuredArtistsObservables.length > 0
-          ? forkJoin(featuredArtistsObservables).pipe(
-            tap(() => console.log('[forkJoin] featuredArtists completado')),
-            tap(() => {
-              console.timeEnd('getFeaturedArtists');
-              console.log('[loadAlbumBySlug] Todos los artistas invitados recibidos');
-            })
-          )
-          : of([]).pipe(
-            tap(() => console.log('[forkJoin] No hay artistas invitados que cargar')),
-            tap(() => {
-              console.timeEnd('getFeaturedArtists');
-              console.log('[loadAlbumBySlug] No hay artistas invitados que procesar');
-            })
-          );
-
-        console.log('[loadAlbumBySlug] Ejecutando forkJoin para todas las solicitudes paralelas');
         return forkJoin({
-          cover: coverObservable.pipe(
-            tap(() => console.log('[forkJoin] coverObservable completado'))
-          ),
-          owner: ownerObservable.pipe(
-            tap(() => console.log('[forkJoin] ownerObservable completado'))
-          ),
-          featuredArtists: featuredArtistsObservable
+          cover: coverObservable,
+          owner: ownerObservable,
+          featuredArtists: forkJoin(featuredArtistsObservables)
         });
       })
     ).subscribe({
       next: (results) => {
-        console.log('[loadAlbumBySlug] Todas las solicitudes completadas correctamente');
         this.albumCover = results.cover;
-        console.log('[loadAlbumBySlug] Portada asignada:', results.cover ? 'Disponible' : 'No disponible');
         this.owner = results.owner;
-        console.log('[loadAlbumBySlug] Propietario asignado:', this.owner?.username);
+
         // Filtrar artistas nulos del resultado
         this.featuredArtists = results.featuredArtists.filter(artist => artist !== null) as UserDescription[];
-        console.log('[loadAlbumBySlug] Artistas invitados procesados:', this.featuredArtists.length);
-        if (this.isAuthenticated) {
-          console.timeEnd('loadUserVotes');
-        }
+
         this.isLoading = false;
-        console.timeEnd('loadAlbumBySlug');
-        console.log('[loadAlbumBySlug] Proceso completado');
       },
       error: (err) => {
-        console.error('[loadAlbumBySlug] Error cargando el álbum:', err);
+        console.error('Error cargando el álbum:', err);
         this.error = 'No se pudo cargar el álbum. Por favor, intenta nuevamente.';
         this.isLoading = false;
-        console.timeEnd('loadAlbumBySlug');
-        console.log('[loadAlbumBySlug] Proceso terminado con error');
       }
     });
   }
-
 
   // Cargar los votos actuales del usuario para cada canción
   loadUserVotes(songs: ResponseSongDto[]): void {
@@ -241,23 +176,11 @@ export class AlbumComponent implements OnInit {
     }
   }
 
-  // Reproducir una canción usando el PlayerService
+  // Funciones para la reproducción de canciones
   playSong(song: ResponseSongDto): void {
-    if (!this.album || !this.albumCover) return;
-
-    // Preparar la cola de reproducción (todas las canciones del álbum)
-    const queue = [...this.album.songs];
-    const currentIndex = queue.findIndex(s => s.id === song.id);
-
-    // Reproducir la canción usando el PlayerService
-    this.playerService.playSong(
-      song,
-      this.albumCover,
-      this.owner,
-      this.featuredArtists,
-      queue,
-      currentIndex
-    );
+    // Aquí añadirías la lógica para reproducir la canción
+    // Esta funcionalidad se implementará más adelante con el miniplayer
+    console.log('Reproduciendo canción:', song.name);
   }
 
   // Función para formatear la duración de la canción
@@ -273,17 +196,21 @@ export class AlbumComponent implements OnInit {
       this.modalService.openModal(ModalType.Auth);
       return;
     }
+
     const currentVote = this.songVotes.get(song.id);
     this.songVotesLoading.set(song.id, true);
+
     const voteMessage: VoteMessage = {
       songId: song.id,
       voteType: voteType
     };
+
     this.songsService.votar(voteMessage).subscribe({
       next: () => {
         // If clicking the same vote type, remove the vote
         if (currentVote === voteType) {
           this.songVotes.set(song.id, null);
+
           // Update counters - decrease the count for the removed vote
           if (voteType === VoteType.LIKE) {
             song.likes = Math.max(0, (song.likes || 1) - 1);
@@ -293,6 +220,7 @@ export class AlbumComponent implements OnInit {
         } else {
           // New vote or changing vote type
           this.songVotes.set(song.id, voteType);
+
           // Update counters
           if (voteType === VoteType.LIKE) {
             song.likes = (song.likes || 0) + 1;
@@ -306,6 +234,7 @@ export class AlbumComponent implements OnInit {
             }
           }
         }
+
         this.songVotesLoading.set(song.id, false);
       },
       error: (err) => {
@@ -324,11 +253,6 @@ export class AlbumComponent implements OnInit {
   likeAlbum(): void {
     // Esta funcionalidad se implementará en el futuro
     console.log('Me gusta álbum:', this.album?.name);
-  }
-
-  // Verificar si una canción está reproduciéndose actualmente
-  isPlaying(songId: number): boolean {
-    return this.currentPlayingSongId === songId && this.playerService.currentState.isPlaying;
   }
 
   protected readonly VoteType = VoteType;

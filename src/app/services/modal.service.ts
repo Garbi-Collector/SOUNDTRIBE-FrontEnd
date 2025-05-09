@@ -6,7 +6,8 @@ export enum ModalType {
   Auth = 'auth',
   ChangePassword = 'changePassword',
   ChangeSlug = 'changeSlug',
-  None = 'none'
+  Notification='Notification',
+  None = 'none',
 }
 
 @Injectable({

@@ -30,6 +30,7 @@ import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {MatButtonModule} from "@angular/material/button";
 import { AlbumComponent } from './pages/album/album.component';
 import { MiniPlayerComponent } from './layouts/mini-player/mini-player.component';
+import { NotificationModalComponent } from './modales/notification-modal/notification-modal.component';
 
 
 
@@ -54,7 +55,8 @@ import { MiniPlayerComponent } from './layouts/mini-player/mini-player.component
     SubirMusicaComponent,
     VerificarCuentaComponent,
     AlbumComponent,
-    MiniPlayerComponent, // Asegúrate de que esté declarado aquí
+    MiniPlayerComponent,
+    NotificationModalComponent, // Asegúrate de que esté declarado aquí
   ],
   imports: [
     BrowserModule,

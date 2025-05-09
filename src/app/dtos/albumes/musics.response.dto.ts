@@ -55,4 +55,5 @@ export interface ResponseAlbumDto {
   owner: number;
   slug: string;
   likeCount: number;
+  duration: number;
 }

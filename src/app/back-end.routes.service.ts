@@ -14,10 +14,7 @@ export class BackEndRoutesService {
   get musicServiceUrl(): string{
     return `${this.baseUrl}:8081`;
   }
-  get commentServiceUrl(): string{
-    return `${this.baseUrl}:8082`;
-  }
-  get commerceServiceUrl(): string{
+  get notificationServiceUrl(): string{
     return `${this.baseUrl}:8083`;
   }
   get searchAnalyticsServiceUrl(): string{

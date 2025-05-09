@@ -72,4 +72,18 @@ export class SongsService {
     const url = `${this.filesUrl}/play/${id}`;
     return this.http.get(url, { responseType: 'blob' }); // para obtener audio como Blob
   }
+
+
+  /**
+   * Convierte segundos a un string en formato "minutos:segundos"
+   * @param segundos
+   * @returns string
+   */
+  formatearDuracion(segundos: number): string {
+    const minutos = Math.floor(segundos / 60);
+    const segundosRestantes = segundos % 60;
+    const segundosFormateados = segundosRestantes < 10 ? '0' + segundosRestantes : segundosRestantes;
+    return `${minutos}:${segundosFormateados}`;
+  }
+
 }

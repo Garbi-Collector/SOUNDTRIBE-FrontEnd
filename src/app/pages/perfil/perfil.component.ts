@@ -165,17 +165,16 @@ export class PerfilComponent implements OnInit {
     });
   }
 
-  // Méto-do para navegar a la página del álbum
-  navigateToAlbum(album: any): void {
-    if (this.slug) {
+// Méto do para navegar a la página del álbum
+  navigateToAlbum(album: ResponseAlbumDto): void {
+    if (album) {
       // Verificar que el álbum tiene un slug
-      if (album && album.slug) {
-        // Navegar usando los slugs del artista y del álbum
-        this.router.navigate(['/', this.slug, album.slug]);
+      if (album.slug) {
+        // Navegar usando la nueva ruta de álbum
+        this.router.navigate(['/album', album.slug]);
       } else {
-        // Si no hay slug disponible, crear uno a partir del nombre
-        const albumSlug = album.name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
-        this.router.navigate(['/', this.slug, albumSlug]);
+        // Si no hay slug disponible, devolver un error o algo mas ameno para decir que el album con ese slug no existe
+        console.log("no tiene un slug disponible el dto del album")
       }
     }
   }

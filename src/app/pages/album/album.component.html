@@ -1,0 +1,113 @@
+<div class="container album-container">
+  <!-- Loading spinner y error -->
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+  <div *ngIf="error" class="alert alert-danger" role="alert">
+    {{ error }}
+  </div>
+  <!-- Contenido del álbum -->
+  <div *ngIf="!isLoading && !error && album" class="album-content">
+    <!-- Cabecera del álbum -->
+    <div class="album-header">
+      <div class="row">
+        <!-- Portada del álbum -->
+        <div class="col-md-4 mb-4">
+          <div class="album-cover-container">
+            <img *ngIf="albumCover" [src]="albumCover" alt="{{ album.name }}" class="img-fluid album-cover">
+            <div *ngIf="!albumCover" class="album-cover-placeholder">
+              <i class="bi bi-music-note-beamed"></i>
+            </div>
+            <div class="album-type-badge">
+              <span class="badge" [ngClass]="{
+                'bg-primary': album.typeAlbum === 'LP',
+                'bg-info': album.typeAlbum === 'EP',
+                'bg-secondary': album.typeAlbum === 'SINGLE'
+              }">{{ album.typeAlbum }}</span>
+            </div>
+          </div>
+        </div>
+        <!-- Información del álbum -->
+        <div class="col-md-8">
+          <div class="album-info">
+            <h1 class="album-title">{{ album.name }}</h1>
+            <!-- Artista principal + featured artists -->
+            <div class="album-artists mb-3">
+              <div class="main-artist" *ngIf="owner" (click)="goToArtistProfile(owner.slug)">
+                <span class="artist-name">{{ owner.username }}</span>
+              </div>
+              <div class="featured-artists" *ngIf="featuredArtists && featuredArtists.length > 0">
+                <span class="featuring-text">ft.</span>
+                <span *ngFor="let artist of featuredArtists; let last = last" class="featured-artist" (click)="goToArtistProfile(artist.slug)">
+                  {{ artist.username }}<ng-container *ngIf="!last">, </ng-container>
+                </span>
+              </div>
+            </div>
+            <!-- Likes y acciones -->
+            <div class="album-actions mb-4">
+              <button class="btn btn-like" (click)="likeAlbum()">
+                <i class="bi bi-heart"></i>
+                <span class="like-count">{{ numbersService.shortenNumber(album.likeCount) }}</span>
+              </button>
+            </div>
+            <!-- Descripción -->
+            <div class="album-description mb-4">
+              <p>{{ album.description }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Lista de canciones -->
+    <div class="songs-section mt-4">
+      <h3 class="section-title mb-3">Canciones</h3>
+      <div class="songs-list">
+        <div class="song-item" *ngFor="let song of album.songs; let i = index" [class.active]="currentPlayingSongId === song.id">
+          <div class="song-index">{{ i + 1 }}</div>
+          <div class="song-play-button" (click)="playSong(song)">
+            <i class="bi" [ngClass]="isPlaying(song.id) ? 'bi-pause-circle-fill' : 'bi-play-circle-fill'"></i>
+          </div>
+          <div class="song-info">
+            <div class="song-title">{{ song.name }}</div>
+            <div class="song-artists">
+              <span *ngIf="owner">{{ owner.username }}</span>
+              <ng-container *ngIf="song.artistasFt && song.artistasFt.length > 0">
+                <span class="featuring-text"> ft. </span>
+                <ng-container *ngFor="let artistId of song.artistasFt; let last = last">
+                  <span *ngFor="let artist of featuredArtists" class="featured-artist" (click)="goToArtistProfile(artist.slug)">
+                    <ng-container *ngIf="artist.id === artistId">
+                      {{ artist.username }}<ng-container *ngIf="!last">, </ng-container>
+                    </ng-container>
+                  </span>
+                </ng-container>
+              </ng-container>
+            </div>
+          </div>
+          <div class="song-duration">
+            {{ songsService.formatearDuracion(song.duration) }}
+          </div>
+          <div class="song-votes">
+            <!-- Like button -->
+            <button class="btn btn-vote"
+                    [class.active]="hasVoted(song, VoteType.LIKE)"
+                    [disabled]="songVotesLoading.get(song.id)"
+                    (click)="vote(song, VoteType.LIKE)">
+              <i class="bi" [ngClass]="hasVoted(song, VoteType.LIKE) ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-up'"></i>
+              <span class="vote-count">{{ numbersService.shortenNumber(song.likes || 0) }}</span>
+            </button>
+            <!-- Dislike button -->
+            <button class="btn btn-vote"
+                    [class.active]="hasVoted(song, VoteType.DISLIKE)"
+                    [disabled]="songVotesLoading.get(song.id)"
+                    (click)="vote(song, VoteType.DISLIKE)">
+              <i class="bi" [ngClass]="hasVoted(song, VoteType.DISLIKE) ? 'bi-hand-thumbs-down-fill' : 'bi-hand-thumbs-down'"></i>
+              <span class="vote-count">{{ numbersService.shortenNumber(song.dislikes || 0) }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

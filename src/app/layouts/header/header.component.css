@@ -15,7 +15,9 @@
   cursor: pointer;
   position: relative;
 }
-
+.notification-container {
+  margin-right: 12px;
+}
 .logo-container {
   position: relative;
   display: inline-block;
@@ -173,7 +175,9 @@
   .search-wrapper.active {
     display: flex;
   }
-
+  .notification-container {
+    margin-right: 8px;
+  }
   .search-container {
     width: 100%;
     max-width: 100%;

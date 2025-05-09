@@ -1,6 +1,10 @@
 <!-- app.component.html -->
 <div class="container-fluid p-0 app-container">
+  <header>
+
   <app-header></app-header>
+  </header>
+
 
   <main class="container-fluid py-3 main-content">
     <router-outlet></router-outlet>
@@ -8,11 +12,14 @@
 
 
   <!--  por aca iria el layer del reproductor-->
-  <app-mini-player></app-mini-player>
 
+  <footer>
+  <app-mini-player></app-mini-player>
   <app-footer></app-footer>
+  </footer>
 
   <!-- Modales -->
   <app-auth-modal *ngIf="modalType === ModalType.Auth"></app-auth-modal>
   <app-change-password *ngIf="modalType === ModalType.ChangePassword"></app-change-password>
+  <app-notification-modal *ngIf="modalType === ModalType.Notification"></app-notification-modal>
 </div>

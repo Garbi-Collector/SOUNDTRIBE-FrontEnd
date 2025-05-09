@@ -78,6 +78,14 @@ export class AlbumService {
 
 
 
+  /**
+   * Obtener un álbum por su slug
+   * @param slug Slug del álbum
+   * @returns Álbum correspondiente al slug
+   */
+  getAlbumBySlug(slug: string): Observable<ResponseAlbumDto> {
+    return this.http.get<ResponseAlbumDto>(`${this.backEndRoutes.musicServiceUrl}/album/slug/${slug}`);
+  }
 
 
   /**

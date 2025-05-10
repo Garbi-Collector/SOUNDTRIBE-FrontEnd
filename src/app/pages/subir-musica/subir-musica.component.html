@@ -17,7 +17,19 @@
                 (click)="changeStep(0)"
                 type="button"
                 style="color: var(--dark-text); border: none; position: relative;">
-          <span class="badge rounded-pill me-2" style="background: var(--gradient-primary);">1</span> Información del Álbum
+          <span class="badge rounded-pill me-2" style="background: var(--gradient-primary);">1</span>
+
+          <div *ngIf="currentStep === 0; else lightText" class="text-dark">
+            Información del Álbum
+          </div>
+
+          <ng-template #lightText>
+            <div class="text-light">
+              Información del Álbum
+            </div>
+          </ng-template>
+
+
           <span *ngIf="currentStep === 0" style="position: absolute; bottom: -1px; left: 0; right: 0; height: 3px; background: var(--gradient-primary);"></span>
         </button>
       </li>
@@ -28,7 +40,18 @@
                 type="button"
                 [disabled]="albumForm.get('albumInfo')?.invalid"
                 style="color: var(--dark-text); border: none; position: relative;">
-          <span class="badge rounded-pill me-2" style="background: var(--gradient-blue);">2</span> Subir Canciones
+          <span class="badge rounded-pill me-2" style="background: var(--gradient-blue);">2</span>
+
+          <div *ngIf="currentStep === 1; else lightText" class="text-dark">
+            Subir Canciones
+          </div>
+
+          <ng-template #lightText>
+            <div class="text-light">
+              Subir Canciones
+            </div>
+          </ng-template>
+
           <span *ngIf="currentStep === 1" style="position: absolute; bottom: -1px; left: 0; right: 0; height: 3px; background: var(--gradient-blue);"></span>
         </button>
       </li>
@@ -39,7 +62,18 @@
                 type="button"
                 [disabled]="albumForm.get('songs')?.invalid"
                 style="color: var(--dark-text); border: none; position: relative;">
-          <span class="badge rounded-pill me-2" style="background: var(--gradient-purple);">3</span> Previsualización
+          <span class="badge rounded-pill me-2" style="background: var(--gradient-purple);">3</span>
+
+          <div *ngIf="currentStep === 2; else lightText" class="text-dark">
+            Previsualización
+          </div>
+
+          <ng-template #lightText>
+            <div class="text-light">
+              Previsualización
+            </div>
+          </ng-template>
+
           <span *ngIf="currentStep === 2" style="position: absolute; bottom: -1px; left: 0; right: 0; height: 3px; background: var(--gradient-purple);"></span>
         </button>
       </li>
@@ -104,7 +138,7 @@
                          style="background-color: var(--dark-component-bg); border: 1px solid var(--dark-border); color: var(--dark-text); border-radius: 0 8px 8px 0;">
                   <input hidden type="file" accept="image/jpeg,image/png" #fileInput (change)="onPortadaSelected($event)">
                 </div>
-                <div class="text-muted small" style="color: var(--dark-text-secondary);">
+                <div class="text-light small" style="color: var(--color-purple);">
                   Formatos: JPG, PNG. Tamaño máximo: 5MB
                 </div>
               </div>
@@ -112,9 +146,11 @@
               <div class="col-md-6">
                 <div *ngIf="portadaPreview" class="portada-preview"
                      style="border: 1px solid var(--dark-border); border-radius: 8px; padding: 8px; box-shadow: var(--shadow-soft);">
-                  <img [src]="portadaPreview" alt="Portada del álbum" class="img-fluid rounded">
+                  <img [src]="portadaPreview" alt="Portada del álbum" class="img-fluid rounded"
+                       style="max-width: 200px; max-height: 200px; object-fit: cover;">
                 </div>
               </div>
+
             </div>
 
             <div class="invalid-feedback d-block" *ngIf="albumForm.get('albumInfo.portada')?.touched && albumForm.get('albumInfo.portada')?.hasError('required')"
@@ -256,7 +292,7 @@
                                      style="background-color: var(--dark-component-bg); border: 1px solid var(--dark-border); color: var(--dark-text); border-radius: 0 8px 8px 0;">
                               <input hidden type="file" accept="audio/wav" #audioInput (change)="onSongFileSelected($event, i)">
                             </div>
-                            <div class="text-muted small" style="color: var(--dark-text-secondary);">
+                            <div class="text-light small" style="color: var(--dark-text-secondary);">
                               Formato: WAV. Tamaño máximo: 45MB
                             </div>
                           </div>

@@ -1,0 +1,24 @@
+footer {
+  position: relative; /* Asegúrate de que no esté fixed o absolute */
+  width: 100%;
+}
+/* Asegúrate de que el body y html ocupen todo el alto de la pantalla */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Esto asegura que el contenido ocupe toda la altura */
+}
+
+.main-content {
+  flex-grow: 1; /* Esto permite que el main crezca si el contenido es más grande */
+}
+
+footer {
+  /* Asegúrate de que el footer esté al final, pero que no tape contenido */
+  position: relative;
+}

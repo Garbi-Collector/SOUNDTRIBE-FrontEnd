@@ -47,8 +47,11 @@
             </div>
             <!-- Likes y acciones -->
             <div class="album-actions mb-4">
-              <button class="btn btn-like" (click)="likeAlbum()">
-                <i class="bi bi-heart"></i>
+              <button class="btn btn-like"
+                      [class.active]="hasLikedAlbum()"
+                      [disabled]="albumLikeLoading"
+                      (click)="likeAlbum()">
+                <i class="bi" [ngClass]="hasLikedAlbum() ? 'bi-heart-fill' : 'bi-heart'"></i>
                 <span class="like-count">{{ numbersService.shortenNumber(album.likeCount) }}</span>
               </button>
             </div>

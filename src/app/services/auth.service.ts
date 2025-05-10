@@ -200,6 +200,22 @@ export class AuthService {
     return localStorage.getItem('auth_token') !== null;
   }
 
+  /**
+   * Verifica si la contraseña proporcionada coincide con la del usuario actual
+   */
+  verifyPassword(password: string): Observable<boolean> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${this.getToken()}`
+    });
+
+    const body = { password };
+
+    return this.http.post<boolean>(`${this.apiUrl}/auth/is-my-password`, body, { headers })
+      .pipe(catchError(this.handleError));
+  }
+
+
 
   /**
    * Méto-do privado para manejar errores en las solicitudes HTTP

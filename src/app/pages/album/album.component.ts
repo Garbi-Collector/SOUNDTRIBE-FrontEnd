@@ -33,6 +33,9 @@ export class AlbumComponent implements OnInit {
   // Estado para los votos de las canciones
   songVotes: Map<number, VoteType | null> = new Map();
   songVotesLoading: Map<number, boolean> = new Map();
+  // Estado para el like del álbum
+  albumLiked: boolean = false;
+  albumLikeLoading: boolean = false;
   // Control de reproducción
   currentPlayingSongId: number | null = null;
 
@@ -71,7 +74,7 @@ export class AlbumComponent implements OnInit {
     });
   }
 
-// Cargar album por slug
+  // Cargar album por slug
   loadAlbumBySlug(slug: string): void {
     console.log(`[loadAlbumBySlug] Iniciando carga del álbum con slug: ${slug}`);
     console.time('loadAlbumBySlug');
@@ -150,13 +153,31 @@ export class AlbumComponent implements OnInit {
           this.songVotes.set(song.id, null);
           this.songVotesLoading.set(song.id, false);
         });
-        // Si el usuario está autenticado, cargar los votos actuales
+
+        let userVotesObservable = of(null);
+        let albumLikedObservable = of(false);
+
+        // Si el usuario está autenticado, cargar los votos actuales y el estado de like del álbum
         if (this.isAuthenticated) {
-          console.log('[loadAlbumBySlug] Usuario autenticado, cargando votos...');
+          console.log('[loadAlbumBySlug] Usuario autenticado, cargando votos y estado del álbum...');
           console.time('loadUserVotes');
-          this.loadUserVotes(album.songs);
+          userVotesObservable = this.loadUserVotes(album.songs);
+
+          // Verificar si el usuario ha dado like al álbum
+          console.time('checkAlbumLiked');
+          albumLikedObservable = this.albumService.isAlbumLiked(album.id).pipe(
+            tap(isLiked => {
+              console.timeEnd('checkAlbumLiked');
+              console.log('[loadAlbumBySlug] Estado de like del álbum:', isLiked);
+              this.albumLiked = isLiked;
+            }),
+            catchError(error => {
+              console.error('[loadAlbumBySlug] Error verificando like del álbum:', error);
+              return of(false);
+            })
+          );
         } else {
-          console.log('[loadAlbumBySlug] Usuario no autenticado, omitiendo carga de votos');
+          console.log('[loadAlbumBySlug] Usuario no autenticado, omitiendo carga de votos y estado de like');
         }
 
         // Crea un observable para los artistas invitados que siempre emite (incluso con array vacío)
@@ -184,7 +205,9 @@ export class AlbumComponent implements OnInit {
           owner: ownerObservable.pipe(
             tap(() => console.log('[forkJoin] ownerObservable completado'))
           ),
-          featuredArtists: featuredArtistsObservable
+          featuredArtists: featuredArtistsObservable,
+          userVotes: userVotesObservable,
+          albumLiked: albumLikedObservable
         });
       })
     ).subscribe({
@@ -214,12 +237,52 @@ export class AlbumComponent implements OnInit {
     });
   }
 
-
   // Cargar los votos actuales del usuario para cada canción
-  loadUserVotes(songs: ResponseSongDto[]): void {
-    // Esta función simula la obtención de votos (deberías implementar este endpoint en el backend)
-    // Aquí puedes agregar la lógica para obtener los votos actuales del usuario
-    // Por ahora, dejaremos los votos como nulos
+  loadUserVotes(songs: ResponseSongDto[]): Observable<any> {
+    console.log('[loadUserVotes] Cargando votos para', songs.length, 'canciones');
+
+    // Crear observables para verificar cada tipo de voto para cada canción
+    const songVoteObservables: Observable<any>[] = [];
+
+    songs.forEach(song => {
+      // Verificar LIKE
+      songVoteObservables.push(
+        this.songsService.isVoted(song.id, VoteType.LIKE).pipe(
+          tap(isLiked => {
+            if (isLiked) {
+              console.log(`[loadUserVotes] Canción ${song.id} tiene LIKE del usuario`);
+              this.songVotes.set(song.id, VoteType.LIKE);
+            }
+          }),
+          catchError(error => {
+            console.error(`[loadUserVotes] Error verificando LIKE para canción ${song.id}:`, error);
+            return of(null);
+          })
+        )
+      );
+
+      // Verificar DISLIKE
+      songVoteObservables.push(
+        this.songsService.isVoted(song.id, VoteType.DISLIKE).pipe(
+          tap(isDisliked => {
+            if (isDisliked) {
+              console.log(`[loadUserVotes] Canción ${song.id} tiene DISLIKE del usuario`);
+              this.songVotes.set(song.id, VoteType.DISLIKE);
+            }
+          }),
+          catchError(error => {
+            console.error(`[loadUserVotes] Error verificando DISLIKE para canción ${song.id}:`, error);
+            return of(null);
+          })
+        )
+      );
+    });
+
+    return songVoteObservables.length > 0
+      ? forkJoin(songVoteObservables).pipe(
+        tap(() => console.log('[loadUserVotes] Todos los votos cargados'))
+      )
+      : of(null);
   }
 
   // Navegar al perfil del artista
@@ -322,8 +385,45 @@ export class AlbumComponent implements OnInit {
 
   // Dar "like" al álbum completo
   likeAlbum(): void {
-    // Esta funcionalidad se implementará en el futuro
-    console.log('Me gusta álbum:', this.album?.name);
+    if (!this.album) {
+      console.error('No se ha cargado el álbum aún.');
+      return;
+    }
+
+    if (!this.isAuthenticated) {
+      this.modalService.openModal(ModalType.Auth);
+      return;
+    }
+
+    this.albumLikeLoading = true;
+
+    this.albumService.likeOrUnlikeAlbum(this.album.id).subscribe({
+      next: (message) => {
+        console.log('Respuesta del backend:', message);
+        // Invertir el estado de like del álbum
+        this.albumLiked = !this.albumLiked;
+
+        // Actualizar el contador de likes del álbum
+        if (this.albumLiked) {
+          this.album!.likeCount = (this.album!.likeCount || 0) + 1;
+        } else {
+          this.album!.likeCount = Math.max(0, (this.album!.likeCount || 1) - 1);
+        }
+
+        this.albumLikeLoading = false;
+      },
+      error: (err) => {
+        console.error('Error al dar like al álbum:', err);
+        this.albumLikeLoading = false;
+      }
+    });
+
+    console.log('Toggle like álbum:', this.album.name);
+  }
+
+  // Verificar si el usuario ha dado like al álbum
+  hasLikedAlbum(): boolean {
+    return this.albumLiked;
   }
 
   // Verificar si una canción está reproduciéndose actualmente

@@ -75,6 +75,27 @@ export class AlbumService {
     return this.http.post<ResponseAlbumDto>(`${this.backEndRoutes.musicServiceUrl}/album/upload`, formData, { headers });
   }
 
+  /**
+   * Hace like o unlike a un álbum por su ID
+   * @param idAlbum ID del álbum
+   * @returns Observable con el mensaje de respuesta del backend
+   */
+  likeOrUnlikeAlbum(idAlbum: number): Observable<string> {
+    const token = localStorage.getItem('auth_token');
+
+    if (!token) {
+      throw new Error('No se encontró el token JWT');
+    }
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    return this.http.post(`${this.backEndRoutes.musicServiceUrl}/album/${idAlbum}/like`, null, {
+      headers,
+      responseType: 'text' // porque el backend devuelve un string
+    });
+  }
 
 
 
@@ -96,5 +117,28 @@ export class AlbumService {
   getAlbumsByArtist(ownerId: number): Observable<ResponseAlbumDto[]> {
     return this.http.get<ResponseAlbumDto[]>(`${this.backEndRoutes.musicServiceUrl}/album/artist/${ownerId}`);
   }
+
+  /**
+   * Verifica si el álbum ya fue likeado por el usuario autenticado
+   * @param idAlbum ID del álbum
+   * @returns `true` si ya le dio like, `false` si no
+   */
+  isAlbumLiked(idAlbum: number): Observable<boolean> {
+    const token = localStorage.getItem('auth_token');
+
+    if (!token) {
+      throw new Error('No se encontró el token JWT');
+    }
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    return this.http.get<boolean>(
+      `${this.backEndRoutes.musicServiceUrl}/album/${idAlbum}/isliked`,
+      { headers }
+    );
+  }
+
 
 }

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { BackEndRoutesService } from "../back-end.routes.service";
-import { VoteMessage } from "../dtos/albumes/songs.dto";
+import { VoteMessage, VoteType } from "../dtos/albumes/songs.dto";
 
 @Injectable({
   providedIn: 'root'
@@ -85,5 +85,27 @@ export class SongsService {
     const segundosFormateados = segundosRestantes < 10 ? '0' + segundosRestantes : segundosRestantes;
     return `${minutos}:${segundosFormateados}`;
   }
+
+
+
+  /**
+   * Verifica si el usuario ya votó una canción con un tipo de voto (LIKE o DISLIKE)
+   * @param songId ID de la canción
+   * @param voteType Tipo de voto (LIKE o DISLIKE)
+   */
+  isVoted(songId: number, voteType: VoteType): Observable<boolean> {
+    const token = localStorage.getItem('auth_token');
+    if (!token) {
+      throw new Error('No se encontró el token JWT');
+    }
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    const url = `${this.votesUrl}/${songId}/isvoted?vote=${voteType}`;
+    return this.http.get<boolean>(url, { headers });
+  }
+
 
 }

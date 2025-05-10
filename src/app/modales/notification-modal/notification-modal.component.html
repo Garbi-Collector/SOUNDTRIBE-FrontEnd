@@ -17,6 +17,7 @@
     <div class="notification-body">
       <ng-container *ngIf="notifications.length > 0; else noNotifications">
         <div *ngFor="let notification of notifications"
+             [class.unread]="!notification.isRead"
              class="notification-item"
              (click)="onNotificationClick(notification)">
           <div class="notification-icon-container">

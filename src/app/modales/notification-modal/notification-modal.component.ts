@@ -1,8 +1,9 @@
 import { Component, OnInit, HostListener } from '@angular/core';
+import { Router } from '@angular/router'; // IMPORTANTE: Importar Router
 import { NotificationGet, NotificationType } from '../../dtos/noti/NotificationsDto';
 import { NotificationService } from '../../services/notification.service';
-import { NotificationRedirectService } from '../../services/notification-redirect.service';
 import { AuthService } from '../../services/auth.service';
+import { forkJoin } from "rxjs";
 
 @Component({
   selector: 'app-notification-modal',
@@ -16,8 +17,8 @@ export class NotificationModalComponent implements OnInit {
 
   constructor(
     private notificationService: NotificationService,
-    private notificationRedirectService: NotificationRedirectService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router // IMPORTANTE: Inyectar Router
   ) {}
 
   ngOnInit(): void {
@@ -59,9 +60,42 @@ export class NotificationModalComponent implements OnInit {
   }
 
   onNotificationClick(notification: NotificationGet): void {
-    // Redirigir basado en el tipo de notificación
-    this.notificationRedirectService.redirectBasedOnNotification(notification);
+    const token = this.authService.getToken();
+    if (!notification.isRead && token) {
+      this.notificationService.markAsRead(notification.id, token).subscribe(() => {
+        notification.isRead = true;
+        this.calculateUnreadCount();
+      });
+    }
+
+    console.log('Slug de notificación:', notification.slug);
+    console.log('Tipo de notificación:', notification.type);
+
+    this.redirectBasedOnNotification(notification);
+
+    // Cerramos el modal después de hacer clic
     this.isOpen = false;
+  }
+
+  redirectBasedOnNotification(notification: NotificationGet): void {
+    if (!notification.slug) {
+      console.error('Slug de notificación no disponible');
+      return;
+    }
+
+    const typesThatGoToProfile = ['DONATION', 'RECORD', 'FOLLOW', 'LIKE_SONG'];
+
+    try {
+      if (typesThatGoToProfile.includes(notification.type)) {
+        console.log('Redirigiendo a perfil:', notification.slug);
+        this.router.navigate(['/perfil', notification.slug]);
+      } else {
+        console.log('Redirigiendo a álbum:', notification.slug);
+        this.router.navigate(['/album', notification.slug]);
+      }
+    } catch (error) {
+      console.error('Error en la redirección:', error);
+    }
   }
 
   getIconForNotificationType(type: NotificationType): string {
@@ -84,16 +118,27 @@ export class NotificationModalComponent implements OnInit {
   }
 
   calculateUnreadCount(): number {
-    // Simplemente contamos todas las notificaciones como no leídas
-    // ya que no tenemos un campo de "leído" en el DTO
-    this.unreadCount = this.notifications.length;
+    this.unreadCount = this.notifications.filter(n => !n.isRead).length;
     return this.unreadCount;
   }
 
   markAllAsRead(): void {
-    // Esto es un placeholder para la función de marcar todas como leídas
-    // En una implementación real, se haría una llamada al backend
-    this.unreadCount = 0;
+    const token = this.authService.getToken();
+    if (!token) return;
+
+    const unreadNotifications = this.notifications.filter(n => !n.isRead);
+    if (unreadNotifications.length === 0) return;
+
+    const requests = unreadNotifications.map(n =>
+      this.notificationService.markAsRead(n.id, token)
+    );
+
+    forkJoin(requests).subscribe({
+      next: () => {
+        this.loadNotifications();
+      },
+      error: err => console.error('Error al marcar como leídas', err)
+    });
   }
 
   @HostListener('document:click', ['$event'])

@@ -173,6 +173,10 @@
   max-width: 220px;
   line-height: 1.4;
 }
+.unread {
+  background-color: #f1f1f1;
+  font-weight: bold;
+}
 
 /* Responsive adjustments */
 @media (max-width: 575.98px) {
@@ -188,6 +192,10 @@
     border-top: 1px solid var(--dark-border);
     border-left: none;
     border-right: none;
+  }
+  .unread {
+    background-color: #f1f1f1;
+    font-weight: bold;
   }
 
   .notification-body {

@@ -12,4 +12,5 @@ export interface NotificationGet {
   message: string;
   slug: string;
   type: NotificationType;
+  isRead: boolean
 }

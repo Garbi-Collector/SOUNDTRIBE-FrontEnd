@@ -60,29 +60,41 @@ export class ChangePasswordComponent implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
 
-    const changePasswordData: ChangePasswordRequestDto = {
-      currentPassword: this.changePasswordForm.value.currentPassword,
-      newPassword: this.changePasswordForm.value.newPassword
-    };
+    const currentPassword = this.changePasswordForm.value.currentPassword;
+    const newPassword = this.changePasswordForm.value.newPassword;
 
-    this.authService.changePassword(changePasswordData).subscribe({
-      next: (response) => {
-        this.isSubmitting = false;
-        this.successMessage = 'Contraseña actualizada correctamente';
-        this.changePasswordForm.reset();
+    this.authService.verifyPassword(currentPassword).subscribe({
+      next: (isPasswordCorrect) => {
+        if (!isPasswordCorrect) {
+          this.isSubmitting = false;
+          this.errorMessage = 'La contraseña actual es incorrecta';
+          return;
+        }
 
-        // Opcional: cerrar el modal después de un tiempo
-        setTimeout(() => {
-          this.closeModal();
-        }, 2000);
+        const changePasswordData: ChangePasswordRequestDto = {
+          currentPassword,
+          newPassword
+        };
+
+        this.authService.changePassword(changePasswordData).subscribe({
+          next: (response) => {
+            this.isSubmitting = false;
+            this.successMessage = 'Contraseña actualizada correctamente';
+            this.changePasswordForm.reset();
+
+            setTimeout(() => {
+              this.closeModal();
+            }, 2000);
+          },
+          error: (error) => {
+            this.isSubmitting = false;
+            this.errorMessage = error.message || 'Ha ocurrido un error al cambiar la contraseña';
+          }
+        });
       },
       error: (error) => {
         this.isSubmitting = false;
-        if (error.status === 401) {
-          this.errorMessage = 'La contraseña actual es incorrecta';
-        } else {
-          this.errorMessage = error.message || 'Ha ocurrido un error al cambiar la contraseña';
-        }
+        this.errorMessage = error.message || 'Error al verificar la contraseña actual';
       }
     });
   }

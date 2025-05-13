@@ -14,7 +14,7 @@
   --dark-border: rgba(128, 128, 255, 0.15);
   --dark-text: #ffffff;
   --dark-text-secondary: rgba(255, 255, 255, 0.7);
-  --dark-component-bg: rgba(255, 255, 255, 0.07);
+  --dark-component-bg: rgb(11, 166, 220);
   --dark-hover: rgba(166, 77, 255, 0.15);
 
   /* Tema Claro */
@@ -70,7 +70,7 @@ body.dark-theme .auth-container .router-outlet-active {
 }
 
 body.dark-theme .auth-container .mat-form-field-appearance-outline .mat-form-field-outline {
-  background-color: var(--dark-component-bg);
+  background-color: var(--dark-component-bg-modal);
 }
 
 body.dark-theme .auth-container .mat-form-field-label {
@@ -227,7 +227,7 @@ body.dark-theme .auth-container {
 }
 
 body.dark-theme .auth-card {
-  background-color: var(--dark-component-bg);
+  background-color: var(--dark-component-bg-modal);
   border: 1px solid var(--dark-border);
   box-shadow: var(--shadow-medium);
 }
@@ -235,7 +235,7 @@ body.dark-theme .auth-card {
 
 body.dark-theme input,
 body.dark-theme label {
-  background-color: var(--dark-component-bg);
+  background-color: var(--dark-component-bg-modal);
   color: var(--dark-text);
   border: 1px solid var(--dark-border);
 }

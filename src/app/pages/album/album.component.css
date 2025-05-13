@@ -7,7 +7,7 @@
 
 /* Estilos para la cabecera del álbum */
 .album-header {
-  background-color: var(--dark-component-bg);
+  background-color: var(--dark-component-bg-modal);
   border-radius: 12px;
   padding: 25px;
   margin-bottom: 30px;
@@ -127,7 +127,7 @@
 
 /* Estilos para la sección de canciones */
 .songs-section {
-  background-color: var(--dark-component-bg);
+  background-color: var(--dark-component-bg-modal);
   border-radius: 12px;
   padding: 25px;
   border: 1px solid var(--dark-border);

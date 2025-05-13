@@ -47,9 +47,19 @@ export class CategoriaService {
    * Endpoint: GET /api/categorias/generos/{generoId}/subgeneros
    */
   getSubgenerosByGeneroId(generoId: number): Observable<ResponseSubgeneroDto[]> {
-    return this.http.get<ResponseSubgeneroDto[]>(`${this.apiUrl}/generos/${generoId}/subgeneros`, {
-      headers: this.getAuthHeaders() // Add headers here
-    }).pipe(catchError(this.handleError));
+    // Asegurarse de que generoId sea un número
+    const id = typeof generoId === 'string' ? parseInt(generoId, 10) : generoId;
+
+    console.log(`Fetching subgenres for genreId: ${id}`); // Log para debugging
+
+    return this.http.get<ResponseSubgeneroDto[]>(`${this.apiUrl}/generos/${id}/subgeneros`, {
+      headers: this.getAuthHeaders()
+    }).pipe(
+      catchError((error) => {
+        console.error(`Error fetching subgenres for genreId ${id}:`, error);
+        return throwError(() => error);
+      })
+    );
   }
 
   /**

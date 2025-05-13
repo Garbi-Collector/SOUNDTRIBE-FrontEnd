@@ -5,37 +5,40 @@
     <span *ngIf="unreadCount > 0" class="notification-badge">{{ unreadCount }}</span>
   </button>
 
-  <div class="notification-dropdown" [class.show]="isOpen" (click)="$event.stopPropagation()">
-    <div class="notification-header">
-      <h6 class="m-0">Notificaciones</h6>
-      <button *ngIf="notifications.length > 0" class="btn btn-link btn-sm p-0 mark-all-read"
-              (click)="markAllAsRead()">
-        <i class="bi bi-check-all"></i> Marcar todo como leído
-      </button>
-    </div>
+  <div class="containernotif">
 
-    <div class="notification-body">
-      <ng-container *ngIf="notifications.length > 0; else noNotifications">
-        <div *ngFor="let notification of notifications"
-             [class.unread]="!notification.isRead"
-             class="notification-item"
-             (click)="onNotificationClick(notification)">
-          <div class="notification-icon-container">
-            <i class="bi" [ngClass]="getIconForNotificationType(notification.type)"></i>
-          </div>
-          <div class="notification-content">
-            <p class="notification-text mb-1">{{ notification.message }}</p>
-            <small class="notification-time">{{ getTimeAgo(notification.id) }}</small>
-          </div>
-        </div>
-      </ng-container>
+    <div class="notification-dropdown" [class.show]="isOpen" (click)="$event.stopPropagation()">
+      <div class="notification-header">
+        <h6 class="m-0">Notificaciones</h6>
+        <button *ngIf="notifications.length > 0" class="btn btn-link btn-sm p-0 mark-all-read"
+                (click)="markAllAsRead()">
+          <i class="bi bi-check-all"></i> Marcar todo como leído
+        </button>
+      </div>
 
-      <ng-template #noNotifications>
-        <div class="no-notifications">
-          <i class="bi bi-bell-slash"></i>
-          <p>No tienes notificaciones aún, intenta conocer artistas de tu gusto :)</p>
-        </div>
-      </ng-template>
+      <div class="notification-body">
+        <ng-container *ngIf="notifications.length > 0; else noNotifications">
+          <div *ngFor="let notification of notifications"
+               [class.unread]="!notification.isRead"
+               class="notification-item"
+               (click)="onNotificationClick(notification)">
+            <div class="notification-icon-container">
+              <i class="bi" [ngClass]="getIconForNotificationType(notification.type)"></i>
+            </div>
+            <div class="notification-content">
+              <p class="notification-text mb-1">{{ notification.message }}</p>
+              <small class="notification-time">{{ getTimeAgo(notification.id) }}</small>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-template #noNotifications>
+          <div class="no-notifications">
+            <i class="bi bi-bell-slash"></i>
+            <p>No tienes notificaciones aún, intenta conocer artistas de tu gusto :)</p>
+          </div>
+        </ng-template>
+      </div>
     </div>
   </div>
 </div>

@@ -6,6 +6,8 @@ import { SongsService } from '../../services/songs.service';
 import { UserService } from '../../services/user.service';
 import { VoteType, VoteMessage } from '../../dtos/albumes/songs.dto';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { ResponseSongDto } from '../../dtos/albumes/musics.response.dto';
+import { UserDescription } from '../../dtos/usuarios/users.dto';
 
 @Component({
   selector: 'app-mini-player',
@@ -171,6 +173,39 @@ export class MiniPlayerComponent implements OnInit, OnDestroy {
         this.router.navigate(['/album', this.playerState.currentSong.id]);
       }
     }
+  }
+
+  // Método para reproducir una canción específica de la queue
+  playSongFromQueue(index: number): void {
+    if (this.loading || !this.playerState?.queue || index === this.playerState.currentIndex) return;
+
+    this.loading = true;
+    const song = this.playerState.queue[index];
+
+    // Reproducir la canción seleccionada usando el PlayerService
+    this.playerService.playSong(
+      song,
+      this.playerState.albumCover,
+      this.playerState.owner,
+      this.playerState.featuredArtists,
+      this.playerState.queue,
+      index
+    );
+
+    setTimeout(() => { this.loading = false; }, 500); // Pequeño delay para evitar múltiples clics rápidos
+  }
+
+  // Obtener la portada del álbum para una canción en la queue
+  getAlbumCoverForSong(song: ResponseSongDto): SafeUrl | null {
+    // En este caso simple retornamos la portada actual,
+    // ya que no tenemos información de portada por cada canción individual
+    return this.albumCoverUrl;
+  }
+
+  // Obtener la información del artista para una canción en la queue
+  getArtistForSong(song: ResponseSongDto): UserDescription | null | undefined {
+    // Si el owner es el mismo para todas las canciones, retornamos el owner actual
+    return this.playerState?.owner;
   }
 
   private updateProgressPercentage(): void {

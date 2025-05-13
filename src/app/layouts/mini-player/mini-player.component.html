@@ -109,6 +109,33 @@
         </button>
       </div>
     </div>
+
+    <!-- Lista de reproducción (queue) -->
+    <div class="queue-container">
+      <h4 class="queue-title">Lista de reproducción</h4>
+      <div class="queue-list scrollable">
+        <div *ngFor="let song of playerState?.queue; let i = index"
+             class="queue-item"
+             [class.active]="i === playerState?.currentIndex"
+             (click)="playSongFromQueue(i)">
+          <div class="queue-item-number">{{ i + 1 }}</div>
+          <div class="queue-item-cover">
+            <div class="queue-cover-img" *ngIf="getAlbumCoverForSong(song)"
+                 [style.background-image]="'url(' + getAlbumCoverForSong(song) + ')'"></div>
+            <div class="queue-cover-placeholder" *ngIf="!getAlbumCoverForSong(song)">
+              <i class="bi bi-music-note"></i>
+            </div>
+          </div>
+          <div class="queue-item-info">
+            <div class="queue-item-title">{{ song.name }}</div>
+            <div class="queue-item-artist">
+              <span *ngIf="getArtistForSong(song)">{{ getArtistForSong(song)?.username }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Controles expandidos -->
     <div class="expanded-controls">
       <div class="expanded-progress">

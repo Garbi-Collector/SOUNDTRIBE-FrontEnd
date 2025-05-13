@@ -48,7 +48,7 @@
 .progress-container {
   width: 100%;
   height: 5px;
-  background-color: var(--dark-component-bg);
+  background-color: var(--dark-component-bg-modal);
   cursor: pointer;
   position: relative;
   margin-bottom: 0;
@@ -89,7 +89,7 @@
   margin-right: 12px;
   background-size: cover;
   background-position: center;
-  background-color: var(--dark-component-bg);
+  background-color: var(--dark-component-bg-modal);
 }
 
 .song-cover.placeholder {
@@ -262,7 +262,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--dark-component-bg);
+  background-color: var(--dark-component-bg-modal);
   color: var(--dark-text-secondary);
   font-size: 40px;
 }
@@ -347,7 +347,7 @@
 .progress-expanded {
   flex-grow: 1;
   height: 6px;
-  background-color: var(--dark-component-bg);
+  background-color: var(--dark-component-bg-modal);
   border-radius: 3px;
   position: relative;
   cursor: pointer;
@@ -383,7 +383,141 @@
   color: var(--color-blue);
   transform: scale(1.1);
 }
+/* Estilos existentes del mini-player (mantener lo que ya tenías) */
 
+/* Estilos para la lista de reproducción (queue) */
+.queue-container {
+  margin-top: 20px;
+  padding: 0 15px;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.queue-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.queue-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.queue-item {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+  cursor: pointer;
+}
+
+.queue-item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.queue-item.active {
+  background-color: rgba(0, 123, 255, 0.1);
+  border-left: 3px solid #007bff;
+}
+
+.queue-item-number {
+  flex: 0 0 20px;
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+}
+
+.queue-item-cover {
+  flex: 0 0 40px;
+  height: 40px;
+  margin: 0 10px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.queue-cover-img {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+}
+
+.queue-cover-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0;
+  color: #999;
+}
+
+.queue-item-info {
+  flex: 1;
+  overflow: hidden;
+}
+
+.queue-item-title {
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.queue-item-artist {
+  font-size: 12px;
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Estilos para la barra de desplazamiento del queue */
+.queue-container::-webkit-scrollbar {
+  width: 4px;
+}
+
+.queue-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.queue-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+/* Estilos para hacer scrollable la lista de reproducción */
+.queue-list.scrollable {
+  max-height: 240px; /* Altura máxima para 4 canciones aproximadamente */
+  overflow-y: auto; /* Habilita el scroll vertical */
+  scrollbar-width: thin; /* Para Firefox */
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent; /* Para Firefox */
+}
+
+/* Estilos para la barra de scroll en navegadores WebKit (Chrome, Safari) */
+.queue-list.scrollable::-webkit-scrollbar {
+  width: 6px;
+}
+
+.queue-list.scrollable::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.queue-list.scrollable::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+
+.queue-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
 .play-pause-large {
   font-size: 40px;
   display: flex;

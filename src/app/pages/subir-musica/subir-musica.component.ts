@@ -96,26 +96,38 @@ export class SubirMusicaComponent implements OnInit {
     this.isLoading = true;
 
     // Cargar géneros
-    this.categoriaService.getAllGeneros().subscribe(generos => {
-      this.generos = generos;
+    this.categoriaService.getAllGeneros().subscribe({
+      next: (generos) => {
+        this.generos = generos;
+        this.isLoading = false;
 
-      // Precargar subgéneros para cada género
-      generos.forEach(genero => {
-        this.categoriaService.getSubgenerosByGeneroId(genero.id).subscribe(
-          subgeneros => this.subgeneros.set(genero.id, subgeneros)
-        );
-      });
+        // No precargar todos los subgéneros automáticamente
+        // Los cargaremos bajo demanda cuando el usuario seleccione un género
+      },
+      error: (error) => {
+        console.error('Error al cargar géneros:', error);
+        this.isLoading = false;
+      }
     });
 
     // Cargar estilos
-    this.categoriaService.getAllEstilos().subscribe(estilos => {
-      this.estilos = estilos;
+    this.categoriaService.getAllEstilos().subscribe({
+      next: (estilos) => {
+        this.estilos = estilos;
+      },
+      error: (error) => {
+        console.error('Error al cargar estilos:', error);
+      }
     });
 
     // Cargar artistas amigos
-    this.userService.getMutualArtistFriends().subscribe(artists => {
-      this.mutualArtistFriends = artists;
-      this.isLoading = false;
+    this.userService.getMutualArtistFriends().subscribe({
+      next: (artists) => {
+        this.mutualArtistFriends = artists;
+      },
+      error: (error) => {
+        console.error('Error al cargar artistas amigos:', error);
+      }
     });
   }
 
@@ -276,12 +288,27 @@ export class SubirMusicaComponent implements OnInit {
   }
 
   onGeneroChange(event: any, index: number): void {
-    const generoId = event.target.value; // Nota: cambiado de event.value a event.target.value para Bootstrap
+    const generoId = parseInt(event.target.value, 10); // Convertir a número para asegurar tipo correcto
     const subgenerosControl = this.songs.at(index).get('subgenero');
 
     // Resetear subgéneros seleccionados
     if (subgenerosControl) {
       subgenerosControl.setValue([]);
+    }
+
+    // Cargar los subgéneros si no están ya en el mapa
+    if (!this.subgeneros.has(generoId)) {
+      this.isLoading = true;
+      this.categoriaService.getSubgenerosByGeneroId(generoId).subscribe({
+        next: (subgeneros) => {
+          this.subgeneros.set(generoId, subgeneros);
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error(`Error al cargar subgéneros para género ${generoId}:`, error);
+          this.isLoading = false;
+        }
+      });
     }
   }
 
@@ -447,4 +474,48 @@ export class SubirMusicaComponent implements OnInit {
     if (!preview || !preview.duration) return 0;
     return (preview.currentTime / preview.duration) * 100;
   }
+
+  // Mapa para rastrear la carga de subgéneros
+  loadingSubgeneros: Map<number, boolean> = new Map();
+
+
+
+
+// Método para obtener subgéneros basados en el ID del género
+  getSubgeneros(generoId: any): ResponseSubgeneroDto[] {
+    if (!generoId) return [];
+
+    // Convertir a número si es necesario
+    const id = typeof generoId === 'string' ? parseInt(generoId, 10) : generoId;
+
+    // Verificar si existe en el mapa
+    if (!this.subgeneros.has(id)) {
+      // Si no está en el mapa, cargar de la API si no está ya cargando
+      if (!this.loadingSubgeneros.get(id)) {
+        this.loadingSubgeneros.set(id, true);
+        this.categoriaService.getSubgenerosByGeneroId(id).subscribe({
+          next: (subgeneros) => {
+            this.subgeneros.set(id, subgeneros);
+            this.loadingSubgeneros.set(id, false);
+          },
+          error: (error) => {
+            console.error(`Error al cargar subgéneros para género ${id}:`, error);
+            this.loadingSubgeneros.set(id, false);
+          }
+        });
+      }
+      return []; // Mientras se carga, devolver array vacío
+    }
+
+    // Devolver los subgéneros del mapa
+    return this.subgeneros.get(id) || [];
+  }
+
+// Verificar si los subgéneros están cargando
+  isLoadingSubgeneros(generoId: any): boolean {
+    if (!generoId) return false;
+    const id = typeof generoId === 'string' ? parseInt(generoId, 10) : generoId;
+    return !!this.loadingSubgeneros.get(id);
+  }
+
 }

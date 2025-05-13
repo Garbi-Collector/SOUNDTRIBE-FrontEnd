@@ -46,7 +46,7 @@
   border-radius: 16px;
   padding: 20px;
   position: relative;
-  background-color: var(--dark-component-bg);
+  background-color: var(--dark-component-bg-modal);
   border: 1px solid var(--dark-border);
   box-shadow: var(--shadow-medium);
   color: var(--dark-text);
@@ -165,18 +165,18 @@
 
 /* Style the options within select */
 .form-select option {
-  background-color: var(--dark-component-bg);
+  background-color: var(--dark-component-bg-modal);
   color: var(--dark-text);
   padding: 10px;
 }
 
 /* Add a custom arrow */
 .input-group .form-select + .input-group-text {
-  background-color: var(--dark-component-bg);
+  background-color: var(--dark-component-bg-modal);
 }
 
 .form-control, .form-select {
-  background-color: var(--dark-component-bg);
+  background-color: var(--dark-component-bg-modal);
   border: 1px solid var(--dark-border);
   color: var(--dark-text);
   border-radius: 8px;
@@ -195,7 +195,7 @@
 }
 
 .input-group-text {
-  background-color: var(--dark-component-bg);
+  background-color: var(--dark-component-bg-modal);
   border: 1px solid var(--dark-border);
   color: var(--dark-text-secondary);
   border-radius: 0 8px 8px 0;
@@ -355,7 +355,7 @@
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background-color: var(--dark-component-bg);
+  background-color: var(--dark-component-bg-modal);
   border: 2px solid var(--dark-border);
   display: flex;
   align-items: center;
@@ -419,11 +419,11 @@
 @-moz-document url-prefix() {
   .form-select {
     color: var(--dark-text);
-    background-color: var(--dark-component-bg);
+    background-color: var(--dark-component-bg-modal);
   }
 
   .form-select option {
-    background-color: var(--dark-component-bg);
+    background-color: var(--dark-component-bg-modal);
     color: var(--dark-text);
   }
 }

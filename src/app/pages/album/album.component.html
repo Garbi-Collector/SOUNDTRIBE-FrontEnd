@@ -98,7 +98,6 @@
                     [disabled]="songVotesLoading.get(song.id)"
                     (click)="vote(song, VoteType.LIKE)">
               <i class="bi" [ngClass]="hasVoted(song, VoteType.LIKE) ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-up'"></i>
-              <span class="vote-count">{{ numbersService.shortenNumber(song.likes || 0) }}</span>
             </button>
             <!-- Dislike button -->
             <button class="btn btn-vote"
@@ -106,7 +105,6 @@
                     [disabled]="songVotesLoading.get(song.id)"
                     (click)="vote(song, VoteType.DISLIKE)">
               <i class="bi" [ngClass]="hasVoted(song, VoteType.DISLIKE) ? 'bi-hand-thumbs-down-fill' : 'bi-hand-thumbs-down'"></i>
-              <span class="vote-count">{{ numbersService.shortenNumber(song.dislikes || 0) }}</span>
             </button>
           </div>
         </div>

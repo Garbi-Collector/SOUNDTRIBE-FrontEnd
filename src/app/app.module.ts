@@ -56,7 +56,7 @@ import { NotificationModalComponent } from './modales/notification-modal/notific
     VerificarCuentaComponent,
     AlbumComponent,
     MiniPlayerComponent,
-    NotificationModalComponent, // Asegúrate de que esté declarado aquí
+    NotificationModalComponent,
   ],
   imports: [
     BrowserModule,

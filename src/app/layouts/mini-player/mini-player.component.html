@@ -52,16 +52,16 @@
         <div class="song-time">
           {{ formatTime(playerState?.currentTime || 0) }} / {{ formatTime(playerState?.duration || 0) }}
         </div>
+
         <div class="song-actions">
           <!-- Botones de like/dislike -->
           <button type="button" class="action-btn like" [class.active]="hasLiked" [disabled]="voteLoading" (click)="vote(VoteType.LIKE)">
             <i class="bi" [ngClass]="hasLiked ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-up'"></i>
-            <span class="vote-count" *ngIf="playerState?.currentSong?.likes">{{ playerState?.currentSong?.likes }}</span>
           </button>
           <button type="button" class="action-btn dislike" [class.active]="hasDisliked" [disabled]="voteLoading" (click)="vote(VoteType.DISLIKE)">
             <i class="bi" [ngClass]="hasDisliked ? 'bi-hand-thumbs-down-fill' : 'bi-hand-thumbs-down'"></i>
-            <span class="vote-count" *ngIf="playerState?.currentSong?.dislikes">{{ playerState?.currentSong?.dislikes }}</span>
           </button>
+
         </div>
       </div>
     </div>
@@ -154,15 +154,6 @@
         </button>
         <button type="button" class="control-btn-large" (click)="nextTrack()" [disabled]="loading">
           <i class="bi bi-skip-end-fill"></i>
-        </button>
-      </div>
-      <!-- Botones de acción adicionales -->
-      <div class="extra-actions">
-        <button type="button" class="action-btn-large" [class.active]="hasLiked" [disabled]="voteLoading" (click)="vote(VoteType.LIKE)">
-          <i class="bi" [ngClass]="hasLiked ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-up'"></i>
-        </button>
-        <button type="button" class="action-btn-large" [class.active]="hasDisliked" [disabled]="voteLoading" (click)="vote(VoteType.DISLIKE)">
-          <i class="bi" [ngClass]="hasDisliked ? 'bi-hand-thumbs-down-fill' : 'bi-hand-thumbs-down'"></i>
         </button>
       </div>
     </div>

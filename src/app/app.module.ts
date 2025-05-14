@@ -31,6 +31,7 @@ import {MatButtonModule} from "@angular/material/button";
 import { AlbumComponent } from './pages/album/album.component';
 import { MiniPlayerComponent } from './layouts/mini-player/mini-player.component';
 import { NotificationModalComponent } from './modales/notification-modal/notification-modal.component';
+import { DonationComponent } from './pages/donation/donation.component';
 
 
 
@@ -57,6 +58,7 @@ import { NotificationModalComponent } from './modales/notification-modal/notific
     AlbumComponent,
     MiniPlayerComponent,
     NotificationModalComponent,
+    DonationComponent,
   ],
   imports: [
     BrowserModule,

@@ -17,7 +17,7 @@ export class BackEndRoutesService {
   get notificationServiceUrl(): string{
     return `${this.baseUrl}:8083`;
   }
-  get searchAnalyticsServiceUrl(): string{
-    return `${this.baseUrl}:8084`;
+  get donationsServiceUrl(): string{
+    return `${this.baseUrl}:8085`;
   }
 }

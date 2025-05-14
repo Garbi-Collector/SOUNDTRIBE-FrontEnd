@@ -32,6 +32,7 @@ import { AlbumComponent } from './pages/album/album.component';
 import { MiniPlayerComponent } from './layouts/mini-player/mini-player.component';
 import { NotificationModalComponent } from './modales/notification-modal/notification-modal.component';
 import { DonationComponent } from './pages/donation/donation.component';
+import { TerminosDonacionComponent } from './modales/terminos-donacion/terminos-donacion.component';
 
 
 
@@ -59,6 +60,7 @@ import { DonationComponent } from './pages/donation/donation.component';
     MiniPlayerComponent,
     NotificationModalComponent,
     DonationComponent,
+    TerminosDonacionComponent,
   ],
   imports: [
     BrowserModule,

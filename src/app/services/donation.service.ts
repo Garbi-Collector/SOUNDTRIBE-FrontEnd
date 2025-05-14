@@ -3,15 +3,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {BackEndRoutesService} from "../back-end.routes.service";
+import {DonationRequest, DonationResponse} from "../dtos/donation/donationDto";
 
-export interface DonationRequest {
-  amount: number;
-}
-
-export interface DonationResponse {
-  initPoint: string;
-  donationId: number;
-}
 
 @Injectable({
   providedIn: 'root'
@@ -27,17 +20,18 @@ export class DonationService {
     this.baseUrl = this.routeService.donationsServiceUrl;
   }
 
-  createDonation(token: string, amount: number): Observable<DonationResponse> {
+
+  donate(request: DonationRequest, token: string): Observable<DonationResponse> {
     const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`
+      'Authorization': `Bearer ${token}`
     });
 
-    const body: DonationRequest = { amount };
-
     return this.http.post<DonationResponse>(
-      `${this.baseUrl}/api/donate`,
-      body,
+      `${this.baseUrl}/donate`,
+      request,
       { headers }
     );
   }
+
+
 }

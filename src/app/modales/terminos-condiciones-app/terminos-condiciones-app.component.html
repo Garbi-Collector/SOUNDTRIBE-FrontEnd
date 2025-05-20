@@ -1,0 +1,68 @@
+<!-- términos-donacion.component.html -->
+<div class="modal-backdrop" (click)="closeModal()"></div>
+<div class="modal-container">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title">Términos y Condiciones de Donación</h5>
+      <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
+    </div>
+    <div class="modal-body">
+      <div class="terms-content">
+
+
+        <h6>1. Aceptación de los Términos</h6>
+        <p>
+          Al registrarse en SOUNDTRIBE, usted acepta estos Términos y Condiciones, y se compromete a respetar las normas y políticas establecidas en esta plataforma.
+        </p>
+
+        <h6>2. Uso de la Plataforma</h6>
+        <p>
+          SOUNDTRIBE es una comunidad para compartir y apoyar proyectos musicales. Usted se compromete a utilizar la plataforma de manera respetuosa, sin publicar contenido ofensivo, ilegal o que infrinja derechos de terceros.
+        </p>
+
+        <h6>3. Protección de Datos Personales</h6>
+        <p>
+          Usted tiene el derecho de decidir y autorizar, de forma libre, previa, expresa e informada, la recolección, uso y tratamiento de sus datos personales para los fines de la plataforma.
+          Los datos personales que usted proporcione serán utilizados para ofrecer y mejorar el servicio, incluyendo análisis estadísticos anónimos sobre la actividad en SOUNDTRIBE.
+          <br><br>
+          No obstante, la información que usted publique en la plataforma podrá ser utilizada para fines estadísticos y analíticos de la misma plataforma, y no podrá ser deshabilitada individualmente.
+          Si usted desea eliminar por completo sus datos personales y su contenido, deberá proceder a eliminar su cuenta, momento en el cual se borrará toda la información vinculada a usted.
+        </p>
+
+        <h6>4. Eliminación de Cuenta y Datos</h6>
+        <p>
+          En caso de que usted decida eliminar su cuenta, SOUNDTRIBE procederá a borrar toda la información personal y el contenido que haya subido a la plataforma, incluyendo su usuario, notificaciones, votos, likes/dislikes y cualquier otro dato asociado. Esta acción es irreversible y se realiza para proteger su privacidad.
+        </p>
+
+
+        <h6>5. Responsabilidades del Usuario</h6>
+        <p>
+          Usted es responsable por la información que proporciona y por el uso que hace de la plataforma. SOUNDTRIBE no se responsabiliza por el contenido generado por los usuarios.
+        </p>
+
+        <h6>6. Modificaciones de los Términos</h6>
+        <p>
+          Puede que hagamos cambios a estos términos en cualquier momento. No es muy común, pero para evitar sorpresas, te aconsejamos echarles un ojo de vez en cuando.
+        </p>
+
+        <h6>7. Contacto</h6>
+        <p>
+          Para consultas sobre estos términos o para ejercer sus derechos sobre sus datos personales, puede contactarnos a través del correo:
+        </p>
+
+        <!--  ACA IRIA EL BOTON O LO QUE FUERE-->
+        <button type="button" class="btn btn-outline-secondary" (click)="copyEmail()">
+          Copiar correo de contacto
+        </button>
+
+        <span *ngIf="copied" style="color: green; margin-left: 10px;">
+          ¡Correo copiado al portapapeles!
+        </span>
+
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-primary" (click)="closeModal()">Aceptar</button>
+    </div>
+  </div>
+</div>

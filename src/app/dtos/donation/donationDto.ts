@@ -6,5 +6,5 @@ export interface DonationResponse {
 
 export interface DonationRequest {
   amount: number;
-  initPoint: string;
+  mensaje: string;
 }

@@ -1,1 +1,100 @@
-<p>donation works!</p>
+<!-- Donation Component -->
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-content">
+      <h2>
+        <i class="fas fa-hand-holding-heart me-2"></i>
+        Hacer una Donación
+      </h2>
+
+      <form [formGroup]="donationForm" (ngSubmit)="onSubmit()">
+        <!-- Opciones de donación -->
+        <div class="form-group">
+          <label class="form-label">Seleccione el monto a donar:</label>
+          <div class="btn-group d-flex flex-wrap gap-2" role="group">
+            <ng-container *ngFor="let option of donationOptions">
+              <button
+                type="button"
+                class="btn"
+                [class.btn-outline-gradient]="donationForm.get('amount')?.value !== option.value"
+                [class.btn-gradient]="donationForm.get('amount')?.value === option.value"
+                (click)="donationForm.get('amount')?.setValue(option.value); onAmountChange(option.value)">
+                <span>{{ option.label }}</span>
+              </button>
+            </ng-container>
+          </div>
+        </div>
+
+        <!-- Input para cantidad personalizada -->
+        <div *ngIf="customAmount" class="form-group">
+          <label class="form-label">Ingrese monto personalizado (mayor a $1000.00):</label>
+          <div class="input-group">
+            <span class="input-group-text">$</span>
+            <input
+              type="number"
+              class="form-control"
+              formControlName="customAmount"
+              placeholder="0.00"
+              step="0.01"
+              min="1000.01">
+          </div>
+          <div *ngIf="donationForm.get('customAmount')?.invalid && donationForm.get('customAmount')?.touched" class="invalid-feedback">
+            <small class="text-light" *ngIf="donationForm.get('customAmount')?.errors?.['min']">El monto debe ser mayor a $1000.00</small>
+            <small class="text-light" *ngIf="donationForm.get('customAmount')?.errors?.['pattern']">El monto debe tener dos decimales</small>
+          </div>
+        </div>
+
+        <!-- Mensaje para notificación -->
+        <div class="form-group">
+          <label class="form-label">Mensaje de donación (máx. 25 caracteres):</label>
+          <textarea
+            class="form-control"
+            formControlName="message"
+            placeholder="Mensaje que verán todos los usuarios"
+            maxlength="25"
+            rows="2"></textarea>
+          <small class="text-info">{{ donationForm.get('message')?.value?.length || 0 }}/25</small>
+        </div>
+
+        <!-- Términos y condiciones -->
+        <div class="form-group">
+          <div class="d-flex align-items-center">
+            <input
+              type="checkbox"
+              class="form-check-input me-2"
+              id="termsAccepted"
+              formControlName="termsAccepted">
+            <label class="form-check-label" for="termsAccepted">
+              Acepto haber leído los <a href="javascript:void(0)" class="text-purple" (click)="openTermsModal()">términos de donación</a>
+            </label>
+          </div>
+          <div *ngIf="donationForm.get('termsAccepted')?.invalid && donationForm.get('termsAccepted')?.touched" class="invalid-feedback">
+            <small>Debe aceptar los términos para continuar</small>
+          </div>
+
+        </div>
+
+        <!-- Mensajes de error/éxito -->
+        <div *ngIf="errorMessage" class="alert alert-danger">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          {{ errorMessage }}
+        </div>
+        <div *ngIf="successMessage" class="alert alert-success">
+          <i class="fas fa-check-circle me-2"></i>
+          {{ successMessage }}
+        </div>
+
+        <!-- Botón de envío -->
+        <div class="form-actions">
+          <button
+            type="submit"
+            class="btn btn-gradient w-100"
+            [disabled]="donationForm.invalid || isSubmitting">
+            <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2 spin" role="status" aria-hidden="true"></span>
+            Realizar Donación
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

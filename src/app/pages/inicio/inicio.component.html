@@ -1,3 +1,215 @@
-<div class="inicio-container">
+<!-- HTML para el componente de albums -->
+<div class="page-container">
+  <!-- SECCIÓN DE ÁLBUMES RECIENTES -->
+  <div class="albums-recientes-container">
+    <!-- Título de la sección con reloj -->
+    <div class="section-header votados-header">
+      <h2 class="section-title">Álbumes Recientes 🕙</h2>
+      <div class="clock">{{ currentTime }}</div>
+    </div>
 
+    <!-- Contenedor de carga y error -->
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+    <div *ngIf="error" class="alert alert-danger" role="alert">
+      {{ error }}
+    </div>
+
+    <!-- Carrusel de álbumes con botones a los lados -->
+    <div *ngIf="!isLoading && !error" class="albums-carousel-wrapper">
+      <!-- Botón izquierdo -->
+      <button class="nav-button prev-button" [disabled]="scrollPosition <= 0" (click)="scrollLeft()">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+
+      <!-- Carrusel de álbumes -->
+      <div class="albums-carousel-container">
+        <div class="albums-carousel" #albumsCarousel (scroll)="onScroll($event)">
+          <div *ngFor="let album of albumesRecientes" class="album-card" (click)="goToAlbum(album.slug)">
+            <div class="album-cover-container">
+              <div *ngIf="!albumCovers.get(album.id)" class="album-cover-placeholder">
+                <i class="bi bi-music-note-beamed"></i>
+              </div>
+              <img *ngIf="albumCovers.get(album.id)" [src]="albumCovers.get(album.id)" [alt]="album.name" class="album-cover">
+              <div class="album-type-badge">
+                <span class="badge" [ngClass]="{
+                  'bg-primary': album.typeAlbum === 'LP',
+                  'bg-info': album.typeAlbum === 'EP',
+                  'bg-secondary': album.typeAlbum === 'SINGLE'
+                }">{{ album.typeAlbum }}</span>
+              </div>
+            </div>
+            <div class="album-info">
+              <h3 class="album-title">{{ album.name }}</h3>
+              <p class="album-songs">{{ album.songs.length }} canciones</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botón derecho -->
+      <button class="nav-button next-button" [disabled]="scrollPosition >= maxScrollPosition" (click)="scrollRight()">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- SECCIÓN DE ÁLBUMES MÁS VOTADOS -->
+  <div class="albums-votados-container">
+    <!-- Título de la sección -->
+    <div class="section-header votados-header">
+      <h2 class="section-title">Álbumes Más Votados ⭐</h2>
+    </div>
+
+    <!-- Contenedor de carga y error -->
+    <div *ngIf="isLoadingVotados" class="loading-container">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+    <div *ngIf="errorVotados" class="alert alert-danger" role="alert">
+      {{ errorVotados }}
+    </div>
+
+    <!-- Carrusel de álbumes con botones a los lados -->
+    <div *ngIf="!isLoadingVotados && !errorVotados" class="albums-carousel-wrapper">
+      <!-- Botón izquierdo -->
+      <button class="nav-button prev-button" [disabled]="scrollPositionVotados <= 0" (click)="scrollLeftVotados()">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+
+      <!-- Carrusel de álbumes votados -->
+      <div class="albums-carousel-container">
+        <div class="albums-carousel" #votedAlbumsCarousel (scroll)="onScrollVotados($event)">
+          <div *ngFor="let album of albumesMasVotados" class="album-card" (click)="goToAlbum(album.slug)">
+            <div class="album-cover-container">
+              <div *ngIf="!albumCovers.get(album.id)" class="album-cover-placeholder">
+                <i class="bi bi-music-note-beamed"></i>
+              </div>
+              <img *ngIf="albumCovers.get(album.id)" [src]="albumCovers.get(album.id)" [alt]="album.name" class="album-cover">
+              <div class="album-type-badge">
+                <span class="badge" [ngClass]="{
+                  'bg-primary': album.typeAlbum === 'LP',
+                  'bg-info': album.typeAlbum === 'EP',
+                  'bg-secondary': album.typeAlbum === 'SINGLE'
+                }">{{ album.typeAlbum }}</span>
+              </div>
+              <!-- Badge para mostrar número de likes -->
+              <div class="likes-badge">
+                <span class="badge bg-danger">
+                  <i class="bi bi-heart-fill"></i> {{ album.likeCount }}
+                </span>
+              </div>
+            </div>
+            <div class="album-info">
+              <h3 class="album-title">{{ album.name }}</h3>
+              <p class="album-songs">{{ album.songs.length }} canciones</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botón derecho -->
+      <button class="nav-button next-button" [disabled]="scrollPositionVotados >= maxScrollPositionVotados" (click)="scrollRightVotados()">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- SECCIÓN DE ÁLBUMES MÁS ESCUCHADOS -->
+  <div class="albums-escuchados-container">
+    <!-- Título de la sección -->
+    <div class="section-header votados-header">
+      <h2 class="section-title">Álbumes Más Escuchados 🎧</h2>
+    </div>
+
+    <!-- Contenedor de carga y error -->
+    <div *ngIf="isLoadingescuchados" class="loading-container">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+    <div *ngIf="errorescuchados" class="alert alert-danger" role="alert">
+      {{ errorescuchados }}
+    </div>
+
+    <!-- Carrusel de álbumes con botones a los lados -->
+    <div *ngIf="!isLoadingescuchados && !errorescuchados" class="albums-carousel-wrapper">
+      <!-- Botón izquierdo -->
+      <button class="nav-button prev-button" [disabled]="scrollPositionEscuchados <= 0" (click)="scrollLeftEscuchados()">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+
+      <!-- Carrusel de álbumes escuchados -->
+      <div class="albums-carousel-container">
+        <div class="albums-carousel" #escuchadosAlbumsCarousel (scroll)="onScrollEscuchados($event)">
+          <div *ngFor="let album of albumesMasescuchados" class="album-card" (click)="goToAlbum(album.slug)">
+            <div class="album-cover-container">
+              <div *ngIf="!albumCovers.get(album.id)" class="album-cover-placeholder">
+                <i class="bi bi-music-note-beamed"></i>
+              </div>
+              <img *ngIf="albumCovers.get(album.id)" [src]="albumCovers.get(album.id)" [alt]="album.name" class="album-cover">
+              <div class="album-type-badge">
+                <span class="badge" [ngClass]="{
+                  'bg-primary': album.typeAlbum === 'LP',
+                  'bg-info': album.typeAlbum === 'EP',
+                  'bg-secondary': album.typeAlbum === 'SINGLE'
+                }">{{ album.typeAlbum }}</span>
+              </div>
+              <!-- Badge para mostrar número de reproducciones -->
+              <div class="plays-badge">
+                <span class="badge bg-success">
+                  <i class="bi bi-headphones"></i> {{ album.allPlaysCount }}
+                </span>
+              </div>
+            </div>
+            <div class="album-info">
+              <h3 class="album-title">{{ album.name }}</h3>
+              <p class="album-songs">{{ album.songs.length }} canciones</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botón derecho -->
+      <button class="nav-button next-button" [disabled]="scrollPositionEscuchados >= maxScrollPositionEscuchados" (click)="scrollRightEscuchados()">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </div>
 </div>
+
+
+
+<!-- FOOTER DE LA PÁGINA CON LÍNEA DIVISORIA -->
+<footer class="app-footer">
+  <!-- Línea divisoria entre el contenido y el footer -->
+  <div class="footer-divider"></div>
+
+  <div class="footer-content">
+    <div class="footer-section">
+      <h4>Sobre la Aplicación</h4>
+      <p>SoundTribe es una plataforma para explorar y escuchar álbumes de música. Busca brindar ayuda a artistas independientes</p>
+    </div>
+    <div class="footer-section">
+      <h4>Contacto del Creador</h4>
+      <p><i class="bi bi-envelope"></i> <a href="mailto:soundtribe.art@gmail.com">soundtribe.art@gmail.com</a></p>
+      <p><i class="bi bi-github"></i> <a href="https://github.com/Garbi-Collector" target="_blank">Garbi-Collector</a></p>
+    </div>
+    <div class="footer-section">
+      <h4>Enlaces Útiles</h4>
+      <ul class="footer-links">
+        <li><a [routerLink]="['/documentacion']" [queryParams]="{section: 'terminos'}"><i class="bi bi-file-text"></i> Términos y Condiciones</a></li>
+        <li><a [routerLink]="['/documentacion']" [queryParams]="{section: 'faq'}"><i class="bi bi-question-circle"></i> Preguntas Frecuentes (FAQ)</a></li>
+        <li><a [routerLink]="['/documentacion']" [queryParams]="{section: 'docs'}"><i class="bi bi-book"></i> Documentación</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2025 SoundTribe. Proyecto licenciado bajo la Licencia MIT.</p>
+    <p class="license-text">Este software es de código abierto. Podés usarlo, modificarlo y distribuirlo libremente bajo los términos de dicha licencia.</p>
+  </div>
+</footer>

@@ -33,6 +33,10 @@ import { MiniPlayerComponent } from './layouts/mini-player/mini-player.component
 import { NotificationModalComponent } from './modales/notification-modal/notification-modal.component';
 import { DonationComponent } from './pages/donation/donation.component';
 import { TerminosDonacionComponent } from './modales/terminos-donacion/terminos-donacion.component';
+import { DonationSuccessComponent } from './pages/donation-success/donation-success.component';
+import { GameComponent } from './pages/game/game.component';
+import { TerminosCondicionesAppComponent } from './modales/terminos-condiciones-app/terminos-condiciones-app.component';
+import { DocumentacionComponent } from './pages/documentacion/documentacion.component';
 
 
 
@@ -61,6 +65,10 @@ import { TerminosDonacionComponent } from './modales/terminos-donacion/terminos-
     NotificationModalComponent,
     DonationComponent,
     TerminosDonacionComponent,
+    DonationSuccessComponent,
+    GameComponent,
+    TerminosCondicionesAppComponent,
+    DocumentacionComponent,
   ],
   imports: [
     BrowserModule,

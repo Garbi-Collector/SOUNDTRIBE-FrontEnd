@@ -1,4 +1,4 @@
-// AppRoutingModule.ts
+// AppRoutingModule.ts (actualizado con ruta de documentación)
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { InicioComponent } from './pages/inicio/inicio.component';
@@ -11,7 +11,10 @@ import { AlbumComponent } from './pages/album/album.component';
 import { AuthGuard } from 'src/app/guards/AuthGuard';
 import { RoleGuard } from 'src/app/guards/RoleGuard';
 import { VerificarCuentaComponent } from "./pages/verificar-cuenta/verificar-cuenta.component";
-import {DonationComponent} from "./pages/donation/donation.component";
+import { DonationComponent } from "./pages/donation/donation.component";
+import { DonationSuccessComponent } from "./pages/donation-success/donation-success.component";
+import { GameComponent } from "./pages/game/game.component";
+import { DocumentacionComponent } from "./pages/documentacion/documentacion.component"; // Importamos el componente de documentación
 
 const routes: Routes = [
   { path: 'verificar-cuenta/:token', component: VerificarCuentaComponent },
@@ -22,6 +25,10 @@ const routes: Routes = [
   { path: 'perfil/:slug', component: PerfilComponent },
   { path: 'album/:albumSlug', component: AlbumComponent },
   { path: 'donation', component: DonationComponent },
+  { path: 'donation/success', component: DonationSuccessComponent },
+  { path: 'game-game-game', component: GameComponent },
+  // Nueva ruta para la documentación
+  { path: 'documentacion', component: DocumentacionComponent },
   {
     path: 'subir-musica',
     component: SubirMusicaComponent,

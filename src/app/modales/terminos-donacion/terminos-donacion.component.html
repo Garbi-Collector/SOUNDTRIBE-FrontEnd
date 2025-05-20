@@ -1,1 +1,83 @@
-<p>terminos-donacion works!</p>
+<!-- términos-donacion.component.html -->
+<div class="modal-backdrop" (click)="closeModal()"></div>
+<div class="modal-container">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title">Términos y Condiciones de Donación</h5>
+      <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
+    </div>
+    <div class="modal-body">
+      <div class="terms-content">
+
+        <h6>1. Generalidades</h6>
+        <p>Bienvenido a <strong>SOUNDTRIBE</strong>, un producto digital proporcionado por <strong>garbi.dev</strong> (la "Compañía", "nosotros" o "nos"). Nos complace ofrecerle acceso a nuestro servicio, sujeto a los siguientes Términos de Donación y a nuestra <a href="#">Política de Privacidad</a>. Al realizar una donación, usted acepta y entiende los presentes términos.</p>
+
+        <h6>2. Permiso para utilizar el Servicio</h6>
+        <p>Al acceder y utilizar el servicio de donaciones, usted confirma que tiene capacidad legal para hacerlo y acepta respetar todas las leyes aplicables. No debe utilizar el servicio con fines fraudulentos, ilegales o malintencionados.</p>
+
+        <h6>3. Descripción del Servicio</h6>
+        <p>Este sistema de donación permite a los usuarios apoyar voluntariamente el desarrollo, mantenimiento y expansión de SOUNDTRIBE. La donación se realiza a través de la plataforma Mercado Pago, en un entorno seguro y confiable.</p>
+
+        <h6>4. Operaciones habilitadas</h6>
+        <ul>
+          <li>Las donaciones son completamente <strong>voluntarias y no reembolsables</strong> bajo ninguna circunstancia.</li>
+          <li>Los fondos recaudados serán destinados exclusivamente al desarrollo, mantenimiento y mejora del proyecto SOUNDTRIBE.</li>
+          <li>Los usuarios podrán incluir un mensaje junto con su donación, el cual deberá respetar las normas de convivencia y decoro.</li>
+          <li>La Compañía se reserva el derecho de eliminar, sin previo aviso, cualquier mensaje que considere ofensivo, inapropiado o contrario a dichas normas.</li>
+          <li>Para realizar una donación, el usuario únicamente deberá contar con conexión a Internet y acceso a la plataforma de pagos Mercado Pago.</li>
+          <li>En caso de no disponer de una cuenta en Mercado Pago, se podrá completar la donación utilizando cualquier tarjeta de crédito o débito aceptada por dicha plataforma.</li>
+          <li>El modelo actual de pagos está sujeto a cambios conforme a las políticas y modalidades que establezca Mercado Pago en el futuro.</li>
+        </ul>
+
+
+        <h6>5. Identificación del Usuario</h6>
+        <p>Durante el proceso de donación podrá requerirse información como nombre, correo electrónico o mensaje personal. Esta información será tratada conforme a nuestra Política de Privacidad. En ningún caso se solicitarán datos sensibles como contraseñas o información bancaria directa.</p>
+
+        <h6>6. Costo del Servicio</h6>
+        <p>
+          La donación es un acto completamente voluntario y libre. No se aplicará ningún cargo adicional por el uso del servicio de donación, excepto por las comisiones propias de la plataforma Mercado Pago.
+          <br><br>
+          Con el fin de mantener la claridad y la transparencia, informamos que el único monto que usted decida aportar será el único costo que verá reflejado.
+          <br><br>
+          Todas las comisiones correspondientes a Mercado Pago serán absorbidas en su totalidad por SOUNDTRIBE (nosotros, el equipo de garbi.dev), por lo que usted no incurrirá en costos extra por ese concepto.
+          <br><br>
+          Este esquema puede estar sujeto a modificaciones según las políticas que Mercado Pago establezca en el futuro.
+        </p>
+
+
+        <h6>7. Vigencia</h6>
+        <p>El usuario puede dejar de usar este servicio en cualquier momento. La Compañía también se reserva el derecho de interrumpir el sistema de donaciones sin previo aviso.</p>
+
+        <h6>8. Validez de las operaciones</h6>
+        <p>Las transacciones confirmadas por la pasarela de pagos se considerarán válidas. SOUNDTRIBE no se hace responsable por errores derivados de operaciones canceladas o rechazadas por la entidad financiera del donante.</p>
+
+        <h6>9. Propiedad Intelectual</h6>
+        <p>
+          SOUNDTRIBE es un proyecto desarrollado por <strong>garbi.dev</strong>. El código fuente del software se encuentra liberado bajo la licencia <strong>MIT</strong>, lo cual permite su uso, modificación y distribución con fines personales o comerciales, siempre que se mantenga el aviso de copyright y la licencia correspondiente.
+          <br><br>
+          Sin embargo, el diseño visual, las imágenes, el nombre SOUNDTRIBE y otros contenidos gráficos y de marca utilizados en esta plataforma están protegidos por la ley 11.723 de Propiedad Intelectual de la República Argentina, y no podrán ser reutilizados sin autorización expresa.
+        </p>
+
+
+        <h6>10. Privacidad de la Información</h6>
+        <p>
+          En SOUNDTRIBE respetamos su privacidad. No almacenamos datos bancarios ni información sensible relacionada a los medios de pago utilizados. Solo se conserva la información mínima necesaria para fines estadísticos y de reconocimiento, como su nombre de usuario, el monto donado y el mensaje opcional que haya decidido incluir como parte de su aporte solidario.
+          <br><br>
+          Toda la información recolectada será protegida y almacenada en servidores seguros, y no será compartida con terceros sin su consentimiento, salvo requerimiento legal. Para más información, consulte nuestra <a href="#">Política de Privacidad</a>.
+        </p>
+
+
+        <h6>11. Agradecimiento</h6>
+        <p>Una vez realizada la donación, garbi.dev podrá contactarlo de forma directa como forma de agradecimiento. Este contacto no requiere respuesta, aunque todo comentario será recibido con gratitud.</p>
+
+        <h6>12. Proceso de Donación</h6>
+        <p>Al enviar el formulario de donación, será redirigido a Mercado Pago. La transacción se completará allí bajo sus términos y políticas de seguridad.</p>
+
+
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-primary" (click)="closeModal()">Aceptar</button>
+    </div>
+  </div>
+</div>

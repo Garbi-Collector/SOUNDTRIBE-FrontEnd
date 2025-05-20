@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ModalService } from '../../services/modal.service';
 
 @Component({
   selector: 'app-terminos-donacion',
@@ -6,5 +7,9 @@ import { Component } from '@angular/core';
   styleUrls: ['./terminos-donacion.component.css']
 })
 export class TerminosDonacionComponent {
+  constructor(private modalService: ModalService) {}
 
+  closeModal(): void {
+    this.modalService.closeModal();
+  }
 }

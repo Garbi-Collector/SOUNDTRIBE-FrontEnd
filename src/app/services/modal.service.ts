@@ -7,6 +7,8 @@ export enum ModalType {
   ChangePassword = 'changePassword',
   ChangeSlug = 'changeSlug',
   Notification='Notification',
+  TermsOfDonation = 'termsOfDonation',
+  TermsAndConditions = 'termsAndConditions',
   None = 'none',
 }
 

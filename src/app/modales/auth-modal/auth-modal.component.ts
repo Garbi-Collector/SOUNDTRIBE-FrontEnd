@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/fo
 import { Router } from '@angular/router';
 import { debounceTime, switchMap, of, catchError } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
-import { ModalService } from '../../services/modal.service';
+import {ModalService, ModalType} from '../../services/modal.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { RegisterRequestDto, LoginRequestDto } from '../../dtos/usuarios/auth.dto';
 
@@ -56,7 +56,8 @@ export class AuthModalComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required],
-      rol: ['OYENTE', Validators.required] // Por defecto 'OYENTE'
+      rol: ['OYENTE', Validators.required],
+      termsAccepted: [false, [Validators.requiredTrue]] // Aceptación de términos y condiciones obligatoria
     }, { validators: this.passwordMatchValidator });
   }
 
@@ -228,6 +229,11 @@ export class AuthModalComponent implements OnInit {
         }
       });
   }
+
+  openTermsModal(): void {
+    this.modalService.openModal(ModalType.TermsAndConditions);
+  }
+
 }
 
 

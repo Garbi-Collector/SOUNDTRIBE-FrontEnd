@@ -116,7 +116,8 @@ export class HeaderComponent implements OnInit, AfterViewInit {
    */
   toggleSearchMobile(event: Event): void {
     event.stopPropagation();
-    this.searchActive = !this.searchActive;
+    this.searchActive = false; // <--- esto activa o desactiva
+
     if (this.searchActive) {
       setTimeout(() => {
         const searchInput = document.querySelector('.search-container input');
@@ -125,9 +126,10 @@ export class HeaderComponent implements OnInit, AfterViewInit {
         }
       }, 100);
     } else {
-      this.clearSearch();
+      this.clearSearch(); // si se cerró, limpia la búsqueda
     }
   }
+
 
   /**
    * Genera la url completa de la imagen del usuario

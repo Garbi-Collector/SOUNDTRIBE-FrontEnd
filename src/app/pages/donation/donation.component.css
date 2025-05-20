@@ -1,0 +1,254 @@
+/* donation.component.css */
+
+/* Reutilizamos los estilos del change-password.component.css */
+.auth-container {
+  width: 100%;
+  max-width: 450px;
+  margin: 30px auto;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.auth-card {
+  border-radius: 16px;
+  padding: 20px;
+  position: relative;
+  background-color: var(--dark-component-bg-modal);
+  border: 1px solid var(--dark-border);
+  box-shadow: var(--shadow-medium);
+  color: var(--dark-text);
+  overflow: hidden;
+}
+
+.auth-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--gradient-primary);
+}
+
+.auth-content {
+  padding: 10px 0;
+}
+
+.auth-content h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: 600;
+  background-image: var(--gradient-primary);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: var(--dark-text);
+  font-size: 0.9rem;
+}
+
+.input-group {
+  position: relative;
+  display: flex;
+}
+
+.form-control {
+  background-color: var(--dark-component-bg-modal);
+  border: 1px solid var(--dark-border);
+  color: var(--dark-text);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  flex-grow: 1;
+}
+
+.form-control:focus {
+  border-color: var(--color-purple);
+  box-shadow: 0 0 0 3px rgba(166, 77, 255, 0.15);
+  outline: none;
+}
+
+.input-group-text {
+  background-color: var(--dark-component-bg-modal);
+  border: 1px solid var(--dark-border);
+  color: var(--dark-text-secondary);
+  border-radius: 8px 0 0 8px;
+  padding: 8px 12px;
+}
+
+.invalid-feedback {
+  display: block;
+  width: 100%;
+  margin-top: 5px;
+  font-size: 12px;
+  color: #dc3545;
+}
+
+/* Estilos para los botones de opción de donación */
+.btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  font-size: 14px;
+  flex: 1 0 auto;
+}
+
+.btn-gradient {
+  border: none;
+  background-image: var(--gradient-primary);
+  color: white;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.btn-gradient::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: var(--gradient-blue);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.btn-gradient:hover::before {
+  opacity: 1;
+}
+
+.btn-gradient:disabled {
+  background-image: linear-gradient(45deg, #999, #777);
+  cursor: not-allowed;
+}
+
+.btn-outline-gradient {
+  background: transparent;
+  border: 2px solid transparent;
+  position: relative;
+  color: var(--dark-text);
+  z-index: 1;
+}
+
+.btn-outline-gradient i,
+.btn-outline-gradient span {
+  position: relative;
+  z-index: 2;
+}
+
+.btn-outline-gradient::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 8px;
+  padding: 2px;
+  background: var(--gradient-primary);
+  -webkit-mask-image: -webkit-linear-gradient(to right, #fff 0%, #fff 100%);
+  -webkit-mask-composite: source-out;
+  mask-composite: exclude;
+  z-index: 0;
+}
+
+.btn-outline-gradient:hover {
+  color: white;
+  background-image: var(--gradient-primary);
+}
+
+.btn-outline-gradient:hover::before {
+  opacity: 0;
+}
+
+.form-actions {
+  margin-top: 20px;
+}
+
+.alert {
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.alert-danger {
+  background-color: rgba(220, 53, 69, 0.15);
+  color: #dc3545;
+  border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+.alert-success {
+  background-color: rgba(40, 167, 69, 0.15);
+  color: #28a745;
+  border: 1px solid rgba(40, 167, 69, 0.3);
+}
+
+input::placeholder {
+  color: #f8f9fa;
+}
+textarea::placeholder {
+  color: #f8f9fa;
+}
+
+
+/* Clase para texto de color morado */
+.text-purple {
+  color: var(--color-purple);
+}
+
+/* Animación de spinner */
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Adaptaciones responsivas */
+@media (max-width: 576px) {
+  .auth-container {
+    max-width: 100%;
+    margin: 10px;
+  }
+
+  .auth-card {
+    padding: 15px;
+  }
+
+  .btn-group {
+    flex-direction: column;
+  }
+}

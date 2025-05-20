@@ -1,0 +1,246 @@
+<!-- HTML para el componente de documentación -->
+<div class="documentation-container">
+  <!-- Sidebar de navegación -->
+  <div class="documentation-sidebar">
+    <div class="sidebar-header">
+      <h3>Documentación</h3>
+    </div>
+    <ul class="sidebar-menu">
+      <li [class.active]="activeSection === 'general'">
+        <a (click)="setActiveSection('general')" [routerLink]="['/documentacion']" [queryParams]="{section: 'general'}">
+          <i class="bi bi-info-circle"></i> Información General
+        </a>
+      </li>
+      <li [class.active]="activeSection === 'docs'">
+        <a (click)="setActiveSection('docs')" [routerLink]="['/documentacion']" [queryParams]="{section: 'docs'}">
+          <i class="bi bi-book"></i> Documentación
+        </a>
+      </li>
+      <li [class.active]="activeSection === 'faq'">
+        <a (click)="setActiveSection('faq')" [routerLink]="['/documentacion']" [queryParams]="{section: 'faq'}">
+          <i class="bi bi-question-circle"></i> Preguntas Frecuentes
+        </a>
+      </li>
+      <li [class.active]="activeSection === 'terminos'">
+        <a (click)="setActiveSection('terminos')" [routerLink]="['/documentacion']" [queryParams]="{section: 'terminos'}">
+          <i class="bi bi-file-text"></i> Términos y Condiciones
+        </a>
+      </li>
+      <li [class.active]="activeSection === 'privacidad'">
+        <a (click)="setActiveSection('privacidad')" [routerLink]="['/documentacion']" [queryParams]="{section: 'privacidad'}">
+          <i class="bi bi-shield-lock"></i> Política de Privacidad
+        </a>
+      </li>
+      <li [class.active]="activeSection === 'contacto'">
+        <a (click)="setActiveSection('contacto')" [routerLink]="['/documentacion']" [queryParams]="{section: 'contacto'}">
+          <i class="bi bi-envelope"></i> Contacto
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="documentation-content">
+    <!-- Sección de información general -->
+    <div *ngIf="activeSection === 'general'" class="doc-section">
+      <h2>Información General</h2>
+      <div class="section-divider"></div>
+      <p>Bienvenido a la documentación de SoundTribe, tu plataforma para descubrir y apoyar a artistas independientes.</p>
+      <p>Explora las diferentes secciones para obtener más información sobre cómo utilizar nuestra plataforma, respuestas a preguntas frecuentes, términos de servicio y más.</p>
+
+      <div class="info-cards">
+        <div class="info-card">
+          <i class="bi bi-music-note-beamed card-icon"></i>
+          <h3>Para Oyentes</h3>
+          <p>Descubre nueva música, crea playlists y apoya a tus artistas favoritos.</p>
+        </div>
+        <div class="info-card">
+          <i class="bi bi-mic card-icon"></i>
+          <h3>Para Artistas</h3>
+          <p>Sube tu música, conecta con fans y monitorea tus estadísticas.</p>
+        </div>
+        <div class="info-card">
+          <i class="bi bi-gear card-icon"></i>
+          <h3>Características</h3>
+          <p>Exploración personalizada, reproductor integrado y mucho más.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección de documentación -->
+    <div *ngIf="activeSection === 'docs'" class="doc-section">
+      <h2>Documentación</h2>
+      <div class="section-divider"></div>
+      <h3>Guía de la plataforma</h3>
+      <p>Esta documentación te ayudará a sacar el máximo provecho de SoundTribe.</p>
+
+      <div class="doc-subsection">
+        <h4>Cómo empezar</h4>
+        <p>Para comenzar a utilizar SoundTribe, sigue estos pasos:</p>
+        <ol>
+          <li>Crea una cuenta o inicia sesión</li>
+          <li>Completa tu perfil</li>
+          <li>Explora la biblioteca de álbumes</li>
+          <li>Guarda tus favoritos en tu biblioteca personal</li>
+        </ol>
+      </div>
+
+      <div class="doc-subsection">
+        <h4>Funcionalidades principales</h4>
+        <ul>
+          <li><strong>Explorar música:</strong> Navega por álbumes recientes, los más votados y los más escuchados.</li>
+          <li><strong>Reproducción:</strong> Escucha álbumes completos o canciones individuales.</li>
+          <li><strong>Biblioteca personal:</strong> Guarda tus álbumes y canciones favoritas.</li>
+          <li><strong>Interacción:</strong> Vota por tus álbumes favoritos y compártelos.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Sección de FAQ -->
+    <div *ngIf="activeSection === 'faq'" class="doc-section">
+      <h2>Preguntas Frecuentes (FAQ)</h2>
+      <div class="section-divider"></div>
+
+      <div class="faq-container">
+        <div class="faq-item">
+          <div class="faq-question" (click)="toggleFaq(1)">
+            <span>¿Cómo puedo crear una cuenta?</span>
+            <i class="bi" [ngClass]="openFaqs.includes(1) ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+          </div>
+          <div class="faq-answer" [ngClass]="{'open': openFaqs.includes(1)}">
+            <p>
+              Para crear una cuenta, haz clic en el boton en la esquina superior derecha, lo reconocera por una imagen de un usuario griz tipica. Te ofrecera dos opciones:
+            </p>
+            <ul>
+              <li>Iniciar Sesion</li>
+              <li>Crear cuenta</li>
+            </ul>
+            <p>
+              Complete el formulario con su información y siga las instrucciones para verificar su cuenta a través del correo electrónico que le enviaremos.
+            </p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" (click)="toggleFaq(2)">
+            <span>¿Cómo puedo subir mi música?</span>
+            <i class="bi" [ngClass]="openFaqs.includes(2) ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+          </div>
+          <div class="faq-answer" [ngClass]="{'open': openFaqs.includes(2)}">
+            <p>
+              Para subir música, debes tener una cuenta de artista. Una vez que has iniciado sesión como artista, ve al icono de tu imagen de perfil, te apareceran varias opciones entra las cuales: "Subir Música" y sigue las instrucciones para crear un álbum y subir tus canciones.
+            </p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" (click)="toggleFaq(3)">
+            <span>¿Es gratuito usar SoundTribe?</span>
+            <i class="bi" [ngClass]="openFaqs.includes(3) ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+          </div>
+          <div class="faq-answer" [ngClass]="{'open': openFaqs.includes(3)}">
+            <p>
+              Sí, SoundTribe es completamente gratuito tanto para oyentes como para artistas. Mantenemos la plataforma mediante donaciones voluntarias que puedes realizar en la sección
+              <a routerLink="/donation" class="donation-link">Donation</a>.
+            </p>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección de términos y condiciones -->
+    <div *ngIf="activeSection === 'terminos'" class="doc-section">
+      <h2>Términos y Condiciones</h2>
+      <div class="section-divider"></div>
+
+      <div class="terms-content">
+        <p>Última actualización: 20 de Mayo 2025</p>
+
+
+        <h6>1. Aceptación de los Términos</h6>
+        <p>
+          Al registrarse en SOUNDTRIBE, usted acepta estos Términos y Condiciones, y se compromete a respetar las normas y políticas establecidas en esta plataforma.
+        </p>
+
+        <h6>2. Uso de la Plataforma</h6>
+        <p>
+          SOUNDTRIBE es una comunidad para compartir y apoyar proyectos musicales. Usted se compromete a utilizar la plataforma de manera respetuosa, sin publicar contenido ofensivo, ilegal o que infrinja derechos de terceros.
+        </p>
+
+        <h6>3. Protección de Datos Personales</h6>
+        <p>
+          Usted tiene el derecho de decidir y autorizar, de forma libre, previa, expresa e informada, la recolección, uso y tratamiento de sus datos personales para los fines de la plataforma.
+          Los datos personales que usted proporcione serán utilizados para ofrecer y mejorar el servicio, incluyendo análisis estadísticos anónimos sobre la actividad en SOUNDTRIBE.
+          <br><br>
+          No obstante, la información que usted publique en la plataforma podrá ser utilizada para fines estadísticos y analíticos de la misma plataforma, y no podrá ser deshabilitada individualmente.
+          Si usted desea eliminar por completo sus datos personales y su contenido, deberá proceder a eliminar su cuenta, momento en el cual se borrará toda la información vinculada a usted.
+        </p>
+
+        <h6>4. Eliminación de Cuenta y Datos</h6>
+        <p>
+          En caso de que usted decida eliminar su cuenta, SOUNDTRIBE procederá a borrar toda la información personal y el contenido que haya subido a la plataforma, incluyendo su usuario, notificaciones, votos, likes/dislikes y cualquier otro dato asociado. Esta acción es irreversible y se realiza para proteger su privacidad.
+        </p>
+
+
+        <h6>5. Responsabilidades del Usuario</h6>
+        <p>
+          Usted es responsable por la información que proporciona y por el uso que hace de la plataforma. SOUNDTRIBE no se responsabiliza por el contenido generado por los usuarios.
+        </p>
+
+        <h6>6. Modificaciones de los Términos</h6>
+        <p>
+          Puede que hagamos cambios a estos términos en cualquier momento. No es muy común, pero para evitar sorpresas, te aconsejamos echarles un ojo de vez en cuando.
+        </p>
+
+        <h6>7. Contacto</h6>
+        <p>
+          Para consultas sobre estos términos o para ejercer sus derechos sobre sus datos personales, puede contactarnos a través del correo:
+        </p>
+
+        <!--  ACA IRIA EL BOTON O LO QUE FUERE-->
+        <button type="button" class="btn btn-outline-secondary" (click)="copyEmail()">
+          Copiar correo de contacto
+        </button>
+
+        <span *ngIf="copied" style="color: green; margin-left: 10px;">
+          ¡Correo copiado al portapapeles!
+        </span>
+      </div>
+    </div>
+
+    <!-- Sección de política de privacidad -->
+    <div *ngIf="activeSection === 'privacidad'" class="doc-section">
+      <h2>Política de Privacidad</h2>
+      <div class="section-divider"></div>
+
+      <p>En SoundTribe, respetamos tu privacidad y nos comprometemos a proteger tus datos personales.</p>
+
+      <h3>Información que recopilamos</h3>
+      <p>Recopilamos información básica como tu nombre, dirección de correo electrónico y preferencias musicales para proporcionarte una experiencia personalizada.</p>
+
+      <h3>Cómo utilizamos tu información</h3>
+      <p>Utilizamos tu información para mejorar nuestros servicios, personalizar tu experiencia y comunicarnos contigo sobre actualizaciones o promociones.</p>
+
+      <h3>Compartir información</h3>
+      <p>No vendemos ni compartimos tu información personal con terceros sin tu consentimiento, excepto cuando sea necesario para proporcionar nuestros servicios o cumplir con requisitos legales.</p>
+
+      <h3>Seguridad de datos</h3>
+      <p>Implementamos medidas de seguridad técnicas y organizativas para proteger tus datos personales contra accesos no autorizados o pérdida.</p>
+    </div>
+
+    <!-- Sección de contacto -->
+    <div *ngIf="activeSection === 'contacto'" class="doc-section">
+      <h2>Contacto</h2>
+      <div class="section-divider"></div>
+
+      <p>Si tienes preguntas, sugerencias o necesitas asistencia, no dudes en contactarnos:</p>
+
+      <div class="contact-info">
+        <p><i class="bi bi-envelope"></i> Email: <a href="mailto:soundtribe.art@gmail.com">soundtribe.art@gmail.com</a></p>
+        <p><i class="bi bi-github"></i> GitHub: <a href="https://github.com/Garbi-Collector" target="_blank">Garbi-Collector</a></p>
+      </div>
+
+    </div>
+  </div>
+</div>

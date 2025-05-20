@@ -1,17 +1,389 @@
-.inicio-container {
-  max-width: 1200px;
-  margin: 0 auto;
+/* Estilos para los componentes de álbumes */
+
+/* Contenedor principal de la página */
+.page-container {
   padding: 20px;
 }
 
-
-.welcome-section h1 {
-  font-size: 2rem;
-  color: #ffffff;
-  margin-bottom: 1rem;
+/* Contenedor de cada sección de álbumes */
+.albums-recientes-container,
+.albums-votados-container,
+.albums-escuchados-container {
+  padding: 20px 0;
+  margin-bottom: 50px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.welcome-section p {
+/* Estilos para el encabezado de las secciones */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 0 10px;
+}
+
+.votados-header {
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.escuchados-header {
+  background-color: rgba(0, 60, 0, 0.1);
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.section-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+  color: #ffffff; /* Título en blanco */
+}
+
+/* Reloj */
+.clock {
+  font-size: 18px;
+  font-weight: 500;
+  color: #ffffff;
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 5px 12px;
+  border-radius: 20px;
+}
+
+/* Botones de navegación */
+.nav-button {
+  background-color: rgba(240, 240, 240, 0.7);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.nav-button:hover:not(:disabled) {
+  background-color: #e0e0e0;
+}
+
+.nav-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Contenedor del carrusel con navegación */
+.albums-carousel-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+}
+
+/* Contenedor del carrusel */
+.albums-carousel-container {
+  position: relative;
+  overflow: hidden;
+  padding: 5px;
+  width: 90%; /* Hace que el carrusel ocupe menos ancho para dejar espacio a los botones */
+  max-width: 1000px; /* Limitar el ancho máximo para centrar mejor */
+  margin: 0 auto;
+}
+
+.albums-carousel {
+  display: flex;
+  gap: 16px;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  padding: 10px 5px;
+  -ms-overflow-style: none;  /* Ocultar scrollbar en IE y Edge */
+  scrollbar-width: none;  /* Ocultar scrollbar en Firefox */
+}
+
+/* Ocultar scrollbar en Chrome y Safari */
+.albums-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+/* Tarjeta de álbum */
+.album-card {
+  min-width: 180px;
+  max-width: 180px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.album-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Contenedor de la portada */
+.album-cover-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1/1;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #f5f5f5;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.album-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.album-card:hover .album-cover {
+  transform: scale(1.05);
+}
+
+.album-cover-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.album-cover-placeholder i {
+  font-size: 48px;
+  color: #aaa;
+}
+
+/* Badge de tipo de álbum */
+.album-type-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+/* Badge de likes */
+.likes-badge {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}
+
+/* Badge de reproducciones */
+.plays-badge {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}
+
+.likes-badge .badge,
+.plays-badge .badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+}
+
+.badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+/* Información del álbum */
+.album-info {
+  padding: 12px 5px;
+}
+
+.album-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 5px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.album-songs {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+}
+
+/* Contenedor de carga */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  padding: 30px 0;
+}
+
+/* Estilos responsive */
+@media (max-width: 768px) {
+  .album-card {
+    min-width: 150px;
+    max-width: 150px;
+  }
+
+  .section-title {
+    font-size: 20px;
+  }
+
+  .albums-carousel-container {
+    width: 80%;
+  }
+
+  .nav-button {
+    width: 34px;
+    height: 34px;
+  }
+}
+
+/* Estilos para el Footer */
+.app-footer {
+  background-color: #121212;
+  color: #f5f5f5;
+  padding: 0;
+  margin-top: 3rem;
+  width: 100%;
+}
+
+/* Línea divisoria entre el contenido y el footer */
+.footer-divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, #666, transparent);
+  margin-bottom: 2rem;
+}
+
+.footer-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding: 1.5rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-section {
+  flex: 1 1 300px;
+  margin-bottom: 1.5rem;
+  padding: 0 1rem;
+}
+
+.footer-section h4 {
+  color: #1db954; /* Color verde de Spotify como referencia */
+  margin-bottom: 1rem;
+  font-weight: 600;
   font-size: 1.1rem;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.footer-section h4::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 40px;
+  height: 2px;
+  background-color: #1db954;
+}
+
+.footer-section p {
   color: #b3b3b3;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links li {
+  margin-bottom: 0.7rem;
+}
+
+.footer-links a {
+  color: #b3b3b3;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+}
+
+.footer-links a i {
+  margin-right: 8px;
+}
+
+.footer-links a:hover {
+  color: #1db954;
+  text-decoration: none;
+}
+
+.footer-section a {
+  color: #b3b3b3;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-section a:hover {
+  color: #1db954;
+  text-decoration: none;
+}
+
+.footer-section i {
+  margin-right: 8px;
+}
+
+.footer-bottom {
+  background-color: #0a0a0a;
+  padding: 1rem 2rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #888;
+  border-top: 1px solid #222;
+}
+
+.license-text {
+  margin-top: 0.3rem;
+  font-size: 0.75rem;
+  color: #666;
+}
+
+
+@media (max-width: 576px) {
+  .album-card {
+    min-width: 130px;
+    max-width: 130px;
+  }
+
+  .section-title {
+    font-size: 18px;
+  }
+
+  .clock {
+    font-size: 14px;
+  }
+
+  .albums-carousel-wrapper {
+    gap: 5px;
+  }
+
+  .footer-content {
+    flex-direction: column;
+  }
+
+  .footer-section {
+    margin-bottom: 2rem;
+  }
+
 }

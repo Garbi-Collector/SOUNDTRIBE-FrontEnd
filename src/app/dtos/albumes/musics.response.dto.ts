@@ -16,16 +16,16 @@ export interface ResponseGeneroDto {
   description: string;
 }
 
-export interface ResponsePortadaDto {
-  id: number;
-  fileName: string;
-  fileUrl: string;
-}
-
 export enum TypeAlbum {
   EP = 'EP',
   LP = 'LP',
   SINGLE = 'SINGLE'
+}
+
+export interface ResponsePortadaDto {
+  id: number;
+  fileName: string;
+  fileUrl: string; //url para buscarlo
 }
 
 export interface ResponseSongDto {
@@ -42,6 +42,7 @@ export interface ResponseSongDto {
   artistasFt: number[];
   likes: number;  // Número de likes
   dislikes: number;  // Número de dislikes
+  playCount: number;
 }
 
 
@@ -56,4 +57,5 @@ export interface ResponseAlbumDto {
   slug: string;
   likeCount: number;
   duration: number;
+  allPlaysCount: number;
 }

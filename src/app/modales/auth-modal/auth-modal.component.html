@@ -185,6 +185,24 @@
               {{ registerSuccessMessage }}
             </div>
 
+            <!-- Términos y condiciones -->
+            <div class="form-group mb-3">
+              <div class="d-flex align-items-center">
+                <input
+                  type="checkbox"
+                  class="form-check-input me-2"
+                  id="termsAccepted"
+                  formControlName="termsAccepted">
+                <label class="form-check-label" for="termsAccepted">
+                  Acepto los <a href="javascript:void(0)" class="text-purple" (click)="openTermsModal()">términos y condiciones</a>
+                </label>
+              </div>
+              <div *ngIf="registerForm.get('termsAccepted')?.invalid && registerForm.get('termsAccepted')?.touched" class="invalid-feedback d-block">
+                Debes aceptar los términos y condiciones para continuar
+              </div>
+            </div>
+
+
             <div class="form-actions">
               <button class="btn btn-gradient" type="submit" [disabled]="registerForm.invalid || registerLoading">
                 <span *ngIf="registerLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>

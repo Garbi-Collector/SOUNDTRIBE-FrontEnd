@@ -27,7 +27,7 @@ export class DonationService {
     });
 
     return this.http.post<DonationResponse>(
-      `${this.baseUrl}/donate`,
+      `${this.baseUrl}/api/donate`,
       request,
       { headers }
     );

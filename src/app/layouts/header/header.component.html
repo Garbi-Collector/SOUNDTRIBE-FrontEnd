@@ -2,10 +2,17 @@
 <nav class="navbar navbar-dark bg-dark">
   <div class="container-fluid">
 
-    <!--  Logo que controla el tema   -->
-    <a
-      class="navbar-brand logo-theme-toggle"
-      [routerLink]="['/donation']">
+    <!-- Logo cuando NO está autenticado -->
+    <div *ngIf="!isAuthenticated" class="navbar-brand logo-theme-toggle">
+      <div class="logo-container">
+        <img src="assets/logo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
+      </div>
+    </div>
+
+    <!-- Logo cuando SÍ está autenticado -->
+    <a *ngIf="isAuthenticated"
+       class="navbar-brand logo-theme-toggle"
+       [routerLink]="['/donation']">
       <div class="logo-container">
         <img src="assets/logo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
       </div>

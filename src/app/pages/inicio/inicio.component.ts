@@ -6,7 +6,8 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { HomeService } from '../../services/home.service';
 import { SongsService } from '../../services/songs.service';
-import { ResponseAlbumDto } from '../../dtos/albumes/musics.response.dto';
+import {ResponseAlbumDto, ResponseSongDto} from '../../dtos/albumes/musics.response.dto';
+import {PlayerService} from "../../services/player.service";
 
 @Component({
   selector: 'app-inicio',
@@ -18,6 +19,7 @@ export class InicioComponent implements OnInit {
   @ViewChild('albumsCarousel') albumsCarousel!: ElementRef;
   @ViewChild('votedAlbumsCarousel') votedAlbumsCarousel!: ElementRef;
   @ViewChild('escuchadosAlbumsCarousel') escuchadosAlbumsCarousel!: ElementRef;
+  @ViewChild('onFireCancionesCarousel') onFireCancionesCarousel!: ElementRef;
 
   // Propiedades para el carrusel de álbumes recientes
   albumesRecientes: ResponseAlbumDto[] = [];
@@ -35,6 +37,12 @@ export class InicioComponent implements OnInit {
   isLoadingescuchados = true;
   errorescuchados: string | null = null;
 
+  // Propiedades para el carrusel de canciones onfire
+  cancionesOnfire: ResponseSongDto[] = [];
+  AlbumesByOnfire: ResponseAlbumDto[] = [];
+  isLoadingOnfire = true;
+  errorOnfire: string | null = null;
+
   // Control de scroll para álbumes recientes
   scrollPosition = 0;
   maxScrollPosition = 0;
@@ -48,12 +56,17 @@ export class InicioComponent implements OnInit {
   scrollPositionEscuchados = 0;
   maxScrollPositionEscuchados = 0;
 
+  // Control de scroll para canciones onfire
+  scrollPositionOnfire = 0;
+  maxScrollPositionOnfire = 0;
+
   // Para el reloj
   currentTime: string = '';
 
   constructor(
     private homeService: HomeService,
     private songsService: SongsService,
+    private playerService: PlayerService,
     private router: Router,
     private sanitizer: DomSanitizer
   ) {}
@@ -157,6 +170,81 @@ export class InicioComponent implements OnInit {
         console.error('[cargarAlbumesMasEscuchados] Error al cargar álbumes más escuchados:', err);
         this.errorescuchados = 'No se pudieron cargar los álbumes más escuchados. Por favor, intenta nuevamente.';
         this.isLoadingescuchados = false;
+      }
+    });
+  }
+
+  /**
+   * Carga las canciones onfire desde el servicio y sus álbumes correspondientes
+   */
+  cargarCancionesOnfire(): void {
+    console.log('[cargarCancionesOnfire] Iniciando carga de canciones onfire');
+    this.isLoadingOnfire = true;
+    this.errorOnfire = null;
+
+    this.homeService.getCancionesOnFire().subscribe({
+      next: (canciones) => {
+        console.log(`[cargarCancionesOnfire] ${canciones.length} canciones onfire recibidas`);
+        this.cancionesOnfire = canciones;
+
+        // Una vez que tenemos las canciones, obtenemos los álbumes correspondientes
+        this.cargarAlbumesDeCanciones(canciones);
+      },
+      error: (err) => {
+        console.error('[cargarCancionesOnfire] Error al cargar canciones onfire:', err);
+        this.errorOnfire = 'No se pudieron cargar las canciones onfire. Por favor, intenta nuevamente.';
+        this.isLoadingOnfire = false;
+      }
+    });
+  }
+
+  /**
+   * Carga los álbumes correspondientes a cada canción onfire
+   * @param canciones Lista de canciones onfire
+   */
+  cargarAlbumesDeCanciones(canciones: ResponseSongDto[]): void {
+    console.log('[cargarAlbumesDeCanciones] Iniciando carga de álbumes para canciones onfire');
+
+    if (canciones.length === 0) {
+      this.isLoadingOnfire = false;
+      return;
+    }
+
+    // Crear un observable para cada álbum que necesitamos cargar
+    const albumObservables = canciones.map(cancion => {
+      return this.homeService.getAlbumBySong(cancion.id).pipe(
+        map(album => {
+          return {
+            cancionId: cancion.id,
+            album: album
+          };
+        }),
+        catchError(error => {
+          console.error(`[cargarAlbumesDeCanciones] Error cargando álbum para la canción ${cancion.id}:`, error);
+          return of(null);
+        })
+      );
+    });
+
+    // Ejecutar todas las solicitudes en paralelo
+    forkJoin(albumObservables).subscribe({
+      next: (results) => {
+        console.log(`[cargarAlbumesDeCanciones] Álbumes para canciones onfire cargados:`, results.length);
+
+        // Almacenar los álbumes en el array de álbumes por canción onfire
+        this.AlbumesByOnfire = results
+          .filter(result => result !== null)
+          .map(result => result!.album);
+
+        // Una vez que tenemos los álbumes, cargamos las portadas
+        this.cargarPortadasDeAlbumes(this.AlbumesByOnfire, 'onfire');
+
+        // Actualizar el máximo scroll position para las canciones onfire
+        setTimeout(() => this.updateMaxScrollPositionOnfire(), 100);
+      },
+      error: (err) => {
+        console.error(`[cargarAlbumesDeCanciones] Error general cargando álbumes para canciones onfire:`, err);
+        this.isLoadingOnfire = false;
       }
     });
   }
@@ -394,4 +482,62 @@ export class InicioComponent implements OnInit {
     const element = event.target as HTMLElement;
     this.scrollPositionEscuchados = element.scrollLeft;
   }
+
+
+  /**
+   * Actualiza el valor máximo de scroll basado en el ancho del contenido para canciones onfire
+   */
+  updateMaxScrollPositionOnfire(): void {
+    if (this.onFireCancionesCarousel) {
+      const element = this.onFireCancionesCarousel.nativeElement;
+      this.maxScrollPositionOnfire = element.scrollWidth - element.clientWidth;
+      console.log(`[updateMaxScrollPositionOnfire] Max scroll position onfire: ${this.maxScrollPositionOnfire}`);
+    }
+  }
+
+  /**
+   * Desplaza el carrusel de canciones onfire hacia la izquierda
+   */
+  scrollLeftOnfire(): void {
+    if (this.onFireCancionesCarousel) {
+      const element = this.onFireCancionesCarousel.nativeElement;
+      const newPosition = Math.max(0, this.scrollPositionOnfire - this.scrollAmount);
+      element.scrollTo({
+        left: newPosition,
+        behavior: 'smooth'
+      });
+      this.scrollPositionOnfire = newPosition;
+    }
+  }
+
+  /**
+   * Desplaza el carrusel de canciones onfire hacia la derecha
+   */
+  scrollRightOnfire(): void {
+    if (this.onFireCancionesCarousel) {
+      const element = this.onFireCancionesCarousel.nativeElement;
+      const newPosition = Math.min(this.maxScrollPositionOnfire, this.scrollPositionOnfire + this.scrollAmount);
+      element.scrollTo({
+        left: newPosition,
+        behavior: 'smooth'
+      });
+      this.scrollPositionOnfire = newPosition;
+    }
+  }
+
+  /**
+   * Listener para eventos de scroll en el carrusel de canciones onfire
+   */
+  onScrollOnfire(event: Event): void {
+    const element = event.target as HTMLElement;
+    this.scrollPositionOnfire = element.scrollLeft;
+  }
+
+  /**
+   * Inicia la reproducción de una canción
+   */
+  playSong(song: ResponseSongDto): void {
+    //this.playerService.playSong(song);
+  }
+
 }

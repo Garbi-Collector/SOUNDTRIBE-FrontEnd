@@ -12,5 +12,6 @@ export interface NotificationGet {
   message: string;
   slug: string;
   type: NotificationType;
-  isRead: boolean
+  isRead: boolean;
+  createdAt: string | number[]; // Puede ser un string ISO o un array de números [año, mes, día, hora, minuto, segundo, nanosegundos]
 }

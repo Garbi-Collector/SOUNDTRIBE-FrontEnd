@@ -1,5 +1,5 @@
 import { Component, OnInit, HostListener } from '@angular/core';
-import { Router } from '@angular/router'; // IMPORTANTE: Importar Router
+import { Router } from '@angular/router';
 import { NotificationGet, NotificationType } from '../../dtos/noti/NotificationsDto';
 import { NotificationService } from '../../services/notification.service';
 import { AuthService } from '../../services/auth.service';
@@ -18,7 +18,7 @@ export class NotificationModalComponent implements OnInit {
   constructor(
     private notificationService: NotificationService,
     private authService: AuthService,
-    private router: Router // IMPORTANTE: Inyectar Router
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -111,10 +111,65 @@ export class NotificationModalComponent implements OnInit {
     return iconMap[type] || 'bi-bell';
   }
 
-  getTimeAgo(id: number): string {
-    // Por ahora dejamos un placeholder
-    // En una implementación real, se calcularía basado en la marca de tiempo de la notificación
-    return 'hace 5 minutos';
+  getTimeAgo(notification: NotificationGet): string {
+    if (!notification.createdAt) {
+      return 'fecha desconocida';
+    }
+
+    // Convertir el array de fecha a un objeto Date
+    let createdDate: Date;
+
+    // Verificar si createdAt es un array (formato Java LocalDateTime)
+    if (Array.isArray(notification.createdAt)) {
+      // El formato es [año, mes, día, hora, minuto, segundo, nanosegundos]
+      const dateArray = notification.createdAt as unknown as number[];
+      // Nota: los meses en JavaScript son base 0 (0-11), por lo que restamos 1 al mes
+      createdDate = new Date(
+        dateArray[0],         // año
+        dateArray[1] - 1,     // mes (JavaScript usa 0-11)
+        dateArray[2],         // día
+        dateArray[3],         // hora
+        dateArray[4],         // minuto
+        dateArray[5],         // segundo
+        dateArray[6] / 1000000 // convertir nanosegundos a milisegundos
+      );
+    } else {
+      // Intentar parsear como string ISO
+      createdDate = new Date(notification.createdAt);
+    }
+
+    const now = new Date();
+
+    // Verificar si la fecha es válida
+    if (isNaN(createdDate.getTime())) {
+      console.error('Fecha inválida:', notification.createdAt);
+      return 'fecha desconocida';
+    }
+
+    // Diferencia en milisegundos
+    const diffMs = now.getTime() - createdDate.getTime();
+
+    // Conversiones a diferentes unidades de tiempo
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    const diffWeeks = Math.floor(diffDays / 7);
+    const diffYears = Math.floor(diffDays / 365);
+
+    // Aplicar formato según el tiempo transcurrido
+    if (diffYears > 0) {
+      return `hace ${diffYears} ${diffYears === 1 ? 'año' : 'años'}`;
+    } else if (diffWeeks > 0) {
+      return `hace ${diffWeeks} sem`;
+    } else if (diffDays > 0) {
+      return `hace ${diffDays} días`;
+    } else if (diffHours > 0) {
+      return `hace ${diffHours} h`;
+    } else if (diffMinutes > 0) {
+      return `hace ${diffMinutes} min`;
+    } else {
+      return 'ahora mismo';
+    }
   }
 
   calculateUnreadCount(): number {

@@ -326,4 +326,10 @@ export class PerfilComponent implements OnInit {
       this.router.navigate(['/perfil', slug]);
     }
   }
+
+  // Méto-do para navegar a la página de eliminar cuenta
+  navigateToDeleteAccount(): void {
+    this.router.navigate(['/eliminate-account']);
+  }
+
 }

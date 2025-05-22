@@ -37,6 +37,7 @@ import { DonationSuccessComponent } from './pages/donation-success/donation-succ
 import { GameComponent } from './pages/game/game.component';
 import { TerminosCondicionesAppComponent } from './modales/terminos-condiciones-app/terminos-condiciones-app.component';
 import { DocumentacionComponent } from './pages/documentacion/documentacion.component';
+import { EliminarCuentaComponent } from './pages/eliminar-cuenta/eliminar-cuenta.component';
 
 
 
@@ -69,6 +70,7 @@ import { DocumentacionComponent } from './pages/documentacion/documentacion.comp
     GameComponent,
     TerminosCondicionesAppComponent,
     DocumentacionComponent,
+    EliminarCuentaComponent,
   ],
   imports: [
     BrowserModule,

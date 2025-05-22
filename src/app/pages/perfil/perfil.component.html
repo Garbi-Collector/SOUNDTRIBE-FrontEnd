@@ -45,11 +45,14 @@
                     <i class="bi bi-key me-2"></i>Cambiar contraseña
                   </a>
                 </li>
+
+                <!-- Nueva opción para eliminar cuenta -->
                 <li>
-                  <a class="dropdown-item" href="#" (click)="openChangeSlugModal(); closeSettingsDropdown(); $event.preventDefault()">
-                    <i class="bi bi-pencil me-2"></i>Cambiar nombre clave
+                  <a class="dropdown-item text-danger" href="#" (click)="navigateToDeleteAccount(); closeSettingsDropdown(); $event.preventDefault()">
+                    <i class="bi bi-trash me-2"></i>Eliminar cuenta
                   </a>
                 </li>
+
               </ul>
             </div>
           </div>

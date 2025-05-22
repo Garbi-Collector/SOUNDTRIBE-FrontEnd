@@ -1,0 +1,156 @@
+<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center bg-dark text-light">
+  <div class="card bg-secondary shadow-lg" style="max-width: 600px; width: 100%;">
+    <div class="card-header text-center bg-danger text-white">
+      <h3 class="mb-0">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        Eliminar Cuenta
+      </h3>
+    </div>
+
+    <div class="card-body p-4">
+      <!-- Indicador de pasos -->
+      <div class="row mb-4">
+        <div class="col-6 text-center">
+          <div class="step-indicator" [class.active]="currentStep === 1" [class.completed]="currentStep > 1">
+            <div class="step-number">1</div>
+            <small class="step-label">Términos</small>
+          </div>
+        </div>
+        <div class="col-6 text-center">
+          <div class="step-indicator" [class.active]="currentStep === 2">
+            <div class="step-number">2</div>
+            <small class="step-label">Confirmación</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Paso 1: Términos y Condiciones -->
+      <div *ngIf="currentStep === 1" class="step-content">
+        <div class="text-center mb-4">
+          <i class="bi bi-emoji-frown display-1 text-warning"></i>
+          <h4 class="mt-3">¡Lamentamos verte partir!</h4>
+          <p class="text-muted">En SOUNDTRIBE valoramos mucho a nuestra comunidad musical.</p>
+        </div>
+
+        <div class="alert alert-secondary" role="alert">
+          <h5 class="alert-heading">
+            <i class="bi bi-info-circle me-2"></i>
+            Antes de continuar, ten en cuenta:
+          </h5>
+          <hr>
+          <ul class="mb-0">
+            <li>Se eliminará permanentemente tu perfil y toda tu información personal</li>
+            <li>Se perderán todas tus canciones, álbumes y contenido subido</li>
+            <li>Se eliminarán tus playlists y bibliotecas musicales</li>
+            <li>Perderás el acceso a todas las funciones</li>
+            <li>Esta acción <strong>NO se puede deshacer</strong></li>
+          </ul>
+        </div>
+
+        <div class="alert alert-info" role="alert">
+          <h6 class="mb-2">
+            <i class="bi bi-envelope me-2"></i>
+            ¿Necesitas ayuda?
+          </h6>
+          <p class="mb-2">Si tienes algún problema o sugerencia, nos encantaría escucharte antes de que te vayas.</p>
+          <button type="button" class="btn btn-outline-info btn-sm" (click)="contactSupport()">
+            <i class="bi bi-envelope me-1"></i>
+            Contactar Soporte
+          </button>
+        </div>
+
+        <div class="form-check mb-4 p-3 border rounded">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="termsCheckbox"
+            [(ngModel)]="termsAccepted"
+          >
+          <label class="form-check-label ms-2" for="termsCheckbox">
+            <strong>Acepto los términos y condiciones</strong> para la eliminación de mi cuenta.
+            Entiendo que esta acción es permanente e irreversible.
+          </label>
+        </div>
+
+        <!-- Mensaje de error -->
+        <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+          <i class="bi bi-exclamation-circle me-2"></i>
+          {{ errorMessage }}
+        </div>
+
+        <!-- Botones del paso 1 -->
+        <div class="d-flex justify-content-between">
+          <button type="button" class="btn btn-outline-secondary" (click)="cancelProcess()">
+            <i class="bi bi-arrow-left me-2"></i>
+            Cancelar
+          </button>
+          <button
+            type="button"
+            class="btn btn-danger"
+            [disabled]="!termsAccepted"
+            (click)="nextStep()"
+          >
+            Continuar
+            <i class="bi bi-arrow-right ms-2"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Paso 2: Confirmación -->
+      <div *ngIf="currentStep === 2" class="step-content">
+        <div class="text-center mb-4">
+          <i class="bi bi-shield-exclamation display-1 text-danger"></i>
+          <h4 class="mt-3 text-danger">Confirmación Final</h4>
+          <p class="text-muted">Para confirmar la eliminación, escribe exactamente el siguiente texto:</p>
+        </div>
+
+        <div class="alert alert-dark text-center mb-4 unselectable" role="alert">
+          <strong class="text-dark">{{ expectedText }}</strong>
+        </div>
+
+
+        <div class="mb-4">
+          <label for="confirmationInput" class="form-label">
+            <strong>Escribe el texto de confirmación:</strong>
+          </label>
+          <textarea
+            class="form-control"
+            id="confirmationInput"
+            rows="3"
+            placeholder="Escribe exactamente el texto mostrado arriba..."
+            [(ngModel)]="confirmationText"
+            [class.is-valid]="isConfirmationTextValid() && confirmationText.length > 0"
+            [class.is-invalid]="!isConfirmationTextValid() && confirmationText.length > 0"
+          ></textarea>
+          <div class="form-text">
+            Debe coincidir exactamente con el texto mostrado arriba.
+          </div>
+        </div>
+
+        <!-- Mensaje de error -->
+        <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+          <i class="bi bi-exclamation-circle me-2"></i>
+          {{ errorMessage }}
+        </div>
+
+        <!-- Botones del paso 2 -->
+        <div class="d-flex justify-content-between">
+          <button type="button" class="btn btn-outline-secondary" (click)="previousStep()">
+            <i class="bi bi-arrow-left me-2"></i>
+            Atrás
+          </button>
+          <button
+            type="button"
+            class="btn btn-danger"
+            [disabled]="!isConfirmationTextValid() || isLoading"
+            (click)="deleteAccount()"
+          >
+            <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+            <i *ngIf="!isLoading" class="bi bi-trash me-2"></i>
+            {{ isLoading ? 'Eliminando...' : 'Eliminar Cuenta Definitivamente' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

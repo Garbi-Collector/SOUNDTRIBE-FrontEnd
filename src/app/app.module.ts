@@ -38,6 +38,8 @@ import { GameComponent } from './pages/game/game.component';
 import { TerminosCondicionesAppComponent } from './modales/terminos-condiciones-app/terminos-condiciones-app.component';
 import { DocumentacionComponent } from './pages/documentacion/documentacion.component';
 import { EliminarCuentaComponent } from './pages/eliminar-cuenta/eliminar-cuenta.component';
+import { ChangeDescriptionComponent } from './modales/change-description/change-description.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
 
 
 
@@ -71,6 +73,8 @@ import { EliminarCuentaComponent } from './pages/eliminar-cuenta/eliminar-cuenta
     TerminosCondicionesAppComponent,
     DocumentacionComponent,
     EliminarCuentaComponent,
+    ChangeDescriptionComponent,
+    DashboardComponent,
   ],
   imports: [
     BrowserModule,

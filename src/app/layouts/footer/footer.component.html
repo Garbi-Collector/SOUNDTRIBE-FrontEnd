@@ -1,6 +1,25 @@
 <footer class="navbar fixed-bottom navbar-dark bg-dark">
   <div class="container-fluid">
-    <div class="row w-100">
+    <!-- Layout para usuarios normales (2 botones) -->
+    <div class="row w-100" *ngIf="!authService.isArtista()">
+      <div class="col-6 text-center">
+        <a class="btn btn-link text-light nav-btn" routerLink="/inicio" routerLinkActive="active">
+          <div class="d-flex flex-column align-items-center">
+            <i class="bi bi-house-door"></i>
+          </div>
+        </a>
+      </div>
+      <div class="col-6 text-center">
+        <a class="btn btn-link text-light nav-btn" routerLink="/explorar" routerLinkActive="active">
+          <div class="d-flex flex-column align-items-center">
+            <i class="bi bi-compass"></i>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Layout para artistas (3 botones) -->
+    <div class="row w-100" *ngIf="authService.isArtista()">
       <div class="col-4 text-center">
         <a class="btn btn-link text-light nav-btn" routerLink="/inicio" routerLinkActive="active">
           <div class="d-flex flex-column align-items-center">
@@ -16,9 +35,9 @@
         </a>
       </div>
       <div class="col-4 text-center">
-        <a class="btn btn-link text-light nav-btn" routerLink="/biblioteca" routerLinkActive="active">
+        <a class="btn btn-link text-light nav-btn" routerLink="/my-dashboard" routerLinkActive="active">
           <div class="d-flex flex-column align-items-center">
-            <i class="bi bi-collection"></i>
+            <i class="bi bi-speedometer2"></i>
           </div>
         </a>
       </div>

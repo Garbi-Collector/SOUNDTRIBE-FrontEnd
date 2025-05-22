@@ -15,7 +15,8 @@ import { DonationComponent } from "./pages/donation/donation.component";
 import { DonationSuccessComponent } from "./pages/donation-success/donation-success.component";
 import { GameComponent } from "./pages/game/game.component";
 import { DocumentacionComponent } from "./pages/documentacion/documentacion.component";
-import {EliminarCuentaComponent} from "./pages/eliminar-cuenta/eliminar-cuenta.component"; // Importamos el componente de documentación
+import {EliminarCuentaComponent} from "./pages/eliminar-cuenta/eliminar-cuenta.component";
+import {DashboardComponent} from "./pages/dashboard/dashboard.component"; // Importamos el componente de documentación
 
 const routes: Routes = [
   { path: 'verificar-cuenta/:token', component: VerificarCuentaComponent },
@@ -31,6 +32,7 @@ const routes: Routes = [
   // Nueva ruta para la documentación
   { path: 'documentacion', component: DocumentacionComponent },
   { path: 'eliminate-account', component: EliminarCuentaComponent },
+  { path: 'my-dashboard', component: DashboardComponent },
   {
     path: 'subir-musica',
     component: SubirMusicaComponent,

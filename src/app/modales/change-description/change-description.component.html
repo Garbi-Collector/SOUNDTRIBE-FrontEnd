@@ -1,0 +1,60 @@
+<div class="modal-overlay" (click)="closeModal()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Cambiar Descripción</h2>
+      <button class="close-btn" (click)="closeModal()" type="button">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="description">Nueva Descripción:</label>
+        <textarea
+          id="description"
+          [(ngModel)]="newDescription"
+          (input)="clearMessages()"
+          (keydown)="onKeyPress($event)"
+          placeholder="Escribe tu nueva descripción aquí..."
+          rows="4"
+          maxlength="250"
+          [disabled]="isLoading">
+        </textarea>
+        <small class="char-count">{{ newDescription.length }}/250 caracteres</small>
+      </div>
+
+      <!-- Mensajes de error y éxito -->
+      <div *ngIf="errorMessage" class="alert alert-error">
+        <i class="fas fa-exclamation-circle"></i>
+        {{ errorMessage }}
+      </div>
+
+      <div *ngIf="successMessage" class="alert alert-success">
+        <i class="fas fa-check-circle"></i>
+        {{ successMessage }}
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button
+        class="btn btn-secondary"
+        (click)="closeModal()"
+        type="button"
+        [disabled]="isLoading">
+        Cancelar
+      </button>
+      <button
+        class="btn btn-primary"
+        (click)="changeDescription()"
+        type="button"
+        [disabled]="isLoading || !newDescription.trim()">
+        <span *ngIf="isLoading" class="spinner"></span>
+        {{ isLoading ? 'Guardando...' : 'Guardar' }}
+      </button>
+    </div>
+
+    <div class="modal-hint">
+      <small><i class="fas fa-info-circle"></i> Presiona Ctrl + Enter para guardar rápidamente</small>
+    </div>
+  </div>
+</div>

@@ -222,5 +222,21 @@ export class UserService {
       .pipe(catchError(this.handleError));
   }
 
+  /**
+   * Cambia la descripción del usuario autenticado.
+   * Requiere autenticación (token JWT en headers).
+   * El backend espera un parámetro "newDescription" en la URL.
+   */
+  changeDescription(newDescription: string): Observable<string> {
+    const headers = this.getAuthHeaders();
+    const params = { newDescription };
 
+    return this.http
+      .put(`${this.apiUrl}/change-description`, null, {
+        headers,
+        params,
+        responseType: 'text'
+      })
+      .pipe(catchError(this.handleError));
+  }
 }

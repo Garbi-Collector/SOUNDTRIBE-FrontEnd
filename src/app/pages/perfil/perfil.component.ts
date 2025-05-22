@@ -270,6 +270,10 @@ export class PerfilComponent implements OnInit {
     this.modalService.openModal(ModalType.Auth);
   }
 
+  openDescriptionModal() {
+    this.modalService.openModal(ModalType.ChangeDescription);
+  }
+
   followUser(): void {
     if (!this.isAuthenticated) {
       this.openAuthModal();

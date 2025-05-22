@@ -2,7 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { forkJoin, of, interval } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, map, tap, finalize } from 'rxjs/operators';
 
 import { HomeService } from '../../services/home.service';
 import { SongsService } from '../../services/songs.service';
@@ -20,6 +20,14 @@ export class InicioComponent implements OnInit {
   @ViewChild('votedAlbumsCarousel') votedAlbumsCarousel!: ElementRef;
   @ViewChild('escuchadosAlbumsCarousel') escuchadosAlbumsCarousel!: ElementRef;
   @ViewChild('onFireCancionesCarousel') onFireCancionesCarousel!: ElementRef;
+
+  // Estado de carga general de la página
+  isPageLoading = true;
+  loadingMessage = 'Cargando SoundTribe...';
+
+  // Contador para seguir el estado de carga de cada sección
+  loadingSectionsTotal = 3; // Total de secciones a cargar (recientes, votados, escuchados)
+  loadingSectionsCompleted = 0;
 
   // Propiedades para el carrusel de álbumes recientes
   albumesRecientes: ResponseAlbumDto[] = [];
@@ -72,10 +80,41 @@ export class InicioComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.resetLoadingCounter();
     this.cargarAlbumesRecientes();
     this.cargarAlbumesMasVotados();
     this.cargarAlbumesMasEscuchados();
     this.startClock();
+  }
+
+  /**
+   * Reinicia el contador de secciones cargadas
+   */
+  resetLoadingCounter(): void {
+    this.loadingSectionsCompleted = 0;
+    this.isPageLoading = true;
+  }
+
+  /**
+   * Verifica si todas las secciones han terminado de cargar
+   */
+  checkAllSectionsLoaded(): void {
+    this.loadingSectionsCompleted++;
+    console.log(`[checkAllSectionsLoaded] Secciones cargadas: ${this.loadingSectionsCompleted}/${this.loadingSectionsTotal}`);
+
+    if (this.loadingSectionsCompleted >= this.loadingSectionsTotal) {
+      console.log('[checkAllSectionsLoaded] Todas las secciones están cargadas. Mostrando página.');
+      setTimeout(() => {
+        this.isPageLoading = false;
+      }, 500); // Pequeño retraso para asegurar que todo esté renderizado correctamente
+    }
+  }
+
+  /**
+   * Actualiza el mensaje de carga
+   */
+  updateLoadingMessage(message: string): void {
+    this.loadingMessage = message;
   }
 
   /**
@@ -107,6 +146,7 @@ export class InicioComponent implements OnInit {
    */
   cargarAlbumesRecientes(): void {
     console.log('[cargarAlbumesRecientes] Iniciando carga de álbumes recientes');
+    this.updateLoadingMessage('Cargando álbumes recientes...');
     this.isLoading = true;
     this.error = null;
 
@@ -122,6 +162,7 @@ export class InicioComponent implements OnInit {
         console.error('[cargarAlbumesRecientes] Error al cargar álbumes:', err);
         this.error = 'No se pudieron cargar los álbumes recientes. Por favor, intenta nuevamente.';
         this.isLoading = false;
+        this.checkAllSectionsLoaded(); // Consideramos la sección como cargada incluso con error
       }
     });
   }
@@ -131,6 +172,7 @@ export class InicioComponent implements OnInit {
    */
   cargarAlbumesMasVotados(): void {
     console.log('[cargarAlbumesMasVotados] Iniciando carga de álbumes más votados');
+    this.updateLoadingMessage('Cargando álbumes más votados...');
     this.isLoadingVotados = true;
     this.errorVotados = null;
 
@@ -146,6 +188,7 @@ export class InicioComponent implements OnInit {
         console.error('[cargarAlbumesMasVotados] Error al cargar álbumes más votados:', err);
         this.errorVotados = 'No se pudieron cargar los álbumes más votados. Por favor, intenta nuevamente.';
         this.isLoadingVotados = false;
+        this.checkAllSectionsLoaded(); // Consideramos la sección como cargada incluso con error
       }
     });
   }
@@ -155,6 +198,7 @@ export class InicioComponent implements OnInit {
    */
   cargarAlbumesMasEscuchados(): void {
     console.log('[cargarAlbumesMasEscuchados] Iniciando carga de álbumes más escuchados');
+    this.updateLoadingMessage('Cargando álbumes más escuchados...');
     this.isLoadingescuchados = true;
     this.errorescuchados = null;
 
@@ -170,6 +214,7 @@ export class InicioComponent implements OnInit {
         console.error('[cargarAlbumesMasEscuchados] Error al cargar álbumes más escuchados:', err);
         this.errorescuchados = 'No se pudieron cargar los álbumes más escuchados. Por favor, intenta nuevamente.';
         this.isLoadingescuchados = false;
+        this.checkAllSectionsLoaded(); // Consideramos la sección como cargada incluso con error
       }
     });
   }
@@ -179,6 +224,7 @@ export class InicioComponent implements OnInit {
    */
   cargarCancionesOnfire(): void {
     console.log('[cargarCancionesOnfire] Iniciando carga de canciones onfire');
+    this.updateLoadingMessage('Cargando canciones populares...');
     this.isLoadingOnfire = true;
     this.errorOnfire = null;
 
@@ -264,10 +310,13 @@ export class InicioComponent implements OnInit {
     if (albumes.length === 0) {
       if (tipo === 'votados') {
         this.isLoadingVotados = false;
+        this.checkAllSectionsLoaded();
       } else if (tipo === 'escuchados') {
         this.isLoadingescuchados = false;
+        this.checkAllSectionsLoaded();
       } else {
         this.isLoading = false;
+        this.checkAllSectionsLoaded();
       }
       return;
     }
@@ -291,7 +340,21 @@ export class InicioComponent implements OnInit {
     });
 
     // Ejecutar todas las solicitudes en paralelo
-    forkJoin(portadaObservables).subscribe({
+    forkJoin(portadaObservables).pipe(
+      finalize(() => {
+        // En caso de que algo falle, nos aseguramos de marcar la sección como cargada
+        if (tipo === 'votados' && this.isLoadingVotados) {
+          this.isLoadingVotados = false;
+          this.checkAllSectionsLoaded();
+        } else if (tipo === 'escuchados' && this.isLoadingescuchados) {
+          this.isLoadingescuchados = false;
+          this.checkAllSectionsLoaded();
+        } else if (tipo === '' && this.isLoading) {
+          this.isLoading = false;
+          this.checkAllSectionsLoaded();
+        }
+      })
+    ).subscribe({
       next: (results) => {
         console.log(`[cargarPortadasDeAlbumes] Portadas de álbumes ${seccion} cargadas:`, results.length);
 
@@ -306,24 +369,30 @@ export class InicioComponent implements OnInit {
           this.isLoadingVotados = false;
           // Actualizar el máximo scroll position para los votados
           setTimeout(() => this.updateMaxScrollPositionVotados(), 100);
+          this.checkAllSectionsLoaded();
         } else if (tipo === 'escuchados') {
           this.isLoadingescuchados = false;
           // Actualizar el máximo scroll position para los escuchados
           setTimeout(() => this.updateMaxScrollPositionEscuchados(), 100);
+          this.checkAllSectionsLoaded();
         } else {
           this.isLoading = false;
           // Actualizar el máximo scroll position para los recientes
           setTimeout(() => this.updateMaxScrollPosition(), 100);
+          this.checkAllSectionsLoaded();
         }
       },
       error: (err) => {
         console.error(`[cargarPortadasDeAlbumes] Error general cargando portadas de álbumes ${seccion}:`, err);
         if (tipo === 'votados') {
           this.isLoadingVotados = false;
+          this.checkAllSectionsLoaded();
         } else if (tipo === 'escuchados') {
           this.isLoadingescuchados = false;
+          this.checkAllSectionsLoaded();
         } else {
           this.isLoading = false;
+          this.checkAllSectionsLoaded();
         }
       }
     });
@@ -539,5 +608,4 @@ export class InicioComponent implements OnInit {
   playSong(song: ResponseSongDto): void {
     //this.playerService.playSong(song);
   }
-
 }

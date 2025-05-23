@@ -1,1 +1,190 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Cargando estadísticas...</p>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="!loading" class="dashboard-content">
+    <!-- Header -->
+    <div class="dashboard-header">
+      <h1 class="dashboard-title">Mi Dashboard</h1>
+      <p class="dashboard-subtitle">Analiza tu rendimiento musical</p>
+    </div>
+
+    <!-- Personal Stats Section -->
+    <div *ngIf="hasSongs" class="personal-stats-section">
+      <h2 class="section-title">
+        <i class="icon-music">🎵</i>
+        Mis Estadísticas
+      </h2>
+
+      <!-- KPI Cards -->
+      <div class="kpi-grid">
+        <div class="kpi-card play-count-card">
+          <div class="kpi-icon">
+            <i class="icon-play">▶</i>
+          </div>
+          <div class="kpi-content">
+            <h3>{{ formatNumber(playCount) }}</h3>
+            <p>Reproducciones Totales</p>
+          </div>
+          <div class="kpi-gradient"></div>
+        </div>
+
+        <div class="kpi-card songs-card">
+          <div class="kpi-icon">
+            <i class="icon-queue">♫</i>
+          </div>
+          <div class="kpi-content">
+            <h3>{{ topSongs.length }}</h3>
+            <p>Canciones Top</p>
+          </div>
+          <div class="kpi-gradient"></div>
+        </div>
+
+        <div class="kpi-card genres-card">
+          <div class="kpi-icon">
+            <i class="icon-category">⚡</i>
+          </div>
+          <div class="kpi-content">
+            <h3>{{ generosMasEscuchados.length }}</h3>
+            <p>Géneros Activos</p>
+          </div>
+          <div class="kpi-gradient"></div>
+        </div>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="charts-grid">
+        <!-- Top Songs Chart -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3>Top 5 Canciones</h3>
+            <i class="icon-chart">📊</i>
+          </div>
+          <div class="chart-container">
+            <div class="bar-chart">
+              <div *ngFor="let song of topSongs; let i = index" class="bar-item">
+                <div class="bar-info">
+                  <span class="song-name">{{ song.nameSong }}</span>
+                  <span class="play-count">{{ formatNumber(song.playCount) }}</span>
+                </div>
+                <div class="bar-wrapper">
+                  <div
+                    class="bar"
+                    [style.width.%]="(song.playCount / topSongs[0].playCount) * 100"
+                    [style.background]="getColor(i)">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Genres Pie Chart -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3>Géneros Más Escuchados</h3>
+            <i class="icon-pie">🥧</i>
+          </div>
+          <div class="chart-container">
+            <div class="pie-chart">
+              <div class="pie-legend">
+                <div *ngFor="let genero of generosMasEscuchados; let i = index" class="legend-item">
+                  <div class="legend-color" [style.background]="getColor(i)"></div>
+                  <span class="legend-label">{{ genero.nameGenero }}</span>
+                  <span class="legend-percent">{{ genero.percent }}%</span>
+                </div>
+              </div>
+              <div class="pie-visual">
+                <div class="pie-center">
+                  <span>Géneros</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Songs Message -->
+    <div *ngIf="!hasSongs" class="no-songs-section">
+      <div class="no-songs-card">
+        <i class="no-songs-icon">🎵</i>
+        <h3>¡Comienza tu Viaje Musical!</h3>
+        <p>Aún no tienes canciones subidas. Sube tu primera canción para ver tus estadísticas personales.</p>
+        <button class="upload-btn" (click)="navigateToUpload()">
+          <i class="icon-upload">⬆</i>
+          Subir Primera Canción
+        </button>
+      </div>
+    </div>
+
+    <!-- Global Stats Section -->
+    <div class="global-stats-section">
+      <h2 class="section-title">
+        <i class="icon-global">🌍</i>
+        Tendencias Globales
+      </h2>
+
+      <div class="global-stats-grid">
+        <!-- Género Top Global -->
+        <div *ngIf="generoTopGlobal" class="celebration-card genero-card">
+          <div class="celebration-icon">
+            <i class="icon-trophy">🏆</i>
+          </div>
+          <div class="celebration-content">
+            <h4>🎵 Género #1 Mundial</h4>
+            <h3>{{ generoTopGlobal.nameGenero }}</h3>
+            <p class="play-count">{{ formatNumber(generoTopGlobal.playCount) }} reproducciones</p>
+            <p class="celebration-message">{{ generoTopGlobal.festejo }}</p>
+          </div>
+          <div class="celebration-sparkles">✨</div>
+        </div>
+
+        <!-- SubGénero Top Global -->
+        <div *ngIf="subGeneroTopGlobal" class="celebration-card subgenero-card">
+          <div class="celebration-icon">
+            <i class="icon-star">⭐</i>
+          </div>
+          <div class="celebration-content">
+            <h4>🎶 SubGénero #1 Mundial</h4>
+            <h3>{{ subGeneroTopGlobal.nameSubGenero }}</h3>
+            <p class="play-count">{{ formatNumber(subGeneroTopGlobal.playCount) }} reproducciones</p>
+            <p class="celebration-message">{{ subGeneroTopGlobal.festejo }}</p>
+          </div>
+          <div class="celebration-sparkles">🌟</div>
+        </div>
+
+        <!-- Estilo Top Global -->
+        <div *ngIf="estiloTopGlobal" class="celebration-card estilo-card">
+          <div class="celebration-icon">
+            <i class="icon-trending">📈</i>
+          </div>
+          <div class="celebration-content">
+            <h4>🎸 Estilo #1 Mundial</h4>
+            <h3>{{ estiloTopGlobal.nameEstilo }}</h3>
+            <p class="play-count">{{ formatNumber(estiloTopGlobal.playCount) }} reproducciones</p>
+            <p class="celebration-message">{{ estiloTopGlobal.festejo }}</p>
+          </div>
+          <div class="celebration-sparkles">🚀</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Achievement Banner -->
+    <div class="achievement-banner" (click)="navigateToUpload()" style="cursor: pointer;">
+      <div class="achievement-content">
+        <i class="icon-awesome">✨</i>
+        <div>
+          <h4>¡Sigue Creando!</h4>
+          <p>Cada canción que subes contribuye a las tendencias globales</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+  <br>
+</div>

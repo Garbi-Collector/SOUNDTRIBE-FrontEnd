@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, isDevMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 // Componentes principales
@@ -40,6 +40,7 @@ import { DocumentacionComponent } from './pages/documentacion/documentacion.comp
 import { EliminarCuentaComponent } from './pages/eliminar-cuenta/eliminar-cuenta.component';
 import { ChangeDescriptionComponent } from './modales/change-description/change-description.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 
 
@@ -90,6 +91,12 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
     MatExpansionModule,
     MatProgressBarModule,
     MatButtonModule,
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    }),
   ],
   providers: [],
   bootstrap: [AppComponent]

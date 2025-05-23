@@ -65,14 +65,89 @@ export class SongsService {
   }
 
   /**
-   * obtiene el archivo .wav de una cancion por su id
+   * obtiene el archivo .wav de una cancion por su id (método legacy)
    * @param id
+   * @deprecated Usar getStreamingUrl() para streaming optimizado
    */
   reproducirCancionPorId(id: number): Observable<Blob> {
     const url = `${this.filesUrl}/play/${id}`;
     return this.http.get(url, { responseType: 'blob' }); // para obtener audio como Blob
   }
 
+  /**
+   * Obtiene la URL de streaming para una canción específica
+   * Esta URL soporta HTTP Range Requests para streaming progresivo
+   * @param id ID de la canción
+   * @returns URL de streaming que puede ser usada directamente en el elemento audio
+   */
+  getStreamingUrl(id: number): string {
+    // Agregar token de autorización como query parameter si es necesario
+    const token = localStorage.getItem('auth_token');
+    const baseUrl = `${this.filesUrl}/stream/${id}`;
+
+    console.log('🌐 SongsService: Generando URL de streaming para canción', id);
+    console.log('🔗 SongsService: URL base:', baseUrl);
+    console.log('🔑 SongsService: Token disponible:', !!token);
+
+    // Si tu backend requiere autenticación para el streaming, descomenta la siguiente línea:
+    // return token ? `${baseUrl}?token=${token}` : baseUrl;
+
+    const finalUrl = baseUrl;
+    console.log('✅ SongsService: URL final de streaming:', finalUrl);
+    return finalUrl;
+  }
+
+  /**
+   * Obtiene la URL de reproducción directa (sin streaming optimizado)
+   * @param id ID de la canción
+   * @returns URL de reproducción directa
+   */
+  getPlayUrl(id: number): string {
+    const token = localStorage.getItem('auth_token');
+    const baseUrl = `${this.filesUrl}/play/${id}`;
+
+    // Si tu backend requiere autenticación, descomenta la siguiente línea:
+    // return token ? `${baseUrl}?token=${token}` : baseUrl;
+
+    return baseUrl;
+  }
+
+  /**
+   * Obtiene información sobre el progreso de descarga de una canción
+   * Útil para mostrar el progreso de buffering
+   * @param id ID de la canción
+   * @param onProgress Callback que recibe el progreso de descarga
+   */
+  getDownloadProgress(id: number, onProgress: (loaded: number, total: number) => void): Observable<Blob> {
+    const url = `${this.filesUrl}/stream/${id}`;
+
+    // Crear un XMLHttpRequest personalizado para monitorear el progreso
+    return new Observable(observer => {
+      const xhr = new XMLHttpRequest();
+
+      xhr.open('GET', url, true);
+      xhr.responseType = 'blob';
+
+      xhr.onprogress = (event) => {
+        if (event.lengthComputable) {
+          onProgress(event.loaded, event.total);
+        }
+      };
+
+      xhr.onload = () => {
+        if (xhr.status === 200 || xhr.status === 206) {
+          observer.next(xhr.response);
+          observer.complete();
+        } else {
+          observer.error(`Error: ${xhr.status}`);
+        }
+      };
+
+      xhr.onerror = () => observer.error('Error de red');
+
+      xhr.send();
+    });
+  }
 
   /**
    * Convierte segundos a un string en formato "minutos:segundos"
@@ -85,8 +160,6 @@ export class SongsService {
     const segundosFormateados = segundosRestantes < 10 ? '0' + segundosRestantes : segundosRestantes;
     return `${minutos}:${segundosFormateados}`;
   }
-
-
 
   /**
    * Verifica si el usuario ya votó una canción con un tipo de voto (LIKE o DISLIKE)
@@ -106,6 +179,4 @@ export class SongsService {
     const url = `${this.votesUrl}/${songId}/isvoted?vote=${voteType}`;
     return this.http.get<boolean>(url, { headers });
   }
-
-
 }

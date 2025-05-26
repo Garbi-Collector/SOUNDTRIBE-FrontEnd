@@ -1,3 +1,4 @@
+// src/app/dtos/albumes/musics.response.dto.ts
 export interface ResponseEstiloDto {
   id: number;
   name: string;
@@ -43,6 +44,24 @@ export interface ResponseSongDto {
   likes: number;  // Número de likes
   dislikes: number;  // Número de dislikes
   playCount: number;
+}
+
+export interface ResponseSongPortadaDto {
+  id: number;
+  name: string;
+  description: string;
+  duration: number;
+  owner: number;
+  fileUrl: string;
+  genero: ResponseGeneroDto[];
+  subgenero: ResponseSubgeneroDto[];
+  estilo: ResponseEstiloDto[];
+  slug: string;
+  artistasFt: number[];
+  likes: number;  // Número de likes
+  dislikes: number;  // Número de dislikes
+  playCount: number;
+  portada: ResponsePortadaDto;
 }
 
 

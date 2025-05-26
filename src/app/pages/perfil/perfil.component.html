@@ -125,8 +125,8 @@
     </div>
 
     <!-- Albums section (solo para artistas) -->
-    <div class="albums-section mt-5" *ngIf="isArtista">
-      <h3 class="section-title mb-3">Álbumes</h3>
+    <div class="albums-section" *ngIf="isArtista">
+      <h3 class="section-title">Álbumes</h3>
 
       <!-- Loading spinner para álbumes -->
       <div *ngIf="isLoadingAlbums" class="text-center py-3">
@@ -143,15 +143,15 @@
       <!-- Carrusel horizontal de álbumes -->
       <div *ngIf="!isLoadingAlbums && userAlbums.length > 0" class="albums-scroll-container">
         <div class="albums-row">
-          <div class="album-card" *ngFor="let album of userAlbums" (click)="navigateToAlbum(album)">
-            <div class="album-cover">
-              <img *ngIf="albumCovers.get(album.id)" [src]="albumCovers.get(album.id)" alt="{{ album.name }}" class="img-fluid">
+          <div class="cover-card" *ngFor="let album of userAlbums" (click)="navigateToAlbum(album)">
+            <div class="cover">
+              <img *ngIf="albumCovers.get(album.id)" [src]="albumCovers.get(album.id)" alt="{{ album.name }}">
               <div *ngIf="!albumCovers.get(album.id)" class="album-cover-placeholder">
                 <i class="bi bi-music-note-beamed"></i>
               </div>
             </div>
-            <div class="album-title">
-              <h5 class="text-truncate">{{ album.name }}</h5>
+            <div class="cover-title">
+              <h5>{{ album.name }}</h5>
             </div>
           </div>
         </div>

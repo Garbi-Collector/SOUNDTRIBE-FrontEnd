@@ -1,5 +1,4 @@
-<!-- HTML para el componente de albums -->
-
+<!-- HTML para el componente de albums CORREGIDO -->
 
 <!-- Pantalla de carga principal -->
 <div *ngIf="isPageLoading" class="page-loading-overlay">
@@ -25,15 +24,13 @@
   </div>
 </div>
 
-
 <div class="container-fluid" *ngIf="!isPageLoading">
-
-
   <div class="page-container" [class.hidden]="isPageLoading">
+
     <!-- SECCIÓN DE ÁLBUMES RECIENTES -->
     <div class="albums-recientes-container">
       <!-- Título de la sección con reloj -->
-      <div class="section-header votados-header">
+      <div class="section-header">
         <h2 class="section-title">Álbumes Recientes 🕙</h2>
         <div class="clock">{{ currentTime }}</div>
       </div>
@@ -58,12 +55,12 @@
         <!-- Carrusel de álbumes -->
         <div class="albums-carousel-container">
           <div class="albums-carousel" #albumsCarousel (scroll)="onScroll($event)">
-            <div *ngFor="let album of albumesRecientes" class="album-card" (click)="goToAlbum(album.slug)">
+            <div *ngFor="let album of albumesRecientes" class="cover-card" (click)="goToAlbum(album.slug)">
               <div class="album-cover-container">
                 <div *ngIf="!albumCovers.get(album.id)" class="album-cover-placeholder">
                   <i class="bi bi-music-note-beamed"></i>
                 </div>
-                <img *ngIf="albumCovers.get(album.id)" [src]="albumCovers.get(album.id)" [alt]="album.name" class="album-cover">
+                <img *ngIf="albumCovers.get(album.id)" [src]="albumCovers.get(album.id)" [alt]="album.name" class="cover">
                 <div class="album-type-badge">
                   <span class="badge" [ngClass]="{
                     'bg-primary': album.typeAlbum === 'LP',
@@ -72,8 +69,8 @@
                   }">{{ album.typeAlbum }}</span>
                 </div>
               </div>
-              <div class="album-info">
-                <h3 class="album-title">{{ album.name }}</h3>
+              <div class="cover-info">
+                <h3 class="cover-title">{{ album.name }}</h3>
                 <p class="album-songs">{{ album.songs.length }} canciones</p>
               </div>
             </div>
@@ -114,12 +111,12 @@
         <!-- Carrusel de álbumes votados -->
         <div class="albums-carousel-container">
           <div class="albums-carousel" #votedAlbumsCarousel (scroll)="onScrollVotados($event)">
-            <div *ngFor="let album of albumesMasVotados" class="album-card" (click)="goToAlbum(album.slug)">
+            <div *ngFor="let album of albumesMasVotados" class="cover-card" (click)="goToAlbum(album.slug)">
               <div class="album-cover-container">
                 <div *ngIf="!albumCovers.get(album.id)" class="album-cover-placeholder">
                   <i class="bi bi-music-note-beamed"></i>
                 </div>
-                <img *ngIf="albumCovers.get(album.id)" [src]="albumCovers.get(album.id)" [alt]="album.name" class="album-cover">
+                <img *ngIf="albumCovers.get(album.id)" [src]="albumCovers.get(album.id)" [alt]="album.name" class="cover">
                 <div class="album-type-badge">
                   <span class="badge" [ngClass]="{
                     'bg-primary': album.typeAlbum === 'LP',
@@ -134,8 +131,8 @@
                   </span>
                 </div>
               </div>
-              <div class="album-info">
-                <h3 class="album-title">{{ album.name }}</h3>
+              <div class="cover-info">
+                <h3 class="cover-title">{{ album.name }}</h3>
                 <p class="album-songs">{{ album.songs.length }} canciones</p>
               </div>
             </div>
@@ -152,7 +149,7 @@
     <!-- SECCIÓN DE ÁLBUMES MÁS ESCUCHADOS -->
     <div class="albums-escuchados-container">
       <!-- Título de la sección -->
-      <div class="section-header votados-header">
+      <div class="section-header escuchados-header">
         <h2 class="section-title">Álbumes Más Escuchados 🎧</h2>
       </div>
 
@@ -176,12 +173,12 @@
         <!-- Carrusel de álbumes escuchados -->
         <div class="albums-carousel-container">
           <div class="albums-carousel" #escuchadosAlbumsCarousel (scroll)="onScrollEscuchados($event)">
-            <div *ngFor="let album of albumesMasescuchados" class="album-card" (click)="goToAlbum(album.slug)">
+            <div *ngFor="let album of albumesMasescuchados" class="cover-card" (click)="goToAlbum(album.slug)">
               <div class="album-cover-container">
                 <div *ngIf="!albumCovers.get(album.id)" class="album-cover-placeholder">
                   <i class="bi bi-music-note-beamed"></i>
                 </div>
-                <img *ngIf="albumCovers.get(album.id)" [src]="albumCovers.get(album.id)" [alt]="album.name" class="album-cover">
+                <img *ngIf="albumCovers.get(album.id)" [src]="albumCovers.get(album.id)" [alt]="album.name" class="cover">
                 <div class="album-type-badge">
                   <span class="badge" [ngClass]="{
                     'bg-primary': album.typeAlbum === 'LP',
@@ -196,8 +193,8 @@
                   </span>
                 </div>
               </div>
-              <div class="album-info">
-                <h3 class="album-title">{{ album.name }}</h3>
+              <div class="cover-info">
+                <h3 class="cover-title">{{ album.name }}</h3>
                 <p class="album-songs">{{ album.songs.length }} canciones</p>
               </div>
             </div>
@@ -211,8 +208,6 @@
       </div>
     </div>
   </div>
-
-
 
   <!-- FOOTER DE LA PÁGINA CON LÍNEA DIVISORIA -->
   <footer class="app-footer">

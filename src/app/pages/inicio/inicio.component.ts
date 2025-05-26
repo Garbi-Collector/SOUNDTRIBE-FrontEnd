@@ -104,10 +104,25 @@ export class InicioComponent implements OnInit {
 
     if (this.loadingSectionsCompleted >= this.loadingSectionsTotal) {
       console.log('[checkAllSectionsLoaded] Todas las secciones están cargadas. Mostrando página.');
+      // Usar un setTimeout más largo para asegurar que los elementos estén renderizados
       setTimeout(() => {
         this.isPageLoading = false;
-      }, 500); // Pequeño retraso para asegurar que todo esté renderizado correctamente
+        // Inicializar las posiciones de scroll después de que la página esté visible
+        setTimeout(() => {
+          this.initializeScrollPositions();
+        }, 100);
+      }, 800);
     }
+  }
+
+  /**
+   * Inicializa las posiciones máximas de scroll para todos los carruseles
+   */
+  initializeScrollPositions(): void {
+    console.log('[initializeScrollPositions] Inicializando posiciones de scroll');
+    this.updateMaxScrollPosition();
+    this.updateMaxScrollPositionVotados();
+    this.updateMaxScrollPositionEscuchados();
   }
 
   /**
@@ -308,16 +323,7 @@ export class InicioComponent implements OnInit {
     console.log(`[cargarPortadasDeAlbumes] Iniciando carga de portadas de álbumes ${seccion}`);
 
     if (albumes.length === 0) {
-      if (tipo === 'votados') {
-        this.isLoadingVotados = false;
-        this.checkAllSectionsLoaded();
-      } else if (tipo === 'escuchados') {
-        this.isLoadingescuchados = false;
-        this.checkAllSectionsLoaded();
-      } else {
-        this.isLoading = false;
-        this.checkAllSectionsLoaded();
-      }
+      this.finalizarCargaSeccion(tipo);
       return;
     }
 
@@ -342,17 +348,8 @@ export class InicioComponent implements OnInit {
     // Ejecutar todas las solicitudes en paralelo
     forkJoin(portadaObservables).pipe(
       finalize(() => {
-        // En caso de que algo falle, nos aseguramos de marcar la sección como cargada
-        if (tipo === 'votados' && this.isLoadingVotados) {
-          this.isLoadingVotados = false;
-          this.checkAllSectionsLoaded();
-        } else if (tipo === 'escuchados' && this.isLoadingescuchados) {
-          this.isLoadingescuchados = false;
-          this.checkAllSectionsLoaded();
-        } else if (tipo === '' && this.isLoading) {
-          this.isLoading = false;
-          this.checkAllSectionsLoaded();
-        }
+        // Asegurar que la sección se marque como cargada
+        this.finalizarCargaSeccion(tipo);
       })
     ).subscribe({
       next: (results) => {
@@ -364,38 +361,30 @@ export class InicioComponent implements OnInit {
             this.albumCovers.set(result.albumId, result.portadaUrl);
           }
         });
-
-        if (tipo === 'votados') {
-          this.isLoadingVotados = false;
-          // Actualizar el máximo scroll position para los votados
-          setTimeout(() => this.updateMaxScrollPositionVotados(), 100);
-          this.checkAllSectionsLoaded();
-        } else if (tipo === 'escuchados') {
-          this.isLoadingescuchados = false;
-          // Actualizar el máximo scroll position para los escuchados
-          setTimeout(() => this.updateMaxScrollPositionEscuchados(), 100);
-          this.checkAllSectionsLoaded();
-        } else {
-          this.isLoading = false;
-          // Actualizar el máximo scroll position para los recientes
-          setTimeout(() => this.updateMaxScrollPosition(), 100);
-          this.checkAllSectionsLoaded();
-        }
       },
       error: (err) => {
         console.error(`[cargarPortadasDeAlbumes] Error general cargando portadas de álbumes ${seccion}:`, err);
-        if (tipo === 'votados') {
-          this.isLoadingVotados = false;
-          this.checkAllSectionsLoaded();
-        } else if (tipo === 'escuchados') {
-          this.isLoadingescuchados = false;
-          this.checkAllSectionsLoaded();
-        } else {
-          this.isLoading = false;
-          this.checkAllSectionsLoaded();
-        }
       }
     });
+  }
+
+  /**
+   * Finaliza la carga de una sección específica
+   */
+  private finalizarCargaSeccion(tipo: string): void {
+    if (tipo === 'votados') {
+      this.isLoadingVotados = false;
+      this.checkAllSectionsLoaded();
+    } else if (tipo === 'escuchados') {
+      this.isLoadingescuchados = false;
+      this.checkAllSectionsLoaded();
+    } else if (tipo === 'onfire') {
+      this.isLoadingOnfire = false;
+      // onfire no cuenta para el loading general
+    } else {
+      this.isLoading = false;
+      this.checkAllSectionsLoaded();
+    }
   }
 
   /**
@@ -409,9 +398,9 @@ export class InicioComponent implements OnInit {
    * Actualiza el valor máximo de scroll basado en el ancho del contenido para álbumes recientes
    */
   updateMaxScrollPosition(): void {
-    if (this.albumsCarousel) {
+    if (this.albumsCarousel?.nativeElement) {
       const element = this.albumsCarousel.nativeElement;
-      this.maxScrollPosition = element.scrollWidth - element.clientWidth;
+      this.maxScrollPosition = Math.max(0, element.scrollWidth - element.clientWidth);
       console.log(`[updateMaxScrollPosition] Max scroll position recientes: ${this.maxScrollPosition}`);
     }
   }
@@ -420,9 +409,9 @@ export class InicioComponent implements OnInit {
    * Actualiza el valor máximo de scroll basado en el ancho del contenido para álbumes votados
    */
   updateMaxScrollPositionVotados(): void {
-    if (this.votedAlbumsCarousel) {
+    if (this.votedAlbumsCarousel?.nativeElement) {
       const element = this.votedAlbumsCarousel.nativeElement;
-      this.maxScrollPositionVotados = element.scrollWidth - element.clientWidth;
+      this.maxScrollPositionVotados = Math.max(0, element.scrollWidth - element.clientWidth);
       console.log(`[updateMaxScrollPositionVotados] Max scroll position votados: ${this.maxScrollPositionVotados}`);
     }
   }
@@ -431,10 +420,21 @@ export class InicioComponent implements OnInit {
    * Actualiza el valor máximo de scroll basado en el ancho del contenido para álbumes escuchados
    */
   updateMaxScrollPositionEscuchados(): void {
-    if (this.escuchadosAlbumsCarousel) {
+    if (this.escuchadosAlbumsCarousel?.nativeElement) {
       const element = this.escuchadosAlbumsCarousel.nativeElement;
-      this.maxScrollPositionEscuchados = element.scrollWidth - element.clientWidth;
+      this.maxScrollPositionEscuchados = Math.max(0, element.scrollWidth - element.clientWidth);
       console.log(`[updateMaxScrollPositionEscuchados] Max scroll position escuchados: ${this.maxScrollPositionEscuchados}`);
+    }
+  }
+
+  /**
+   * Actualiza el valor máximo de scroll basado en el ancho del contenido para canciones onfire
+   */
+  updateMaxScrollPositionOnfire(): void {
+    if (this.onFireCancionesCarousel?.nativeElement) {
+      const element = this.onFireCancionesCarousel.nativeElement;
+      this.maxScrollPositionOnfire = Math.max(0, element.scrollWidth - element.clientWidth);
+      console.log(`[updateMaxScrollPositionOnfire] Max scroll position onfire: ${this.maxScrollPositionOnfire}`);
     }
   }
 
@@ -442,7 +442,7 @@ export class InicioComponent implements OnInit {
    * Desplaza el carrusel de álbumes recientes hacia la izquierda
    */
   scrollLeft(): void {
-    if (this.albumsCarousel) {
+    if (this.albumsCarousel?.nativeElement) {
       const element = this.albumsCarousel.nativeElement;
       const newPosition = Math.max(0, this.scrollPosition - this.scrollAmount);
       element.scrollTo({
@@ -450,6 +450,7 @@ export class InicioComponent implements OnInit {
         behavior: 'smooth'
       });
       this.scrollPosition = newPosition;
+      console.log(`[scrollLeft] Nueva posición: ${newPosition}`);
     }
   }
 
@@ -457,7 +458,7 @@ export class InicioComponent implements OnInit {
    * Desplaza el carrusel de álbumes recientes hacia la derecha
    */
   scrollRight(): void {
-    if (this.albumsCarousel) {
+    if (this.albumsCarousel?.nativeElement) {
       const element = this.albumsCarousel.nativeElement;
       const newPosition = Math.min(this.maxScrollPosition, this.scrollPosition + this.scrollAmount);
       element.scrollTo({
@@ -465,6 +466,7 @@ export class InicioComponent implements OnInit {
         behavior: 'smooth'
       });
       this.scrollPosition = newPosition;
+      console.log(`[scrollRight] Nueva posición: ${newPosition}`);
     }
   }
 
@@ -472,7 +474,7 @@ export class InicioComponent implements OnInit {
    * Desplaza el carrusel de álbumes votados hacia la izquierda
    */
   scrollLeftVotados(): void {
-    if (this.votedAlbumsCarousel) {
+    if (this.votedAlbumsCarousel?.nativeElement) {
       const element = this.votedAlbumsCarousel.nativeElement;
       const newPosition = Math.max(0, this.scrollPositionVotados - this.scrollAmount);
       element.scrollTo({
@@ -480,6 +482,7 @@ export class InicioComponent implements OnInit {
         behavior: 'smooth'
       });
       this.scrollPositionVotados = newPosition;
+      console.log(`[scrollLeftVotados] Nueva posición: ${newPosition}`);
     }
   }
 
@@ -487,7 +490,7 @@ export class InicioComponent implements OnInit {
    * Desplaza el carrusel de álbumes votados hacia la derecha
    */
   scrollRightVotados(): void {
-    if (this.votedAlbumsCarousel) {
+    if (this.votedAlbumsCarousel?.nativeElement) {
       const element = this.votedAlbumsCarousel.nativeElement;
       const newPosition = Math.min(this.maxScrollPositionVotados, this.scrollPositionVotados + this.scrollAmount);
       element.scrollTo({
@@ -495,6 +498,7 @@ export class InicioComponent implements OnInit {
         behavior: 'smooth'
       });
       this.scrollPositionVotados = newPosition;
+      console.log(`[scrollRightVotados] Nueva posición: ${newPosition}`);
     }
   }
 
@@ -502,7 +506,7 @@ export class InicioComponent implements OnInit {
    * Desplaza el carrusel de álbumes escuchados hacia la izquierda
    */
   scrollLeftEscuchados(): void {
-    if (this.escuchadosAlbumsCarousel) {
+    if (this.escuchadosAlbumsCarousel?.nativeElement) {
       const element = this.escuchadosAlbumsCarousel.nativeElement;
       const newPosition = Math.max(0, this.scrollPositionEscuchados - this.scrollAmount);
       element.scrollTo({
@@ -510,6 +514,7 @@ export class InicioComponent implements OnInit {
         behavior: 'smooth'
       });
       this.scrollPositionEscuchados = newPosition;
+      console.log(`[scrollLeftEscuchados] Nueva posición: ${newPosition}`);
     }
   }
 
@@ -517,7 +522,7 @@ export class InicioComponent implements OnInit {
    * Desplaza el carrusel de álbumes escuchados hacia la derecha
    */
   scrollRightEscuchados(): void {
-    if (this.escuchadosAlbumsCarousel) {
+    if (this.escuchadosAlbumsCarousel?.nativeElement) {
       const element = this.escuchadosAlbumsCarousel.nativeElement;
       const newPosition = Math.min(this.maxScrollPositionEscuchados, this.scrollPositionEscuchados + this.scrollAmount);
       element.scrollTo({
@@ -525,6 +530,39 @@ export class InicioComponent implements OnInit {
         behavior: 'smooth'
       });
       this.scrollPositionEscuchados = newPosition;
+      console.log(`[scrollRightEscuchados] Nueva posición: ${newPosition}`);
+    }
+  }
+
+  /**
+   * Desplaza el carrusel de canciones onfire hacia la izquierda
+   */
+  scrollLeftOnfire(): void {
+    if (this.onFireCancionesCarousel?.nativeElement) {
+      const element = this.onFireCancionesCarousel.nativeElement;
+      const newPosition = Math.max(0, this.scrollPositionOnfire - this.scrollAmount);
+      element.scrollTo({
+        left: newPosition,
+        behavior: 'smooth'
+      });
+      this.scrollPositionOnfire = newPosition;
+      console.log(`[scrollLeftOnfire] Nueva posición: ${newPosition}`);
+    }
+  }
+
+  /**
+   * Desplaza el carrusel de canciones onfire hacia la derecha
+   */
+  scrollRightOnfire(): void {
+    if (this.onFireCancionesCarousel?.nativeElement) {
+      const element = this.onFireCancionesCarousel.nativeElement;
+      const newPosition = Math.min(this.maxScrollPositionOnfire, this.scrollPositionOnfire + this.scrollAmount);
+      element.scrollTo({
+        left: newPosition,
+        behavior: 'smooth'
+      });
+      this.scrollPositionOnfire = newPosition;
+      console.log(`[scrollRightOnfire] Nueva posición: ${newPosition}`);
     }
   }
 
@@ -550,48 +588,6 @@ export class InicioComponent implements OnInit {
   onScrollEscuchados(event: Event): void {
     const element = event.target as HTMLElement;
     this.scrollPositionEscuchados = element.scrollLeft;
-  }
-
-
-  /**
-   * Actualiza el valor máximo de scroll basado en el ancho del contenido para canciones onfire
-   */
-  updateMaxScrollPositionOnfire(): void {
-    if (this.onFireCancionesCarousel) {
-      const element = this.onFireCancionesCarousel.nativeElement;
-      this.maxScrollPositionOnfire = element.scrollWidth - element.clientWidth;
-      console.log(`[updateMaxScrollPositionOnfire] Max scroll position onfire: ${this.maxScrollPositionOnfire}`);
-    }
-  }
-
-  /**
-   * Desplaza el carrusel de canciones onfire hacia la izquierda
-   */
-  scrollLeftOnfire(): void {
-    if (this.onFireCancionesCarousel) {
-      const element = this.onFireCancionesCarousel.nativeElement;
-      const newPosition = Math.max(0, this.scrollPositionOnfire - this.scrollAmount);
-      element.scrollTo({
-        left: newPosition,
-        behavior: 'smooth'
-      });
-      this.scrollPositionOnfire = newPosition;
-    }
-  }
-
-  /**
-   * Desplaza el carrusel de canciones onfire hacia la derecha
-   */
-  scrollRightOnfire(): void {
-    if (this.onFireCancionesCarousel) {
-      const element = this.onFireCancionesCarousel.nativeElement;
-      const newPosition = Math.min(this.maxScrollPositionOnfire, this.scrollPositionOnfire + this.scrollAmount);
-      element.scrollTo({
-        left: newPosition,
-        behavior: 'smooth'
-      });
-      this.scrollPositionOnfire = newPosition;
-    }
   }
 
   /**

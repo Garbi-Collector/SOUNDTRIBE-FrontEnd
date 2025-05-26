@@ -1,1 +1,290 @@
-<p>explorar works!</p>
+<div class="explorar-container">
+  <!-- Header con buscador -->
+  <div class="search-header">
+    <h1 class="page-title">Explorar Música</h1>
+    <div class="search-wrapper">
+      <div class="search-box">
+        <i class="search-icon">🔍</i>
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          placeholder="Buscar música, artistas, álbumes..."
+          class="search-input"
+          (keyup.enter)="onSearch()">
+        <button class="search-btn" (click)="onSearch()">
+          <i class="icon-search">➤</i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtros de búsqueda -->
+  <div class="filters-section">
+    <div class="filter-group">
+      <h3 class="filter-title">Buscar en:</h3>
+      <div class="filter-buttons">
+        <button
+          *ngFor="let filter of filters"
+          class="filter-btn"
+          [class.active]="filter.active"
+          [class.disabled]="activeFilters.length <= 2 && filter.active"
+          (click)="toggleFilter(filter.key)">
+          <i class="filter-icon">{{ filter.key === 'albums' ? '💿' : filter.key === 'songs' ? '🎵' : filter.key === 'artists' ? '🎤' : '👥' }}</i>
+          {{ filter.label }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Dropdown de géneros -->
+    <div class="genre-filter">
+      <h3 class="filter-title">Género:</h3>
+      <div class="dropdown-wrapper" [class.disabled]="isGenreFilterDisabled">
+
+        <!-- Loading state -->
+        <div class="dropdown-loading-select" *ngIf="loadingGenres">
+          <div class="mini-spinner"></div>
+          <span>Cargando géneros...</span>
+        </div>
+
+        <!-- Select dropdown -->
+        <div class="custom-select-wrapper" *ngIf="!loadingGenres">
+          <select
+            class="custom-select"
+            [disabled]="isGenreFilterDisabled"
+            [(ngModel)]="selectedGenre"
+            (change)="onGenreChange($event)">
+
+            <option [value]="null">Todos los géneros</option>
+            <option
+              *ngFor="let genre of genres"
+              [value]="genre.id">
+              {{ genre.name }}
+            </option>
+          </select>
+
+          <!-- Custom arrow -->
+          <div class="select-arrow">
+            <i class="dropdown-arrow">▼</i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Línea separatoria -->
+  <div class="separator"></div>
+
+  <!-- Secciones de resultados -->
+  <div class="results-sections">
+    <!-- Álbumes -->
+    <div *ngIf="isAlbumsActive" class="result-section albums-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <i class="section-icon">💿</i>
+          Álbumes
+        </h2>
+        <div class="section-count">{{ albumsCount }} resultado{{ albumsCount !== 1 ? 's' : '' }}</div>
+      </div>
+
+      <!-- Loading state -->
+      <div *ngIf="showAlbumsLoading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Cargando álbumes...</p>
+      </div>
+
+      <!-- Error state -->
+      <div *ngIf="showAlbumsError" class="error-state">
+        <i class="error-icon">⚠️</i>
+        <p>{{ albumsError }}</p>
+        <button class="retry-btn" (click)="onSearch()">Reintentar</button>
+      </div>
+
+      <!-- Empty state -->
+      <div *ngIf="showEmptyAlbumsState" class="empty-state">
+        <i class="empty-icon">💿</i>
+        <p>No se encontraron álbumes</p>
+        <button class="reset-btn" (click)="resetSearch()">Ver álbumes populares</button>
+      </div>
+
+      <!-- Albums grid -->
+      <div *ngIf="showAlbumsList" class="cover-grid">
+        <div
+          *ngFor="let album of albums"
+          class="cover-card"
+          (click)="goToAlbum(album.slug)">
+
+          <!-- Album cover -->
+          <div class="cover">
+            <img
+              *ngIf="getAlbumCover(album.id)"
+              [src]="getAlbumCover(album.id)"
+              [alt]="album.name"
+              class="cover-image"
+              loading="lazy">
+
+            <!-- Placeholder while loading -->
+            <div *ngIf="!getAlbumCover(album.id)" class="cover-placeholder">
+              <i class="placeholder-icon">💿</i>
+            </div>
+
+            <!-- Play button overlay -->
+            <div class="play-overlay">
+              <button class="play-btn">
+                <i class="play-icon">▶️</i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Album info -->
+          <div class="cover-info">
+            <h3 class="cover-title" [title]="album.name">{{ album.name }}</h3>
+            <p class="cover-description" [title]="album.description">{{ album.description }}</p>
+
+            <!-- Album stats -->
+            <div class="album-stats">
+              <span class="stat-item">
+                <i class="stat-icon">❤️</i>
+                {{ album.likeCount }}
+              </span>
+              <span class="stat-item">
+                <i class="stat-icon">▶️</i>
+                {{ album.allPlaysCount }}
+              </span>
+              <span class="stat-item">
+                <i class="stat-icon">🎵</i>
+                {{ album.songs?.length || 0 }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Canciones -->
+    <div *ngIf="isSongsActive" class="result-section songs-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <i class="section-icon">🎵</i>
+          Canciones
+        </h2>
+        <div class="section-count">{{ songsCount }} resultado{{ songsCount !== 1 ? 's' : '' }}</div>
+      </div>
+
+      <!-- Loading state -->
+      <div *ngIf="showSongsLoading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Cargando canciones...</p>
+      </div>
+
+      <!-- Error state -->
+      <div *ngIf="showSongsError" class="error-state">
+        <i class="error-icon">⚠️</i>
+        <p>{{ songsError }}</p>
+        <button class="retry-btn" (click)="onSearch()">Reintentar</button>
+      </div>
+
+      <!-- Empty state -->
+      <div *ngIf="showEmptySongsState" class="empty-state">
+        <i class="empty-icon">🎵</i>
+        <p>No se encontraron canciones</p>
+        <button class="reset-btn" (click)="resetSearch()">Ver canciones populares</button>
+      </div>
+
+      <!-- Songs grid -->
+      <div *ngIf="showSongsList" class="cover-grid">
+        <div
+          *ngFor="let song of songs"
+          class="cover-card"
+          (click)="playSong(song)">
+
+          <!-- Song cover -->
+          <div class="cover">
+            <img
+              *ngIf="getSongCover(song.id)"
+              [src]="getSongCover(song.id)"
+              [alt]="song.name"
+              class="cover-image"
+              loading="lazy">
+
+            <!-- Placeholder while loading -->
+            <div *ngIf="!getSongCover(song.id)" class="cover-placeholder">
+              <i class="placeholder-icon">🎵</i>
+            </div>
+
+            <!-- Play button overlay -->
+            <div class="play-overlay">
+              <button class="play-btn">
+                <i class="play-icon">▶️</i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Song info -->
+          <div class="cover-info">
+            <h3 class="cover-title" [title]="song.name">{{ song.name }}</h3>
+            <p class="cover-description" [title]="song.description">{{ song.description }}</p>
+
+            <!-- Song stats -->
+            <div class="album-stats">
+              <span class="stat-item">
+                <i class="stat-icon">❤️</i>
+                {{ song.likes }}
+              </span>
+              <span class="stat-item">
+                <i class="stat-icon">▶️</i>
+                {{ song.playCount }}
+              </span>
+              <span class="stat-item">
+                <i class="stat-icon">⏱️</i>
+                {{ formatDuration(song.duration) }}
+              </span>
+            </div>
+
+            <!-- Song genres -->
+            <div class="song-genres" *ngIf="song.genero && song.genero.length > 0">
+              <span
+                *ngFor="let genre of song.genero.slice(0, 2); let last = last"
+                class="genre-tag">
+                {{ genre.name }}<span *ngIf="!last">, </span>
+              </span>
+              <span *ngIf="song.genero.length > 2" class="genre-more">
+                +{{ song.genero.length - 2 }} más
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Artistas -->
+    <div *ngIf="filters[2].active" class="result-section artists-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <i class="section-icon">🎤</i>
+          Artistas
+        </h2>
+        <div class="section-count">0 resultados</div>
+      </div>
+      <div class="empty-state">
+        <i class="empty-icon">🎤</i>
+        <p>No se encontraron artistas</p>
+      </div>
+    </div>
+
+    <!-- Oyentes -->
+    <div *ngIf="filters[3].active" class="result-section listeners-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <i class="section-icon">👥</i>
+          Oyentes
+        </h2>
+        <div class="section-count">0 resultados</div>
+      </div>
+      <div class="empty-state">
+        <i class="empty-icon">👥</i>
+        <p>No se encontraron oyentes</p>
+      </div>
+    </div>
+  </div>
+</div>

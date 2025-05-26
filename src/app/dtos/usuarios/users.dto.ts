@@ -1,6 +1,8 @@
+// src/app/dtos/usuarios/users.dto.ts
 export interface UserGet {
   id: number;
   username: string;
+  rol: string;
   urlFoto: string;
   slug: string;
   followersCount: number;

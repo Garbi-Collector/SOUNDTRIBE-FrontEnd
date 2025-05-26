@@ -363,15 +363,15 @@
 
           <div class="row mb-4">
             <div class="col-md-4">
-              <div class="album-cover" style="border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-medium);">
+              <div class="cover" style="border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-medium);">
                 <img [src]="portadaPreview || 'assets/img/default-album.png'" alt="Portada del álbum" class="img-fluid">
               </div>
             </div>
 
             <div class="col-md-8">
-              <h4 class="album-title" style="font-weight: 600; color: var(--dark-text);">{{ albumForm.get('albumInfo.name')?.value || 'Título del álbum' }}</h4>
+              <h4 class="cover-title" style="font-weight: 600; color: var(--dark-text);">{{ albumForm.get('albumInfo.name')?.value || 'Título del álbum' }}</h4>
               <p class="badge text-bg-primary" style="background: var(--gradient-primary) !important; border: none;">{{ albumType || 'Tipo de álbum' }}</p>
-              <p class="album-description" style="color: var(--dark-text-secondary);">{{ albumForm.get('albumInfo.description')?.value || 'Sin descripción' }}</p>
+              <p class="cover-description" style="color: var(--dark-text-secondary);">{{ albumForm.get('albumInfo.description')?.value || 'Sin descripción' }}</p>
             </div>
           </div>
 

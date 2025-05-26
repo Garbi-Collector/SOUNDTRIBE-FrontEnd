@@ -199,7 +199,7 @@
   padding: 10px 0;
 }
 
-.album-card {
+.cover-card {
   flex: 0 0 auto;
   width: 160px;
   cursor: pointer;
@@ -208,20 +208,20 @@
   overflow: hidden;
 }
 
-:host-context(body.dark-theme) .album-card {
+:host-context(body.dark-theme) .cover-card {
   background-color: rgba(255, 255, 255, 0.05);
 }
 
-:host-context(body:not(.dark-theme)) .album-card {
+:host-context(body:not(.dark-theme)) .cover-card {
   background-color: rgba(0, 0, 0, 0.05);
 }
 
-.album-card:hover {
+.cover-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
-.album-cover {
+.cover {
   position: relative;
   width: 160px;
   height: 160px;
@@ -229,7 +229,7 @@
   border-radius: 8px 8px 0 0;
 }
 
-.album-cover img {
+.cover img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -249,12 +249,12 @@
   opacity: 0.6;
 }
 
-.album-title {
+.cover-title {
   padding: 10px;
   text-align: center;
 }
 
-.album-title h5 {
+.cover-title h5 {
   margin: 0;
   font-size: 0.9rem;
   font-weight: 500;
@@ -544,11 +544,11 @@
   }
 
   /* Ajustes para la sección de álbumes en móvil */
-  .album-card {
+  .cover-card {
     width: 140px;
   }
 
-  .album-cover {
+  .cover {
     width: 140px;
     height: 140px;
   }

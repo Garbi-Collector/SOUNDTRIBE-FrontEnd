@@ -76,7 +76,14 @@ export class PlayerService {
   }
 
   // Reproducir una canción usando streaming
-  playSong(song: ResponseSongDto, albumCover: SafeUrl | null, owner: UserDescription | null, featuredArtists: UserDescription[], queue: ResponseSongDto[] = [], currentIndex: number = 0): void {
+  playSong(
+    song: ResponseSongDto,
+    albumCover: SafeUrl | null,
+    owner: UserDescription | null,
+    featuredArtists: UserDescription[],
+    queue: ResponseSongDto[] = [],
+    currentIndex: number = 0
+  ): void {
     console.log('🎵 PlayerService: Iniciando reproducción de canción:', song.name);
 
     // Marcar que estamos cambiando de canción

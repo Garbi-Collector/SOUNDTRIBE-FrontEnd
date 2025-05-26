@@ -1,3 +1,4 @@
+// src/app/services/categoria.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BackEndRoutesService } from '../back-end.routes.service';

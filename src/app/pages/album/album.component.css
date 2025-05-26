@@ -27,7 +27,7 @@
   justify-content: center;
 }
 
-.album-cover {
+.cover {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -35,7 +35,7 @@
   transition: transform 0.3s ease;
 }
 
-.album-cover:hover {
+.cover:hover {
   transform: scale(1.03);
 }
 
@@ -57,7 +57,7 @@
 }
 
 /* Estilos para la información del álbum */
-.album-title {
+.cover-title {
   font-size: 2.2rem;
   font-weight: 700;
   margin-bottom: 10px;
@@ -118,7 +118,7 @@
   font-size: 1.1rem;
 }
 
-.album-description {
+.cover-description {
   margin-top: 20px;
   color: var(--dark-text-secondary);
   font-size: 1rem;
@@ -241,7 +241,7 @@
     padding: 15px;
   }
 
-  .album-title {
+  .cover-title {
     font-size: 1.8rem;
     margin-top: 15px;
   }

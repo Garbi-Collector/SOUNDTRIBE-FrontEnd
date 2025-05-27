@@ -1,5 +1,5 @@
 footer {
-  position: relative; /* Asegúrate de que no esté fixed o absolute */
+  position: absolute; /* Asegúrate de que no esté fixed o absolute */
   width: 100%;
 }
 /* Asegúrate de que el body y html ocupen todo el alto de la pantalla */

@@ -17,6 +17,7 @@ import { UserDescription } from '../../dtos/usuarios/users.dto';
 export class MiniPlayerComponent implements OnInit, OnDestroy {
   playerState: PlayerState | null = null;
   isExpanded = false;
+  isHidden = false; // Nuevo estado para ocultar el reproductor
   loading = false;
   voteLoading = false;
   hasLiked = false;
@@ -53,6 +54,11 @@ export class MiniPlayerComponent implements OnInit, OnDestroy {
       if (state?.currentSong) {
         this.checkUserVotes(state.currentSong.id);
       }
+
+      // Si no hay canción reproduciéndose, resetear estados
+      if (!state?.currentSong) {
+        this.resetPlayerStates();
+      }
     });
   }
 
@@ -62,9 +68,45 @@ export class MiniPlayerComponent implements OnInit, OnDestroy {
     }
   }
 
+  // MÉTODOS DE CONTROL DE ESTADOS DEL REPRODUCTOR
+
+  /**
+   * Alternar entre estado compacto y expandido
+   */
   toggleExpand(): void {
+    if (this.isHidden) return; // No hacer nada si está oculto
+
     this.isExpanded = !this.isExpanded;
   }
+
+  /**
+   * Ocultar el reproductor (solo mostrar botón para levantar)
+   */
+  hidePlayer(): void {
+    this.isHidden = true;
+    this.isExpanded = false; // Asegurar que no esté expandido
+  }
+
+  /**
+   * Mostrar el reproductor (pasar de oculto a compacto)
+   */
+  showPlayer(): void {
+    this.isHidden = false;
+    this.isExpanded = false; // Mostrar en estado compacto
+  }
+
+  /**
+   * Resetear todos los estados del reproductor
+   */
+  private resetPlayerStates(): void {
+    this.isExpanded = false;
+    this.isHidden = false;
+    this.hasLiked = false;
+    this.hasDisliked = false;
+    this.progressPercentage = 0;
+  }
+
+  // MÉTODOS DE CONTROL DE REPRODUCCIÓN
 
   togglePlay(): void {
     if (this.loading) return;
@@ -75,14 +117,14 @@ export class MiniPlayerComponent implements OnInit, OnDestroy {
     if (this.loading) return;
     this.loading = true;
     this.playerService.previousTrack();
-    setTimeout(() => { this.loading = false; }, 500); // Pequeño delay para evitar múltiples clics rápidos
+    setTimeout(() => { this.loading = false; }, 500);
   }
 
   nextTrack(): void {
     if (this.loading) return;
     this.loading = true;
     this.playerService.nextTrack();
-    setTimeout(() => { this.loading = false; }, 500); // Pequeño delay para evitar múltiples clics rápidos
+    setTimeout(() => { this.loading = false; }, 500);
   }
 
   seekTo(event: MouseEvent): void {
@@ -98,9 +140,12 @@ export class MiniPlayerComponent implements OnInit, OnDestroy {
     return this.playerService.formatTime(seconds);
   }
 
+  // MÉTODOS DE VOTACIÓN
+
   vote(voteType: VoteType): void {
     if (this.voteLoading || !this.playerState?.currentSong) return;
     this.voteLoading = true;
+
     // Si ya ha votado con el mismo tipo, eliminar el voto
     if ((voteType === VoteType.LIKE && this.hasLiked) ||
       (voteType === VoteType.DISLIKE && this.hasDisliked)) {
@@ -144,67 +189,6 @@ export class MiniPlayerComponent implements OnInit, OnDestroy {
     }
   }
 
-  goToArtistProfile(slug: string | undefined): void {
-    if (slug) {
-      this.router.navigate(['/perfil', slug]);
-    }
-  }
-
-  goToArtistProfileById(id: number): void {
-    this.userService.getUserDescription(id).subscribe({
-      next: (artist) => {
-        if (artist.slug) {
-          this.goToArtistProfile(artist.slug);
-        }
-      },
-      error: (err) => {
-        console.error('Error al obtener la descripción del usuario:', err);
-      }
-    });
-  }
-
-
-  // Método para reproducir una canción específica de la queue
-  playSongFromQueue(index: number): void {
-    if (this.loading || !this.playerState?.queue || index === this.playerState.currentIndex) return;
-
-    this.loading = true;
-    const song = this.playerState.queue[index];
-
-    // Reproducir la canción seleccionada usando el PlayerService
-    this.playerService.playSong(
-      song,
-      this.playerState.albumCover,
-      this.playerState.owner,
-      this.playerState.featuredArtists,
-      this.playerState.queue,
-      index
-    );
-
-    setTimeout(() => { this.loading = false; }, 500); // Pequeño delay para evitar múltiples clics rápidos
-  }
-
-  // Obtener la portada del álbum para una canción en la queue
-  getAlbumCoverForSong(song: ResponseSongDto): SafeUrl | null {
-    // En este caso simple retornamos la portada actual,
-    // ya que no tenemos información de portada por cada canción individual
-    return this.albumCoverUrl;
-  }
-
-  // Obtener la información del artista para una canción en la queue
-  getArtistForSong(song: ResponseSongDto): UserDescription | null | undefined {
-    // Si el owner es el mismo para todas las canciones, retornamos el owner actual
-    return this.playerState?.owner;
-  }
-
-  private updateProgressPercentage(): void {
-    if (this.playerState?.duration && this.playerState.duration > 0) {
-      this.progressPercentage = (this.playerState.currentTime / this.playerState.duration) * 100;
-    } else {
-      this.progressPercentage = 0;
-    }
-  }
-
   private checkUserVotes(songId: number): void {
     this.voteLoading = true;
     // Usar forkJoin para hacer las dos solicitudes en paralelo
@@ -226,66 +210,101 @@ export class MiniPlayerComponent implements OnInit, OnDestroy {
     });
   }
 
-// Agregar estos métodos al final de la clase MiniPlayerComponent, antes del cierre de la clase
+  // MÉTODOS DE NAVEGACIÓN
 
-// MÉTODOS DE CONTROL DE VOLUMEN
+  goToArtistProfile(slug: string | undefined): void {
+    if (slug) {
+      this.router.navigate(['/perfil', slug]);
+    }
+  }
 
-  /**
-   * Cambiar el volumen usando un slider
-   */
+  goToArtistProfileById(id: number): void {
+    this.userService.getUserDescription(id).subscribe({
+      next: (artist) => {
+        if (artist.slug) {
+          this.goToArtistProfile(artist.slug);
+        }
+      },
+      error: (err) => {
+        console.error('Error al obtener la descripción del usuario:', err);
+      }
+    });
+  }
+
+  // MÉTODOS DE COLA DE REPRODUCCIÓN
+
+  playSongFromQueue(index: number): void {
+    if (this.loading || !this.playerState?.queue || index === this.playerState.currentIndex) return;
+
+    this.loading = true;
+    const song = this.playerState.queue[index];
+
+    // Reproducir la canción seleccionada usando el PlayerService
+    this.playerService.playSong(
+      song,
+      this.playerState.albumCover,
+      this.playerState.owner,
+      this.playerState.featuredArtists,
+      this.playerState.queue,
+      index
+    );
+
+    setTimeout(() => { this.loading = false; }, 500);
+  }
+
+  getAlbumCoverForSong(song: ResponseSongDto): SafeUrl | null {
+    return this.albumCoverUrl;
+  }
+
+  getArtistForSong(song: ResponseSongDto): UserDescription | null | undefined {
+    return this.playerState?.owner;
+  }
+
+  // MÉTODOS DE CONTROL DE VOLUMEN
+
   setVolume(event: Event): void {
     const target = event.target as HTMLInputElement;
     const volume = parseInt(target.value, 10);
     this.playerService.setVolume(volume);
   }
 
-  /**
-   * Alternar silencio
-   */
   toggleMute(): void {
     this.playerService.toggleMute();
   }
 
-  /**
-   * Aumentar volumen con botón
-   */
   increaseVolume(): void {
     this.playerService.increaseVolume(10);
   }
 
-  /**
-   * Disminuir volumen con botón
-   */
   decreaseVolume(): void {
     this.playerService.decreaseVolume(10);
   }
 
-  /**
-   * Obtener el icono de volumen apropiado
-   */
   getVolumeIcon(): string {
     return this.playerService.getVolumeIcon();
   }
 
-  /**
-   * Obtener el nivel de volumen descriptivo
-   */
   getVolumeLevel(): string {
     return this.playerService.getVolumeLevel();
   }
 
-  /**
-   * Controlar volumen con rueda del mouse
-   */
   onVolumeWheel(event: WheelEvent): void {
     event.preventDefault();
 
     if (event.deltaY < 0) {
-      // Scroll hacia arriba = aumentar volumen
       this.increaseVolume();
     } else {
-      // Scroll hacia abajo = disminuir volumen
       this.decreaseVolume();
+    }
+  }
+
+  // MÉTODO AUXILIAR
+
+  private updateProgressPercentage(): void {
+    if (this.playerState?.duration && this.playerState.duration > 0) {
+      this.progressPercentage = (this.playerState.currentTime / this.playerState.duration) * 100;
+    } else {
+      this.progressPercentage = 0;
     }
   }
 }

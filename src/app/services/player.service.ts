@@ -17,6 +17,8 @@ export interface PlayerState {
   currentIndex: number;
   isLoading: boolean;
   bufferedTime: number;
+  volume: number; // Añadido: nivel de volumen (0-100)
+  isMuted: boolean; // Añadido: estado de silencio
 }
 
 @Injectable({
@@ -25,7 +27,8 @@ export interface PlayerState {
 export class PlayerService {
   private audio: HTMLAudioElement;
   private updateInterval: any;
-  private isChangingSong = false; // Nueva bandera para controlar cambios de canción
+  private isChangingSong = false;
+  private previousVolume = 50; // Para recordar el volumen antes de silenciar
 
   // Estado inicial del reproductor
   private initialState: PlayerState = {
@@ -39,7 +42,9 @@ export class PlayerService {
     queue: [],
     currentIndex: -1,
     isLoading: false,
-    bufferedTime: 0
+    bufferedTime: 0,
+    volume: 50, // Volumen inicial al 50%
+    isMuted: false
   };
 
   // BehaviorSubject para mantener y emitir el estado del reproductor
@@ -51,6 +56,9 @@ export class PlayerService {
     private sanitizer: DomSanitizer
   ) {
     this.audio = new Audio();
+    // Configurar volumen inicial
+    this.audio.volume = 0.5; // 50%
+
     // Configurar eventos del elemento de audio
     this.audio.addEventListener('timeupdate', this.updateCurrentTime.bind(this));
     this.audio.addEventListener('loadedmetadata', this.handleMetadata.bind(this));
@@ -61,6 +69,7 @@ export class PlayerService {
     this.audio.addEventListener('waiting', this.handleWaiting.bind(this));
     this.audio.addEventListener('playing', this.handlePlaying.bind(this));
     this.audio.addEventListener('progress', this.updateBufferedTime.bind(this));
+    this.audio.addEventListener('volumechange', this.handleVolumeChange.bind(this));
     // Configurar preload para streaming optimizado
     this.audio.preload = 'metadata';
   }
@@ -73,6 +82,94 @@ export class PlayerService {
   // Actualizar el estado del reproductor
   private updateState(newState: Partial<PlayerState>): void {
     this.playerStateSubject.next({ ...this.currentState, ...newState });
+  }
+
+  // MÉTODOS DE CONTROL DE VOLUMEN
+
+  // Cambiar el volumen (0-100)
+  setVolume(volume: number): void {
+    // Validar rango
+    const clampedVolume = Math.max(0, Math.min(100, volume));
+    console.log('🔊 PlayerService: Cambiando volumen a:', clampedVolume + '%');
+
+    // Actualizar el elemento de audio (HTMLAudioElement usa 0-1)
+    this.audio.volume = clampedVolume / 100;
+
+    // Si el volumen es 0, marcar como silenciado
+    if (clampedVolume === 0) {
+      this.updateState({ volume: clampedVolume, isMuted: true });
+    } else {
+      // Si había volumen y estaba silenciado, quitarle el mute
+      this.updateState({
+        volume: clampedVolume,
+        isMuted: false
+      });
+    }
+  }
+
+  // Aumentar volumen en incrementos (por defecto 10%)
+  increaseVolume(increment: number = 10): void {
+    const currentVolume = this.currentState.volume;
+    const newVolume = Math.min(100, currentVolume + increment);
+    console.log('🔊+ PlayerService: Aumentando volumen de', currentVolume + '% a', newVolume + '%');
+    this.setVolume(newVolume);
+  }
+
+  // Disminuir volumen en incrementos (por defecto 10%)
+  decreaseVolume(increment: number = 10): void {
+    const currentVolume = this.currentState.volume;
+    const newVolume = Math.max(0, currentVolume - increment);
+    console.log('🔊- PlayerService: Disminuyendo volumen de', currentVolume + '% a', newVolume + '%');
+    this.setVolume(newVolume);
+  }
+
+  // Alternar silencio
+  toggleMute(): void {
+    console.log('🔇 PlayerService: Toggle mute solicitado');
+
+    if (this.currentState.isMuted) {
+      // Restaurar volumen anterior
+      console.log('🔊 PlayerService: Restaurando volumen a:', this.previousVolume + '%');
+      this.setVolume(this.previousVolume);
+    } else {
+      // Guardar volumen actual y silenciar
+      this.previousVolume = this.currentState.volume;
+      console.log('🔇 PlayerService: Silenciando, volumen guardado:', this.previousVolume + '%');
+      this.audio.volume = 0;
+      this.updateState({ isMuted: true });
+    }
+  }
+
+  // Silenciar
+  mute(): void {
+    if (!this.currentState.isMuted) {
+      console.log('🔇 PlayerService: Silenciando audio');
+      this.previousVolume = this.currentState.volume;
+      this.audio.volume = 0;
+      this.updateState({ isMuted: true });
+    }
+  }
+
+  // Quitar silencio
+  unmute(): void {
+    if (this.currentState.isMuted) {
+      console.log('🔊 PlayerService: Quitando silencio');
+      this.setVolume(this.previousVolume);
+    }
+  }
+
+  // Event handler para cambios de volumen
+  private handleVolumeChange(): void {
+    const audioVolume = Math.round(this.audio.volume * 100);
+    console.log('🔊 PlayerService: [EVENTO] volumechange - Volumen:', audioVolume + '%');
+
+    // Sincronizar estado si cambió externamente
+    if (audioVolume !== this.currentState.volume) {
+      this.updateState({
+        volume: audioVolume,
+        isMuted: audioVolume === 0
+      });
+    }
   }
 
   // Reproducir una canción usando streaming
@@ -104,7 +201,7 @@ export class PlayerService {
       duration: song.duration,
       currentTime: 0,
       bufferedTime: 0,
-      isPlaying: false // Asegurar que empiece en pausa hasta que esté listo
+      isPlaying: false
     });
 
     // Obtener la URL de streaming directamente
@@ -156,7 +253,7 @@ export class PlayerService {
 
     if (this.currentState.isLoading || this.isChangingSong) {
       console.log('⏳ PlayerService: No se puede hacer toggle, está cargando o cambiando canción');
-      return; // No hacer nada si está cargando o cambiando canción
+      return;
     }
 
     if (this.currentState.isPlaying) {
@@ -178,7 +275,6 @@ export class PlayerService {
     console.log('🛑 PlayerService: Deteniendo canción actual');
     this.audio.pause();
     this.audio.currentTime = 0;
-    // No limpiar el src aquí para evitar conflictos durante el cambio
     this.updateState({
       isPlaying: false,
       isLoading: false,
@@ -198,8 +294,6 @@ export class PlayerService {
       return;
     }
 
-    // Si estamos en los primeros 3 segundos de la canción, ir a la anterior
-    // Si no, reiniciar la canción actual
     if (this.audio.currentTime > 3) {
       console.log('🔄 PlayerService: Reiniciando canción actual (más de 3 segundos)');
       this.audio.currentTime = 0;
@@ -230,8 +324,6 @@ export class PlayerService {
       return;
     }
 
-    // Si hay una canción siguiente, reproducirla
-    // Si estamos en la última canción, volver a la primera (comportamiento circular)
     if (currentIndex < queue.length - 1) {
       const nextIndex = currentIndex + 1;
       const nextSong = queue[nextIndex];
@@ -245,7 +337,6 @@ export class PlayerService {
         nextIndex
       );
     } else {
-      // Estamos en la última canción, volver a la primera
       console.log('🔄 PlayerService: Volviendo a la primera canción (comportamiento circular)');
       this.playSong(
         queue[0],
@@ -284,10 +375,7 @@ export class PlayerService {
 
     this.updateState({ isLoading: false });
 
-    // Solo auto-reproducir si no estamos en proceso de cambio de canción
-    // y si hay una canción actual y no está reproduciéndose
     console.log('🚀 PlayerService: Auto-reproduciendo tras canplay');
-    // Pequeño delay para asegurar que todo esté estable
     setTimeout(() => {
       if (!this.isChangingSong && !this.currentState.isPlaying) {
         this.play();
@@ -297,7 +385,6 @@ export class PlayerService {
 
   private handleWaiting(): void {
     console.log('⏳ PlayerService: [EVENTO] waiting - Esperando más datos...');
-    // Solo mostrar loading si no estamos cambiando canción
     if (!this.isChangingSong) {
       this.updateState({ isLoading: true });
     }
@@ -320,7 +407,7 @@ export class PlayerService {
     if (this.audio.buffered.length > 0) {
       const bufferedEnd = this.audio.buffered.end(this.audio.buffered.length - 1);
       const previousBuffered = this.currentState.bufferedTime;
-      if (Math.abs(bufferedEnd - previousBuffered) > 1) { // Solo log si cambió significativamente
+      if (Math.abs(bufferedEnd - previousBuffered) > 1) {
         console.log('📊 PlayerService: [EVENTO] progress - Buffer actualizado:', {
           bufferedTime: bufferedEnd,
           duration: this.audio.duration,
@@ -347,7 +434,6 @@ export class PlayerService {
   // Manejar el final de la canción
   private handleSongEnd(): void {
     console.log('🏁 PlayerService: [EVENTO] ended - Canción terminada, yendo a siguiente');
-    // Al finalizar la canción, ir a la siguiente (con comportamiento circular)
     this.nextTrack();
   }
 
@@ -394,5 +480,33 @@ export class PlayerService {
   // Verificar si hay suficientes datos buffereados para reproducir
   canPlayThrough(): boolean {
     return this.audio.readyState >= 4; // HAVE_ENOUGH_DATA
+  }
+
+  // MÉTODOS UTILITARIOS PARA VOLUMEN
+
+  // Obtener el icono de volumen apropiado según el nivel
+  getVolumeIcon(): string {
+    if (this.currentState.isMuted || this.currentState.volume === 0) {
+      return '🔇'; // Silenciado
+    } else if (this.currentState.volume < 30) {
+      return '🔈'; // Volumen bajo
+    } else if (this.currentState.volume < 70) {
+      return '🔉'; // Volumen medio
+    } else {
+      return '🔊'; // Volumen alto
+    }
+  }
+
+  // Obtener el nivel de volumen como string descriptivo
+  getVolumeLevel(): string {
+    if (this.currentState.isMuted || this.currentState.volume === 0) {
+      return 'Silenciado';
+    } else if (this.currentState.volume < 30) {
+      return 'Bajo';
+    } else if (this.currentState.volume < 70) {
+      return 'Medio';
+    } else {
+      return 'Alto';
+    }
   }
 }

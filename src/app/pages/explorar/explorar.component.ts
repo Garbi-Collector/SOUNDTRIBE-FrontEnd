@@ -14,6 +14,7 @@ import { SongsService } from "../../services/songs.service";
 import { PlayerService } from "../../services/player.service";
 import { UserService } from "../../services/user.service";
 import { UserDescription, UserGet } from "../../dtos/usuarios/users.dto";
+import {BackEndRoutesService} from "../../back-end.routes.service";
 
 interface FilterType {
   key: 'albums' | 'songs' | 'artists' | 'listeners';
@@ -28,6 +29,16 @@ interface FilterType {
 })
 export class ExplorarComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
+
+  // Configuración de elementos visibles por defecto
+  private readonly DEFAULT_VISIBLE_ITEMS = 4;
+
+  // Estados de expansión para cada sección
+  showAllAlbums = false;
+  showAllSongs = false;
+  showAllArtists = false;
+  showAllListeners = false;
+
 
   // Buscador
   searchTerm = '';
@@ -75,6 +86,7 @@ export class ExplorarComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private sanitizer: DomSanitizer,
     private router: Router,
+    private routesBack: BackEndRoutesService,
     private playerService: PlayerService
   ) {}
 
@@ -87,6 +99,116 @@ export class ExplorarComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
+
+
+  // =================== NUEVOS MÉTODOS PARA MANEJO DE VISTA COLAPSADA ===================
+
+  /**
+   * Expande o colapsa la sección de álbumes
+   */
+  toggleAlbumsView(): void {
+    this.showAllAlbums = !this.showAllAlbums;
+  }
+
+  /**
+   * Expande o colapsa la sección de canciones
+   */
+  toggleSongsView(): void {
+    this.showAllSongs = !this.showAllSongs;
+  }
+
+  /**
+   * Expande o colapsa la sección de artistas
+   */
+  toggleArtistsView(): void {
+    this.showAllArtists = !this.showAllArtists;
+  }
+
+  /**
+   * Expande o colapsa la sección de oyentes
+   */
+  toggleListenersView(): void {
+    this.showAllListeners = !this.showAllListeners;
+  }
+
+  /**
+   * Obtiene los álbumes a mostrar según el estado de expansión
+   */
+  get displayedAlbums(): ResponseAlbumDto[] {
+    if (this.showAllAlbums || this.hasSearched) {
+      return this.albums;
+    }
+    return this.albums.slice(0, this.DEFAULT_VISIBLE_ITEMS);
+  }
+
+  /**
+   * Obtiene las canciones a mostrar según el estado de expansión
+   */
+  get displayedSongs(): ResponseSongPortadaDto[] {
+    if (this.showAllSongs || this.hasSearched) {
+      return this.songs;
+    }
+    return this.songs.slice(0, this.DEFAULT_VISIBLE_ITEMS);
+  }
+
+  /**
+   * Obtiene los artistas a mostrar según el estado de expansión
+   */
+  get displayedArtists(): UserGet[] {
+    if (this.showAllArtists || this.hasSearched) {
+      return this.artists;
+    }
+    return this.artists.slice(0, this.DEFAULT_VISIBLE_ITEMS);
+  }
+
+  /**
+   * Obtiene los oyentes a mostrar según el estado de expansión
+   */
+  get displayedListeners(): UserGet[] {
+    if (this.showAllListeners || this.hasSearched) {
+      return this.listeners;
+    }
+    return this.listeners.slice(0, this.DEFAULT_VISIBLE_ITEMS);
+  }
+
+  /**
+   * Verifica si debe mostrar el botón "Ver más" para álbumes
+   */
+  get shouldShowAlbumsToggle(): boolean {
+    return !this.hasSearched && this.albums.length > this.DEFAULT_VISIBLE_ITEMS;
+  }
+
+  /**
+   * Verifica si debe mostrar el botón "Ver más" para canciones
+   */
+  get shouldShowSongsToggle(): boolean {
+    return !this.hasSearched && this.songs.length > this.DEFAULT_VISIBLE_ITEMS;
+  }
+
+  /**
+   * Verifica si debe mostrar el botón "Ver más" para artistas
+   */
+  get shouldShowArtistsToggle(): boolean {
+    return !this.hasSearched && this.artists.length > this.DEFAULT_VISIBLE_ITEMS;
+  }
+
+  /**
+   * Verifica si debe mostrar el botón "Ver más" para oyentes
+   */
+  get shouldShowListenersToggle(): boolean {
+    return !this.hasSearched && this.listeners.length > this.DEFAULT_VISIBLE_ITEMS;
+  }
+
+  /**
+   * Resetea todos los estados de expansión cuando se realiza una búsqueda
+   */
+  private resetExpandedStates(): void {
+    this.showAllAlbums = false;
+    this.showAllSongs = false;
+    this.showAllArtists = false;
+    this.showAllListeners = false;
+  }
+
 
   private loadGenres() {
     this.loadingGenres = true;
@@ -436,7 +558,7 @@ export class ExplorarComponent implements OnInit, OnDestroy {
    * Navega al perfil del usuario
    */
   goToUserProfile(slug: string): void {
-    this.router.navigate(['/profile', slug]);
+    this.router.navigate(['/perfil', slug]);
   }
 
   /**
@@ -466,23 +588,62 @@ export class ExplorarComponent implements OnInit, OnDestroy {
     // Obtener la portada de la canción
     const albumCover = this.getSongCover(song.id);
 
+
+
     // Por ahora, pasamos datos básicos del owner (se puede mejorar obteniendo datos completos del usuario)
-    const owner: UserDescription = {
-      artistasSeguidos: [], createdAt: "", followedsCount: 0, followersCount: 0, rol: "", slug: "", urlimage: "",
-      id: song.owner,
-      username: `Usuario ${song.owner}`, // Placeholder
-      description: ''
-    };
+
 
     // Reproducir la canción
-    this.playerService.playSong(
-      songForPlayer,
-      albumCover,
-      owner,
-      [], // featuredArtists - se puede mejorar obteniendo datos completos
-      [songForPlayer], // queue con solo esta canción
-      0 // currentIndex
-    );
+    this.userService.getUserDescription(song.owner).subscribe({
+      next: (userDescription) => {
+
+        // Si no hay artistas en feat, pasamos un array vacío
+        const featIds = song.artistasFt || [];
+
+        // Creamos un array de observables de cada artista
+        const featObservables = featIds.map((id) => this.userService.getUserDescription(id));
+
+        forkJoin(featObservables).subscribe({
+          next: (featuredArtists) => {
+            this.playerService.playSong(
+              songForPlayer,
+              albumCover,
+              userDescription,
+              featuredArtists,
+              [songForPlayer],
+              0
+            );
+          },
+          error: (error) => {
+            console.error('Error al obtener artistas feat:', error);
+            // Podemos continuar solo con el owner si falla
+            this.playerService.playSong(
+              songForPlayer,
+              albumCover,
+              userDescription,
+              [],
+              [songForPlayer],
+              0
+            );
+          }
+        });
+
+      },
+      error: (err) => {
+        console.error('Error al obtener el owner:', err);
+        // Fallback si falla obtener el owner
+        this.playerService.playSong(
+          songForPlayer,
+          albumCover,
+          null,
+          [],
+          [songForPlayer],
+          0
+        );
+      }
+    });
+
+
   }
 
   /**
@@ -701,4 +862,16 @@ export class ExplorarComponent implements OnInit, OnDestroy {
     this.usersError = null;
     this.loadInitialContent();
   }
+
+  /**
+   * Genera la url completa de la imagen del usuario
+   */
+  getImageUrl(filename: string): string {
+    // Verificar si la URL ya incluye la ruta completa
+    if (filename.startsWith('http')) {
+      return filename;
+    }
+    return `${this.routesBack.userServiceUrl}/fotos/image/${filename}`;
+  }
+
 }

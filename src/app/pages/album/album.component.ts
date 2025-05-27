@@ -34,6 +34,7 @@ export class AlbumComponent implements OnInit {
   songVotes: Map<number, VoteType | null> = new Map();
   songVotesLoading: Map<number, boolean> = new Map();
   // Estado para el like del álbum
+  likeCount: number | null = null;
   albumLiked: boolean = false;
   albumLikeLoading: boolean = false;
   // Control de reproducción
@@ -67,6 +68,7 @@ export class AlbumComponent implements OnInit {
         this.isLoading = false;
       }
     });
+    this.checkIfAlbumIsLiked();
 
     // Suscribirse al estado del player para conocer la canción actual
     this.playerService.playerState$.subscribe(state => {
@@ -156,6 +158,8 @@ export class AlbumComponent implements OnInit {
 
         let userVotesObservable = of(null);
         let albumLikedObservable = of(false);
+        let likesCountObservable = of(0); // NUEVO observable para el conteo
+
 
         // Si el usuario está autenticado, cargar los votos actuales y el estado de like del álbum
         if (this.isAuthenticated) {
@@ -179,6 +183,19 @@ export class AlbumComponent implements OnInit {
         } else {
           console.log('[loadAlbumBySlug] Usuario no autenticado, omitiendo carga de votos y estado de like');
         }
+
+        // NUEVO: Cargar el conteo de likes siempre (autenticado o no)
+        likesCountObservable = this.albumService.getLikesCount(album.id).pipe(
+          tap(count => {
+            console.log('[loadAlbumBySlug] Conteo de likes:', count);
+            // Actualizar directamente el álbum
+            this.album!.likeCount = count;
+          }),
+          catchError(error => {
+            console.error('[loadAlbumBySlug] Error obteniendo conteo de likes:', error);
+            return of(0);
+          })
+        );
 
         // Crea un observable para los artistas invitados que siempre emite (incluso con array vacío)
         const featuredArtistsObservable = featuredArtistsObservables.length > 0
@@ -207,7 +224,8 @@ export class AlbumComponent implements OnInit {
           ),
           featuredArtists: featuredArtistsObservable,
           userVotes: userVotesObservable,
-          albumLiked: albumLikedObservable
+          albumLiked: albumLikedObservable,
+          likesCount: likesCountObservable
         });
       })
     ).subscribe({
@@ -219,6 +237,7 @@ export class AlbumComponent implements OnInit {
         console.log('[loadAlbumBySlug] Propietario asignado:', this.owner?.username);
         // Filtrar artistas nulos del resultado
         this.featuredArtists = results.featuredArtists.filter(artist => artist !== null) as UserDescription[];
+        console.log('[loadAlbumBySlug] LikeCount final:', this.album?.likeCount);
         console.log('[loadAlbumBySlug] Artistas invitados procesados:', this.featuredArtists.length);
         if (this.isAuthenticated) {
           console.timeEnd('loadUserVotes');
@@ -425,6 +444,36 @@ export class AlbumComponent implements OnInit {
   hasLikedAlbum(): boolean {
     return this.albumLiked;
   }
+
+
+  checkIfAlbumIsLiked(): void {
+    if (this.album) {
+      this.albumService.isAlbumLiked(this.album.id).subscribe({
+        next: (liked: boolean) => {
+          this.albumLiked = liked;
+        },
+        error: (error) => {
+          console.error('Error al verificar si el álbum fue likeado:', error);
+          this.albumLiked = false; // por si falla la petición
+        }
+      });
+    }
+  }
+
+
+  checkAlbumLikesCount(): void {
+    if (this.album) {
+      this.albumService.getLikesCount(this.album.id).subscribe({
+        next: (count: number) => {
+          this.likeCount = count;
+        },
+        error: (error) => {
+          console.error('Error al obtener la cantidad de likes del álbum:', error);
+        }
+      });
+    }
+  }
+
 
   // Verificar si una canción está reproduciéndose actualmente
   isPlaying(songId: number): boolean {

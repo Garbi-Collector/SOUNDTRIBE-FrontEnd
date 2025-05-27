@@ -22,3 +22,11 @@ footer {
   /* Asegúrate de que el footer esté al final, pero que no tape contenido */
   position: relative;
 }
+/* Header fijo en la parte superior */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000; /* Asegura que esté por encima de otros elementos */
+}

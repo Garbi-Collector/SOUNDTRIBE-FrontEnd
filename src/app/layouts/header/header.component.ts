@@ -5,7 +5,6 @@ import {ThemeService} from "../../services/theme.service";
 import {AuthService} from "../../services/auth.service";
 import {UserService} from "../../services/user.service";
 import {Router, RouterLink} from "@angular/router";
-import {BackEndRoutesService} from "../../back-end.routes.service";
 
 
 
@@ -28,9 +27,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   userFotoUrl: string | undefined;
   userSlug: string | undefined;
   currentUser: UserGet | null = null;
-  searchQuery: string = '';
   userList: UserGet[] = [];
-  filteredUsers: UserGet[] = [];
   isMobile: boolean = false;
   searchActive: boolean = false; // Por defecto activo en desktop
 
@@ -40,7 +37,6 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     private authService: AuthService,
     private userExperienceService: UserService,
     private router: Router,
-    private routesBack: BackEndRoutesService
   ) {
     this.themeService.theme$.subscribe(theme => {
       this.isLightTheme = theme === 'light';
@@ -48,98 +44,6 @@ export class HeaderComponent implements OnInit, AfterViewInit {
 
     // Verificar si es móvil al inicio
     this.checkScreenSize();
-  }
-
-
-
-  //  logo  - theme mode
-
-  /**
-   * Se ejecuta al hacer clic en el logo. Cambia el tema y previene navegación.
-   * @param event Evento del clic
-   */
-  onLogoClick(event: Event): void {
-    event.preventDefault(); // evita la navegación
-    this.toggleTheme();     // cambia el tema
-  }
-
-  /**
-   * cambia el tema de la app
-   */
-  toggleTheme(): void {
-    this.themeService.toggleTheme();
-  }
-
-
-
-  //  Buscador
-
-  /**
-   * filtra la lista de usuarios segun lo ingresado
-   */
-  filterUsers() {
-    if (this.searchQuery.trim() === '') {
-      this.filteredUsers = [];
-    } else {
-      this.filteredUsers = this.userList.filter(user =>
-        user.username.toLowerCase().includes(this.searchQuery.toLowerCase())
-      ).slice(0, 5); // Limitar a 5 resultados
-    }
-  }
-
-  /**
-   * redirige al perfil del usuario seleccionado
-   */
-  navigateToUserProfile(user: UserGet) {
-    if (user && user.slug) {
-      this.router.navigate(['/perfil', user.slug]);
-    } else if (user && user.id) {
-      // Fallback por si no hay slug
-      this.router.navigate(['/perfil', user.id]);
-    }
-    this.clearSearch();
-    if (this.isMobile) {
-      this.searchActive = false;
-    }
-  }
-
-  /**
-   * limpia el input y los resultados de busqueda
-   */
-  clearSearch() {
-    this.searchQuery = '';
-    this.filteredUsers = [];
-  }
-
-  /**
-   * alterna el buscador visible en moviles
-   */
-  toggleSearchMobile(event: Event): void {
-    event.stopPropagation();
-    this.searchActive = false; // <--- esto activa o desactiva
-
-    if (this.searchActive) {
-      setTimeout(() => {
-        const searchInput = document.querySelector('.search-container input');
-        if (searchInput) {
-          (searchInput as HTMLElement).focus();
-        }
-      }, 100);
-    } else {
-      this.clearSearch(); // si se cerró, limpia la búsqueda
-    }
-  }
-
-
-  /**
-   * Genera la url completa de la imagen del usuario
-   */
-  getImageUrl(filename: string): string {
-    // Verificar si la URL ya incluye la ruta completa
-    if (filename.startsWith('http')) {
-      return filename;
-    }
-    return `${this.routesBack.userServiceUrl}/fotos/image/${filename}`;
   }
 
 
@@ -188,28 +92,6 @@ export class HeaderComponent implements OnInit, AfterViewInit {
       const dropdownContainer = document.querySelector('.user-menu');
       if (dropdownContainer && !dropdownContainer.contains(event.target as Node)) {
         this.closeDropdown();
-      }
-    }
-
-    // Código existente para cerrar los resultados de búsqueda...
-    if (this.filteredUsers.length > 0) {
-      const searchContainer = document.querySelector('.search-container');
-      if (searchContainer && !searchContainer.contains(event.target as Node)) {
-        this.clearSearch();
-      }
-    }
-
-    // Código existente para cerrar la búsqueda en móvil...
-    if (this.isMobile && this.searchActive) {
-      const searchWrapper = document.querySelector('.search-wrapper');
-      const searchToggleBtn = document.querySelector('.search-toggle-btn');
-      if (
-        searchWrapper &&
-        !searchWrapper.contains(event.target as Node) &&
-        searchToggleBtn &&
-        !searchToggleBtn.contains(event.target as Node)
-      ) {
-        this.searchActive = false;
       }
     }
   }

@@ -1,5 +1,138 @@
 /* mini-player.component.css - Versión mejorada */
 
+.progress-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.time {
+  font-size: 0.900rem;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+.progress-bar-container {
+  flex-grow: 1;
+  height: 6px;
+  background-color: #ccc;
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: #007bff;
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+
+/* CSS adicional - agregar a mini-player.component.css */
+
+/* Asegurar que la barra de progreso mantenga ancho constante */
+.progress-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 300px; /* ⬅️ Ancho fijo */
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  z-index: 10;
+  border-radius: 0;
+}
+
+
+.progress-bar {
+  height: 100%;
+  background: var(--gradient-primary);
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: width 0.1s linear;
+  border-radius: 0;
+}
+
+/* Ajustar el contenedor principal para dejar espacio a la barra de progreso */
+.mini-player-container {
+  position: fixed;
+  bottom: 60px;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  background-color: var(--dark-bg-secondary);
+  border-top: 1px solid var(--dark-border);
+  box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  color: var(--dark-text);
+  padding-top: 8px; /* Espacio para la barra de progreso */
+}
+
+/* Nuevo contenedor para el contenido del reproductor compacto */
+.player-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  height: 70px;
+}
+
+/* Ajustar el botón de expandir para que esté encima de la barra de progreso */
+.expand-toggle {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 30px;
+  background: var(--gradient-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  z-index: 11; /* Por encima de la barra de progreso */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Ajustar el reproductor compacto */
+.player-compact {
+  display: block;
+  padding: 10px;
+  height: auto;
+}
+
+/* Asegurar que el indicador de progreso sea visible */
+.progress-bar::after {
+  content: '';
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  border: 2px solid var(--gradient-primary-end, #667eea);
+  opacity: 1;
+  transition: transform 0.15s ease;
+  z-index: 12;
+}
+
+/* Efecto hover para la barra de progreso */
+.progress-container:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.progress-container:hover .progress-bar::after {
+  transform: translateY(-50%) scale(1.2);
+}
+
 .mini-player-container {
   position: fixed;
   bottom: 60px; /* Alineado justo encima del footer */
@@ -709,7 +842,7 @@
   .player-compact {
     flex-wrap: wrap;
     height: auto;
-    padding: 10px;
+    padding: 15px;
   }
 
   .song-info {
@@ -741,5 +874,322 @@
 
   .song-stats {
     justify-content: center;
+  }
+}
+
+
+/* Agregar estos estilos a tu archivo mini-player.component.css */
+
+/* ===== CONTROL DE VOLUMEN COMPACTO ===== */
+.volume-control-compact {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 100px;
+}
+
+.volume-btn {
+  background: none;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+}
+
+.volume-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: scale(1.1);
+}
+
+.volume-slider-container {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.volume-slider-compact {
+  width: 60px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.volume-slider-compact::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+}
+
+.volume-slider-compact::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.volume-slider-compact::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+}
+
+.volume-slider-compact::-moz-range-thumb:hover {
+  transform: scale(1.2);
+}
+
+.volume-slider-compact:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===== CONTROL DE VOLUMEN EXPANDIDO ===== */
+.volume-control-expanded {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 15px 20px;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.volume-btn-expanded {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  min-height: 36px;
+}
+
+.volume-btn-expanded:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  transform: scale(1.1);
+}
+
+.volume-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  max-width: 300px;
+}
+
+.volume-mute-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+}
+
+.volume-mute-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: scale(1.1);
+}
+
+.volume-mute-btn.muted {
+  color: #ff6b6b;
+}
+
+.volume-icon {
+  font-size: 18px;
+}
+
+.volume-slider-expanded-container {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  position: relative;
+}
+
+.volume-slider-expanded {
+  width: 100%;
+  height: 6px;
+  background: transparent;
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  position: relative;
+  z-index: 2;
+}
+
+.volume-indicator {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  transform: translateY(-50%);
+  overflow: hidden;
+}
+
+.volume-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff1493, #ff34d2, #a64dff, #34b0ff, #ff4500);
+  border-radius: 3px;
+  transition: width 0.2s ease;
+}
+
+.volume-slider-expanded::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+  position: relative;
+  z-index: 3;
+}
+
+.volume-slider-expanded::-webkit-slider-thumb:hover {
+  transform: scale(1.3);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+.volume-slider-expanded::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 6px rgb(8, 8, 16);
+  transition: all 0.2s ease;
+}
+
+.volume-slider-expanded::-moz-range-thumb:hover {
+  transform: scale(1.3);
+}
+
+.volume-slider-expanded:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.volume-percentage {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+  min-width: 35px;
+  text-align: center;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+  .volume-control-compact {
+    min-width: 80px;
+  }
+
+  .volume-slider-compact {
+    width: 50px;
+  }
+
+  .volume-control-expanded {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .volume-section {
+    max-width: 250px;
+  }
+
+  .volume-btn-expanded {
+    font-size: 16px;
+    min-width: 32px;
+    min-height: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .volume-control-compact {
+    min-width: 60px;
+  }
+
+  .volume-slider-compact {
+    width: 40px;
+  }
+
+  .volume-section {
+    max-width: 200px;
+  }
+}
+
+/* ===== ANIMACIONES ===== */
+@keyframes volumePulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.volume-btn:active,
+.volume-mute-btn:active,
+.volume-btn-expanded:active {
+  animation: volumePulse 0.2s ease;
+}
+
+/* ===== ACCESIBILIDAD ===== */
+.volume-slider-compact:focus,
+.volume-slider-expanded:focus {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+}
+
+.volume-btn:focus,
+.volume-mute-btn:focus,
+.volume-btn-expanded:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}
+
+/* ===== TEMA OSCURO (opcional) ===== */
+@media (prefers-color-scheme: dark) {
+  .volume-indicator {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  .volume-control-expanded {
+    background: rgba(0, 0, 0, 0.3);
   }
 }

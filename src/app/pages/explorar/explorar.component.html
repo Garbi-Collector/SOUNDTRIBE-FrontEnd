@@ -76,6 +76,7 @@
 
   <!-- Secciones de resultados -->
   <div class="results-sections">
+
     <!-- Álbumes -->
     <div *ngIf="isAlbumsActive" class="result-section albums-section">
       <div class="section-header">
@@ -107,55 +108,66 @@
       </div>
 
       <!-- Albums grid -->
-      <div *ngIf="showAlbumsList" class="cover-grid">
-        <div
-          *ngFor="let album of albums"
-          class="cover-card"
-          (click)="goToAlbum(album.slug)">
+      <div *ngIf="showAlbumsList" class="albums-container">
+        <div class="cover-grid">
+          <div
+            *ngFor="let album of displayedAlbums"
+            class="cover-card"
+            (click)="goToAlbum(album.slug)">
 
-          <!-- Album cover -->
-          <div class="cover">
-            <img
-              *ngIf="getAlbumCover(album.id)"
-              [src]="getAlbumCover(album.id)"
-              [alt]="album.name"
-              class="cover-image"
-              loading="lazy">
+            <!-- Album cover -->
+            <div class="cover">
+              <img
+                *ngIf="getAlbumCover(album.id)"
+                [src]="getAlbumCover(album.id)"
+                [alt]="album.name"
+                class="cover-image"
+                loading="lazy">
 
-            <!-- Placeholder while loading -->
-            <div *ngIf="!getAlbumCover(album.id)" class="cover-placeholder">
-              <i class="placeholder-icon">💿</i>
+              <!-- Placeholder while loading -->
+              <div *ngIf="!getAlbumCover(album.id)" class="cover-placeholder">
+                <i class="placeholder-icon">💿</i>
+              </div>
+
+              <!-- Play button overlay -->
+              <div class="play-overlay">
+                <button class="play-btn">
+                  <i class="play-icon">▶️</i>
+                </button>
+              </div>
             </div>
 
-            <!-- Play button overlay -->
-            <div class="play-overlay">
-              <button class="play-btn">
-                <i class="play-icon">▶️</i>
-              </button>
+            <!-- Album info -->
+            <div class="cover-info">
+              <h3 class="cover-title" [title]="album.name">{{ album.name }}</h3>
+              <p class="cover-description" [title]="album.description">{{ album.description }}</p>
+
+              <!-- Album stats -->
+              <div class="album-stats">
+                <span class="stat-item">
+                  <i class="stat-icon">❤️</i>
+                  {{ album.likeCount }}
+                </span>
+                <span class="stat-item">
+                  <i class="stat-icon">▶️</i>
+                  {{ album.allPlaysCount }}
+                </span>
+                <span class="stat-item">
+                  <i class="stat-icon">🎵</i>
+                  {{ album.songs?.length || 0 }}
+                </span>
+              </div>
             </div>
           </div>
+        </div>
 
-          <!-- Album info -->
-          <div class="cover-info">
-            <h3 class="cover-title" [title]="album.name">{{ album.name }}</h3>
-            <p class="cover-description" [title]="album.description">{{ album.description }}</p>
-
-            <!-- Album stats -->
-            <div class="album-stats">
-              <span class="stat-item">
-                <i class="stat-icon">❤️</i>
-                {{ album.likeCount }}
-              </span>
-              <span class="stat-item">
-                <i class="stat-icon">▶️</i>
-                {{ album.allPlaysCount }}
-              </span>
-              <span class="stat-item">
-                <i class="stat-icon">🎵</i>
-                {{ album.songs?.length || 0 }}
-              </span>
-            </div>
-          </div>
+        <!-- Ver más/menos button for albums -->
+        <div *ngIf="shouldShowAlbumsToggle" class="view-toggle-container">
+          <button class="view-toggle-btn" (click)="toggleAlbumsView()">
+            <span *ngIf="!showAllAlbums">Ver más álbumes ({{ albums.length - displayedAlbums.length }} más)</span>
+            <span *ngIf="showAllAlbums">Ver menos álbumes</span>
+            <i class="toggle-icon" [class.rotated]="showAllAlbums">▼</i>
+          </button>
         </div>
       </div>
     </div>
@@ -192,99 +204,266 @@
       </div>
 
       <!-- Songs grid -->
-      <div *ngIf="showSongsList" class="cover-grid">
-        <div
-          *ngFor="let song of songs"
-          class="cover-card"
-          (click)="playSong(song)">
+      <div *ngIf="showSongsList" class="songs-container">
+        <div class="cover-grid">
+          <div
+            *ngFor="let song of displayedSongs"
+            class="cover-card"
+            (click)="playSong(song)">
 
-          <!-- Song cover -->
-          <div class="cover">
-            <img
-              *ngIf="getSongCover(song.id)"
-              [src]="getSongCover(song.id)"
-              [alt]="song.name"
-              class="cover-image"
-              loading="lazy">
+            <!-- Song cover -->
+            <div class="cover">
+              <img
+                *ngIf="getSongCover(song.id)"
+                [src]="getSongCover(song.id)"
+                [alt]="song.name"
+                class="cover-image"
+                loading="lazy">
 
-            <!-- Placeholder while loading -->
-            <div *ngIf="!getSongCover(song.id)" class="cover-placeholder">
-              <i class="placeholder-icon">🎵</i>
+              <!-- Placeholder while loading -->
+              <div *ngIf="!getSongCover(song.id)" class="cover-placeholder">
+                <i class="placeholder-icon">🎵</i>
+              </div>
+
+              <!-- Play button overlay -->
+              <div class="play-overlay">
+                <button class="play-btn">
+                  <i class="play-icon">▶️</i>
+                </button>
+              </div>
             </div>
 
-            <!-- Play button overlay -->
-            <div class="play-overlay">
-              <button class="play-btn">
-                <i class="play-icon">▶️</i>
-              </button>
+            <!-- Song info -->
+            <div class="cover-info">
+              <h3 class="cover-title" [title]="song.name">{{ song.name }}</h3>
+              <p class="cover-description" [title]="song.description">{{ song.description }}</p>
+
+              <!-- Song stats -->
+              <div class="album-stats">
+                <span class="stat-item">
+                  <i class="stat-icon">❤️</i>
+                  {{ song.likes }}
+                </span>
+                <span class="stat-item">
+                  <i class="stat-icon">▶️</i>
+                  {{ song.playCount }}
+                </span>
+                <span class="stat-item">
+                  <i class="stat-icon">⏱️</i>
+                  {{ formatDuration(song.duration) }}
+                </span>
+              </div>
+
+              <!-- Song genres -->
+              <div class="song-genres" *ngIf="song.genero && song.genero.length > 0">
+                <span
+                  *ngFor="let genre of song.genero.slice(0, 2); let last = last"
+                  class="genre-tag">
+                  {{ genre.name }}<span *ngIf="!last">, </span>
+                </span>
+                <span *ngIf="song.genero.length > 2" class="genre-more">
+                  +{{ song.genero.length - 2 }} más
+                </span>
+              </div>
             </div>
           </div>
+        </div>
 
-          <!-- Song info -->
-          <div class="cover-info">
-            <h3 class="cover-title" [title]="song.name">{{ song.name }}</h3>
-            <p class="cover-description" [title]="song.description">{{ song.description }}</p>
-
-            <!-- Song stats -->
-            <div class="album-stats">
-              <span class="stat-item">
-                <i class="stat-icon">❤️</i>
-                {{ song.likes }}
-              </span>
-              <span class="stat-item">
-                <i class="stat-icon">▶️</i>
-                {{ song.playCount }}
-              </span>
-              <span class="stat-item">
-                <i class="stat-icon">⏱️</i>
-                {{ formatDuration(song.duration) }}
-              </span>
-            </div>
-
-            <!-- Song genres -->
-            <div class="song-genres" *ngIf="song.genero && song.genero.length > 0">
-              <span
-                *ngFor="let genre of song.genero.slice(0, 2); let last = last"
-                class="genre-tag">
-                {{ genre.name }}<span *ngIf="!last">, </span>
-              </span>
-              <span *ngIf="song.genero.length > 2" class="genre-more">
-                +{{ song.genero.length - 2 }} más
-              </span>
-            </div>
-          </div>
+        <!-- Ver más/menos button for songs -->
+        <div *ngIf="shouldShowSongsToggle" class="view-toggle-container">
+          <button class="view-toggle-btn" (click)="toggleSongsView()">
+            <span *ngIf="!showAllSongs">Ver más canciones ({{ songs.length - displayedSongs.length }} más)</span>
+            <span *ngIf="showAllSongs">Ver menos canciones</span>
+            <i class="toggle-icon" [class.rotated]="showAllSongs">▼</i>
+          </button>
         </div>
       </div>
     </div>
 
+
+
+
     <!-- Artistas -->
-    <div *ngIf="filters[2].active" class="result-section artists-section">
+    <div *ngIf="isArtistsActive" class="result-section artists-section">
       <div class="section-header">
         <h2 class="section-title">
           <i class="section-icon">🎤</i>
           Artistas
         </h2>
-        <div class="section-count">0 resultados</div>
+        <div class="section-count">{{ artistsCount }} resultado{{ artistsCount !== 1 ? 's' : '' }}</div>
       </div>
-      <div class="empty-state">
+
+      <!-- Loading state -->
+      <div *ngIf="showUsersLoading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Cargando artistas...</p>
+      </div>
+
+      <!-- Error state -->
+      <div *ngIf="showUsersError" class="error-state">
+        <i class="error-icon">⚠️</i>
+        <p>{{ usersError }}</p>
+        <button class="retry-btn" (click)="onSearch()">Reintentar</button>
+      </div>
+
+      <!-- Empty state -->
+      <div *ngIf="showEmptyArtistsState" class="empty-state">
         <i class="empty-icon">🎤</i>
         <p>No se encontraron artistas</p>
+        <button class="reset-btn" (click)="resetSearch()">Ver artistas populares</button>
+      </div>
+
+      <!-- Artists grid -->
+      <div *ngIf="showArtistsList" class="artists-container">
+        <div class="cover-grid">
+          <div
+            *ngFor="let artist of displayedArtists"
+            class="cover-card"
+            (click)="goToUserProfile(artist.slug)">
+
+            <!-- Artist photo -->
+            <div class="cover">
+              <img
+                *ngIf="artist.urlFoto"
+                [src]="getImageUrl(artist.urlFoto)"
+                [alt]="artist.username"
+                class="cover-image"
+                loading="lazy">
+
+              <!-- Placeholder if no photo -->
+              <div *ngIf="!artist.urlFoto" class="cover-placeholder">
+                <i class="placeholder-icon">🎤</i>
+              </div>
+
+              <!-- Profile overlay -->
+              <div class="play-overlay">
+                <button class="play-btn">
+                  <i class="play-icon">👤</i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Artist info -->
+            <div class="cover-info">
+              <h3 class="cover-title" [title]="artist.username">{{ artist.username }}</h3>
+              <p class="cover-description">{{ artist.rol }}</p>
+
+              <!-- Artist stats -->
+              <div class="album-stats">
+                <span class="stat-item">
+                  <i class="stat-icon">👥</i>
+                  {{ formatFollowersCount(artist.followersCount) }}
+                </span>
+                <span class="stat-item">
+                  <i class="stat-icon">🎤</i>
+                  Artista
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ver más/menos button for artists -->
+        <div *ngIf="shouldShowArtistsToggle" class="view-toggle-container">
+          <button class="view-toggle-btn" (click)="toggleArtistsView()">
+            <span *ngIf="!showAllArtists">Ver más artistas ({{ artists.length - displayedArtists.length }} más)</span>
+            <span *ngIf="showAllArtists">Ver menos artistas</span>
+            <i class="toggle-icon" [class.rotated]="showAllArtists">▼</i>
+          </button>
+        </div>
       </div>
     </div>
 
     <!-- Oyentes -->
-    <div *ngIf="filters[3].active" class="result-section listeners-section">
+    <div *ngIf="isListenersActive" class="result-section listeners-section">
       <div class="section-header">
         <h2 class="section-title">
           <i class="section-icon">👥</i>
           Oyentes
         </h2>
-        <div class="section-count">0 resultados</div>
+        <div class="section-count">{{ listenersCount }} resultado{{ listenersCount !== 1 ? 's' : '' }}</div>
       </div>
-      <div class="empty-state">
+
+      <!-- Loading state -->
+      <div *ngIf="showUsersLoading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Cargando oyentes...</p>
+      </div>
+
+      <!-- Error state -->
+      <div *ngIf="showUsersError" class="error-state">
+        <i class="error-icon">⚠️</i>
+        <p>{{ usersError }}</p>
+        <button class="retry-btn" (click)="onSearch()">Reintentar</button>
+      </div>
+
+      <!-- Empty state -->
+      <div *ngIf="showEmptyListenersState" class="empty-state">
         <i class="empty-icon">👥</i>
         <p>No se encontraron oyentes</p>
+        <button class="reset-btn" (click)="resetSearch()">Ver oyentes populares</button>
+      </div>
+
+      <!-- Listeners grid -->
+      <div *ngIf="showListenersList" class="listeners-container">
+        <div class="cover-grid">
+          <div
+            *ngFor="let listener of displayedListeners"
+            class="cover-card"
+            (click)="goToUserProfile(listener.slug)">
+
+            <!-- Listener photo -->
+            <div class="cover">
+              <img
+                *ngIf="listener.urlFoto"
+                [src]="getImageUrl(listener.urlFoto)"
+                [alt]="listener.username"
+                class="cover-image"
+                loading="lazy">
+
+              <!-- Placeholder if no photo -->
+              <div *ngIf="!listener.urlFoto" class="cover-placeholder">
+                <i class="placeholder-icon">👥</i>
+              </div>
+
+              <!-- Profile overlay -->
+              <div class="play-overlay">
+                <button class="play-btn">
+                  <i class="play-icon">👤</i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Listener info -->
+            <div class="cover-info">
+              <h3 class="cover-title" [title]="listener.username">{{ listener.username }}</h3>
+              <p class="cover-description">{{ listener.rol }}</p>
+
+              <!-- Listener stats -->
+              <div class="album-stats">
+                <span class="stat-item">
+                  <i class="stat-icon">👥</i>
+                  {{ formatFollowersCount(listener.followersCount) }}
+                </span>
+                <span class="stat-item">
+                  <i class="stat-icon">🎧</i>
+                  Oyente
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ver más/menos button for listeners -->
+        <div *ngIf="shouldShowListenersToggle" class="view-toggle-container">
+          <button class="view-toggle-btn" (click)="toggleListenersView()">
+            <span *ngIf="!showAllListeners">Ver más oyentes ({{ listeners.length - displayedListeners.length }} más)</span>
+            <span *ngIf="showAllListeners">Ver menos oyentes</span>
+            <i class="toggle-icon" [class.rotated]="showAllListeners">▼</i>
+          </button>
+        </div>
       </div>
     </div>
+
   </div>
 </div>

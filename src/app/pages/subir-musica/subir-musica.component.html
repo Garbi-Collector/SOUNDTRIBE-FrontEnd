@@ -132,14 +132,14 @@
                 <div class="input-group mb-3">
                   <button class="btn" type="button" (click)="fileInput.click()"
                           style="background: var(--gradient-primary); color: white; border: none; border-radius: 8px 0 0 8px;">
-                    <i class="bi bi-image"></i> Seleccionar imagen
+                    <i class="bi bi-image"></i> Seleccionar imagen PNG, para evitar problemas es mejor subir una imagen cuadrada.
                   </button>
                   <input type="text" class="form-control" [value]="albumForm.get('albumInfo.portada')?.value?.name || 'Ningún archivo seleccionado'" disabled
                          style="background-color: var(--dark-component-bg-modal); border: 1px solid var(--dark-border); color: var(--dark-text); border-radius: 0 8px 8px 0;">
-                  <input hidden type="file" accept="image/jpeg,image/png" #fileInput (change)="onPortadaSelected($event)">
+                  <input hidden type="file" accept="image/png" #fileInput (change)="onPortadaSelected($event)">
                 </div>
                 <div class="text-light small" style="color: var(--color-purple);">
-                  Formatos: JPG, PNG. Tamaño máximo: 5MB
+                  Formatos: PNG. Tamaño máximo: 5MB
                 </div>
               </div>
 
@@ -248,7 +248,9 @@
                                   style="background-color: var(--dark-component-bg-modal); border: 1px solid var(--dark-border); color: var(--dark-text); border-radius: 8px; padding: 10px 15px; min-height: 100px;">
                             <option
                               *ngFor="let subgenero of getSubgeneros(songForm.get('genero')?.value)"
-                              [value]="subgenero.id">
+                              [value]="subgenero.id"
+                              class="text-light"
+                            >
                               {{ subgenero.name }}
                             </option>
                           </select>
@@ -287,7 +289,9 @@
                           <label [for]="'song-artists-' + i" class="form-label" style="color: var(--dark-text-secondary);">Artistas invitados (opcional)</label>
                           <select class="form-select" [id]="'song-artists-' + i" formControlName="artistasFt" multiple
                                   style="background-color: var(--dark-component-bg-modal); border: 1px solid var(--dark-border); color: var(--dark-text); border-radius: 8px; padding: 10px 15px; min-height: 100px;">
-                            <option *ngFor="let artist of mutualArtistFriends" [value]="artist.id">
+                            <option *ngFor="let artist of mutualArtistFriends" [value]="artist.id"
+                                    class="text-light"
+                            >
                               {{ artist.username }}
                             </option>
                           </select>

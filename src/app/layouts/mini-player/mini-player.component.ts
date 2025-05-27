@@ -163,17 +163,6 @@ export class MiniPlayerComponent implements OnInit, OnDestroy {
     });
   }
 
-  goToAlbum(): void {
-    if (this.playerState?.currentSong?.slug) {
-      // Buscar el slug del álbum si está disponible en el estado del player
-      if (this.playerState.currentSong.slug) {
-        this.router.navigate(['/album', this.playerState.currentSong.slug]);
-      } else {
-        // Si no tenemos el slug, navegar usando el ID
-        this.router.navigate(['/album', this.playerState.currentSong.id]);
-      }
-    }
-  }
 
   // Método para reproducir una canción específica de la queue
   playSongFromQueue(index: number): void {
@@ -235,5 +224,68 @@ export class MiniPlayerComponent implements OnInit, OnDestroy {
         this.voteLoading = false;
       }
     });
+  }
+
+// Agregar estos métodos al final de la clase MiniPlayerComponent, antes del cierre de la clase
+
+// MÉTODOS DE CONTROL DE VOLUMEN
+
+  /**
+   * Cambiar el volumen usando un slider
+   */
+  setVolume(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const volume = parseInt(target.value, 10);
+    this.playerService.setVolume(volume);
+  }
+
+  /**
+   * Alternar silencio
+   */
+  toggleMute(): void {
+    this.playerService.toggleMute();
+  }
+
+  /**
+   * Aumentar volumen con botón
+   */
+  increaseVolume(): void {
+    this.playerService.increaseVolume(10);
+  }
+
+  /**
+   * Disminuir volumen con botón
+   */
+  decreaseVolume(): void {
+    this.playerService.decreaseVolume(10);
+  }
+
+  /**
+   * Obtener el icono de volumen apropiado
+   */
+  getVolumeIcon(): string {
+    return this.playerService.getVolumeIcon();
+  }
+
+  /**
+   * Obtener el nivel de volumen descriptivo
+   */
+  getVolumeLevel(): string {
+    return this.playerService.getVolumeLevel();
+  }
+
+  /**
+   * Controlar volumen con rueda del mouse
+   */
+  onVolumeWheel(event: WheelEvent): void {
+    event.preventDefault();
+
+    if (event.deltaY < 0) {
+      // Scroll hacia arriba = aumentar volumen
+      this.increaseVolume();
+    } else {
+      // Scroll hacia abajo = disminuir volumen
+      this.decreaseVolume();
+    }
   }
 }

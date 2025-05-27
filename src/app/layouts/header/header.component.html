@@ -12,59 +12,13 @@
     <!-- Logo cuando SÍ está autenticado -->
     <a *ngIf="isAuthenticated"
        class="navbar-brand logo-theme-toggle"
-       [routerLink]="['/donation']">
+       [attr.href]="'/donation'"
+       target="_blank"
+       rel="noopener noreferrer">
       <div class="logo-container">
         <img src="assets/logo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
       </div>
     </a>
-
-
-
-
-
-    <!--    Buscador    -->
-
-
-
-    <div class="search-wrapper" [class.active]="searchActive">
-      <div class="search-container">
-        <div class="input-group">
-          <span class="input-group-text bg-dark border-secondary">
-            <i class="bi bi-search text-light"></i>
-          </span>
-          <input type="text" class="form-control bg-dark text-light border-secondary"
-                 placeholder="Buscar..." [(ngModel)]="searchQuery"
-                 (input)="filterUsers()" (click)="$event.stopPropagation()">
-          <button *ngIf="isMobile" class="btn btn-dark border-secondary"
-                  (click)="toggleSearchMobile($event)">
-            <i class="bi bi-x text-light"></i>
-          </button>
-        </div>
-        <!-- Resultados de búsqueda como overlay -->
-        <div *ngIf="filteredUsers.length > 0" class="search-results">
-          <ul class="list-unstyled m-0">
-            <li *ngFor="let user of filteredUsers" class="search-item d-flex align-items-center"
-                (click)="navigateToUserProfile(user)">
-              <div class="user-avatar">
-                <img *ngIf="user.urlFoto" [src]="getImageUrl(user.urlFoto)"
-                     alt="Foto de usuario" class="rounded-circle" width="36" height="36">
-                <i *ngIf="!user.urlFoto" class="bi bi-person-circle fs-4 text-light"></i>
-              </div>
-              <div class="ms-2 user-info">
-                <strong class="text-light">{{ user.username }}</strong>
-                <div class="text-muted small">Ver perfil</div>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <!-- Botón de búsqueda para móviles -->
-    <button *ngIf="isMobile" class="btn btn-link text-light search-toggle-btn"
-            (click)="toggleSearchMobile($event)" [class.d-none]="searchActive">
-      <i class="bi bi-search fs-5"></i>
-    </button>
 
 
     <app-notification-modal *ngIf="isAuthenticated" class="notification-container"></app-notification-modal>

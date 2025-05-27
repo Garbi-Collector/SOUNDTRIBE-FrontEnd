@@ -140,5 +140,16 @@ export class AlbumService {
     );
   }
 
+  /**
+   * Obtiene la cantidad de likes de un álbum
+   * @param idAlbum ID del álbum
+   * @returns Número de likes
+   */
+  getLikesCount(idAlbum: number): Observable<number> {
+    return this.http.get<number>(
+      `${this.backEndRoutes.musicServiceUrl}/album/${idAlbum}/likescount`
+    );
+  }
+
 
 }

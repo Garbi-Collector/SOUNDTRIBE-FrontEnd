@@ -198,7 +198,7 @@ export class SubirMusicaComponent implements OnInit {
 
       // Validar tamaño y tipo de archivo
       if (!this.isValidImageFile(file)) {
-        alert('La portada debe ser una imagen (JPG, PNG) y menor a 5MB');
+        alert('La portada debe ser una imagen (PNG) y menor a 7MB');
         this.albumForm.get('albumInfo.portada')?.setValue(null);
         return;
       }
@@ -314,13 +314,13 @@ export class SubirMusicaComponent implements OnInit {
 
   isValidImageFile(file: File): boolean {
     const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-    const maxSize = 5 * 1024 * 1024; // 5MB
+    const maxSize = 7 * 1024 * 1024; // 7MB
     return validTypes.includes(file.type) && file.size <= maxSize;
   }
 
   isValidAudioFile(file: File): boolean {
     const validTypes = ['audio/wav', 'audio/x-wav'];
-    const maxSize = 45 * 1024 * 1024; // 45MB
+    const maxSize = 60 * 1024 * 1024; // 60MB
     return validTypes.includes(file.type) && file.size <= maxSize;
   }
 

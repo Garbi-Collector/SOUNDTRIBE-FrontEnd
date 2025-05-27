@@ -234,6 +234,10 @@ export class AuthModalComponent implements OnInit {
     this.modalService.openModal(ModalType.TermsAndConditions);
   }
 
+  openResetPasswordModal(): void {
+    this.modalService.openModal(ModalType.ResetPassword);
+  }
+
 }
 
 

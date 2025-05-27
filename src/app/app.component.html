@@ -1,38 +1,42 @@
 <!-- app.component.html -->
 <div class="container-fluid p-0 app-container">
   <header>
-
-  <app-header></app-header>
+    <app-header></app-header>
   </header>
-<ng-container>
 
+  <ng-container>
+    <main class="container-fluid py-3 main-content">
+      <br>
+      <br>
+      <br>
 
-  <main class="container-fluid py-3 main-content">
-    <br>
-    <br>
-    <br>
+      <router-outlet></router-outlet>
 
+      <br>
+      <br>
 
-    <router-outlet></router-outlet>
+      <!-- Añadir <br> adicionales solo en móviles cuando hay una canción reproduciéndose -->
+      <ng-container *ngIf="shouldShowExtraBreaks()">
+        <br>
+        <br>
+        <br>
+        <br>
+      </ng-container>
+    </main>
+  </ng-container>
 
-    <br>
-    <br>
-  </main>
-
-</ng-container>
-  <!--  por aca iria el layer del reproductor-->
-
+  <!-- Por acá iría el layer del reproductor -->
   <footer>
-  <app-mini-player></app-mini-player>
-  <app-footer></app-footer>
+    <app-mini-player></app-mini-player>
+    <app-footer></app-footer>
   </footer>
 
   <!-- Modales -->
   <app-auth-modal *ngIf="modalType === ModalType.Auth"></app-auth-modal>
+  <app-reset-password *ngIf="modalType === ModalType.ResetPassword"></app-reset-password>
   <app-change-password *ngIf="modalType === ModalType.ChangePassword"></app-change-password>
   <app-notification-modal *ngIf="modalType === ModalType.Notification"></app-notification-modal>
   <app-terminos-donacion *ngIf="modalType === ModalType.TermsOfDonation"></app-terminos-donacion>
   <app-terminos-condiciones-app *ngIf="modalType === ModalType.TermsAndConditions"></app-terminos-condiciones-app>
   <app-change-description *ngIf="modalType === ModalType.ChangeDescription"></app-change-description>
-
 </div>

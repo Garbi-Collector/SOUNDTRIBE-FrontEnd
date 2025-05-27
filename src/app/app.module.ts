@@ -41,6 +41,7 @@ import { EliminarCuentaComponent } from './pages/eliminar-cuenta/eliminar-cuenta
 import { ChangeDescriptionComponent } from './modales/change-description/change-description.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { ResetPasswordComponent } from './modales/reset-password/reset-password.component';
 
 
 
@@ -76,6 +77,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
     EliminarCuentaComponent,
     ChangeDescriptionComponent,
     DashboardComponent,
+    ResetPasswordComponent,
   ],
   imports: [
     BrowserModule,

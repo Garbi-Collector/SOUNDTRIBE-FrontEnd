@@ -69,7 +69,17 @@
             </div>
 
             <div class="auth-links mt-3">
-              <a href="javascript:void(0)" (click)="setActiveTab('register')">¿No tienes cuenta? Regístrate</a>
+              <div class="row">
+                <a href="javascript:void(0)" (click)="setActiveTab('register')">
+                  ¿No tienes cuenta? Regístrate
+                </a>
+              </div>
+              br
+              <div class="row">
+                <a class="text-purple" style="cursor: pointer;" (click)="openResetPasswordModal()">
+                  ¿Olvidaste tu contraseña?
+                </a>
+              </div>
             </div>
           </form>
         </div>

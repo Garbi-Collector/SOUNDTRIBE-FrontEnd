@@ -101,6 +101,18 @@ export class UserService {
       );
   }
 
+  /**
+   * Envía una solicitud para recuperar la contraseña usando el email.
+   * Este endpoint es público y no requiere autenticación.
+   */
+  recuperarPassword(email: string): Observable<string> {
+    return this.http
+      .post(`${this.apiUrl}/recuperar-password`, email, {
+        headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+        responseType: 'text' // Porque el backend devuelve un string plano
+      })
+      .pipe(catchError(this.handleError));
+  }
 
 
   /**

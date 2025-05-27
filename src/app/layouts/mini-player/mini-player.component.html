@@ -1,8 +1,11 @@
 <div class="mini-player-container" [ngClass]="{'expanded': isExpanded}" *ngIf="playerState?.currentSong">
+
+
   <!-- Botón para expandir/contraer -->
   <div class="expand-toggle" (click)="toggleExpand()">
     <i class="bi" [ngClass]="isExpanded ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
   </div>
+
 
   <div class="player-compact" *ngIf="!isExpanded">
     <!-- Barra de progreso con tiempos a los lados -->

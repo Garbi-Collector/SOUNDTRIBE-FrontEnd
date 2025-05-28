@@ -204,6 +204,9 @@ h2 {
   padding: 10px;
   background-color: rgba(76, 175, 80, 0.1);
   border-radius: 4px;
+  justify-content: center; /* Centra horizontalmente el contenido dentro del flex */
+  margin: 0 auto; /* Esto lo centra horizontalmente si el contenedor lo permite */
+  text-align: center;
 }
 
 .form-actions {

@@ -11,6 +11,7 @@ export enum ModalType {
   TermsAndConditions = 'termsAndConditions',
   ChangeDescription = 'changeDescription',
   ResetPassword = 'ResetPassword',
+  RecoveryPassword = 'RecoveryPassword',
   None = 'none',
 }
 

@@ -25,3 +25,8 @@ export interface UserDescription {
 export interface GetAll {
   usuarios: UserGet[];
 }
+
+export interface PasswordChangeRequest {
+  newPassword: string;
+  slugRecovery: string;
+}

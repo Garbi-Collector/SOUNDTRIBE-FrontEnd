@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { debounceTime, switchMap, of, catchError } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import {ModalService, ModalType} from '../../services/modal.service';
@@ -14,8 +14,23 @@ import { RegisterRequestDto, LoginRequestDto } from '../../dtos/usuarios/auth.dt
 })
 export class AuthModalComponent implements OnInit {
 
+
+
+  sacarUrl(): string {
+    const urlActual = this.router.url;
+    console.log('URL actual:', urlActual); // Opcional: para depurar
+    return urlActual;
+  }
+
   // Métodos del modal
   closeModal(): void {
+    const urlActual = this.sacarUrl();
+
+    if (urlActual === '/auth') {
+      // Si estamos en /auth, redirige a /inicio
+      this.router.navigate(['/inicio']);
+    }
+
     this.modalService.closeModal();
   }
 
@@ -42,6 +57,7 @@ export class AuthModalComponent implements OnInit {
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
     private modalService: ModalService
   ) {
     // Inicializar formulario de login

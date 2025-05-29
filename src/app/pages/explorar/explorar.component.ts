@@ -15,6 +15,7 @@ import { PlayerService } from "../../services/player.service";
 import { UserService } from "../../services/user.service";
 import { UserDescription, UserGet } from "../../dtos/usuarios/users.dto";
 import {BackEndRoutesService} from "../../back-end.routes.service";
+import {AuthService} from "../../services/auth.service";
 
 interface FilterType {
   key: 'albums' | 'songs' | 'artists' | 'listeners';
@@ -84,6 +85,7 @@ export class ExplorarComponent implements OnInit, OnDestroy {
     private exploreService: ExploreService,
     private songsService: SongsService,
     private userService: UserService,
+    private authService: AuthService,
     private sanitizer: DomSanitizer,
     private router: Router,
     private routesBack: BackEndRoutesService,
@@ -241,15 +243,17 @@ export class ExplorarComponent implements OnInit, OnDestroy {
    * Carga usuarios iniciales (todos los usuarios del sistema)
    */
   private loadInitialUsers() {
-
     this.loadingUsers = true;
     this.usersError = null;
 
-    this.userService.getAllUsersWithJwt()
+    const userObservable = this.authService.isAuthenticated()
+      ? this.userService.getAllUsersWithJwt()
+      : this.userService.getAllUsers();
+
+    userObservable
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
-
           this.allUsers = response.usuarios;
           this.filterUsersByRole();
           this.loadingUsers = false;
@@ -261,6 +265,7 @@ export class ExplorarComponent implements OnInit, OnDestroy {
         }
       });
   }
+
 
   /**
    * Filtra usuarios por rol (Artista/Oyente) y aplica límite de 11 por categoría

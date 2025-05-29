@@ -106,14 +106,14 @@ export class UserService {
    * Este endpoint es público y no requiere autenticación.
    */
   recuperarPassword(email: string): Observable<string> {
-    console.log('[RecuperarPassword] Enviando solicitud con email:', email);
+
     return this.http
       .post(`${this.apiUrl}/recuperar-password`, email, {
         headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
         responseType: 'text'
       })
       .pipe(
-        tap(response => console.log('[RecuperarPassword] Respuesta recibida:', response)),
+
         catchError(error => {
           console.error('[RecuperarPassword] Error:', error);
           return this.handleError(error);
@@ -126,14 +126,14 @@ export class UserService {
    * El endpoint es público y devuelve un string (el username) si es válido.
    */
   validarSlugRecovery(slug: string): Observable<string> {
-    console.log('[ValidarSlugRecovery] Validando slug:', slug);
+
     return this.http
       .get(`${this.apiUrl}/validar-slug/${slug}`, {
         responseType: 'text'
       })
       .pipe(
         tap(username => {
-          console.log('[ValidarSlugRecovery] Username recibido:', username);
+
         }),
         catchError(error => {
           console.error('[ValidarSlugRecovery] Error:', error);
@@ -148,14 +148,14 @@ export class UserService {
    * El endpoint es público (no requiere autenticación).
    */
   cambiarPassword(request: PasswordChangeRequest): Observable<string> {
-    console.log('[CambiarPassword] Enviando solicitud de cambio con request:', request);
+
     return this.http
       .put(`${this.apiUrl}/cambiar-password`, request, {
         headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
         responseType: 'text'
       })
       .pipe(
-        tap(response => console.log('[CambiarPassword] Respuesta:', response)),
+
         catchError(error => {
           console.error('[CambiarPassword] Error:', error);
           return this.handleError(error);
@@ -169,11 +169,11 @@ export class UserService {
    * El endpoint es público (no requiere autenticación).
    */
   isSlugRecoveryValid(slugRecovery: string): Observable<boolean> {
-    console.log('[IsSlugRecoveryValid] Verificando slug:', slugRecovery);
+
     return this.http
       .get<boolean>(`${this.apiUrl}/recuperar-password/validar/${slugRecovery}`)
       .pipe(
-        tap(valid => console.log('[IsSlugRecoveryValid] Resultado:', valid)),
+
         catchError(error => {
           console.error('[IsSlugRecoveryValid] Error:', error);
           return this.handleError(error);
@@ -198,14 +198,14 @@ export class UserService {
     const headers = this.getAuthHeaders();
 
     // Agregar log para depuración
-    console.log('Headers for getMyDescription:', headers);
-    console.log('URL for getMyDescription:', `${this.apiUrl}/mi-perfil`);
+
+
 
     return this.http
       .get<UserDescription>(`${this.apiUrl}/mi-perfil`, { headers })
       .pipe(
         map(user => {
-          console.log('Raw user data received:', user); // Ver los datos tal como llegan
+
           // Resto del código...
           return this.mapUserDescription(user);
         }),

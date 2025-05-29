@@ -189,9 +189,16 @@ export class MiniPlayerComponent implements OnInit, OnDestroy {
     }
   }
 
+  private lastCheckedSongId: number | null = null;
+
   private checkUserVotes(songId: number): void {
+    if (this.lastCheckedSongId === songId) {
+      return; // Evita hacer las peticiones si ya se chequeó esta canción
+    }
+    this.lastCheckedSongId = songId;
+
     this.voteLoading = true;
-    // Usar forkJoin para hacer las dos solicitudes en paralelo
+
     forkJoin([
       this.songsService.isVoted(songId, VoteType.LIKE),
       this.songsService.isVoted(songId, VoteType.DISLIKE)
@@ -209,6 +216,7 @@ export class MiniPlayerComponent implements OnInit, OnDestroy {
       }
     });
   }
+
 
   // MÉTODOS DE NAVEGACIÓN
 

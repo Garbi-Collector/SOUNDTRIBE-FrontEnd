@@ -218,7 +218,7 @@ export class ExplorarComponent implements OnInit, OnDestroy {
         next: (genres) => {
           this.genres = genres;
           this.loadingGenres = false;
-          console.log('[loadGenres] Géneros cargados:', this.genres);
+
         },
         error: (error) => {
           console.error('[loadGenres] Error loading genres:', error);
@@ -231,7 +231,7 @@ export class ExplorarComponent implements OnInit, OnDestroy {
    * Carga contenido inicial (álbumes, canciones y usuarios populares)
    */
   private loadInitialContent() {
-    console.log('[loadInitialContent] Cargando contenido inicial');
+
     this.loadInitialAlbums();
     this.loadInitialSongs();
     this.loadInitialUsers();
@@ -241,7 +241,7 @@ export class ExplorarComponent implements OnInit, OnDestroy {
    * Carga usuarios iniciales (todos los usuarios del sistema)
    */
   private loadInitialUsers() {
-    console.log('[loadInitialUsers] Cargando usuarios iniciales');
+
     this.loadingUsers = true;
     this.usersError = null;
 
@@ -249,7 +249,7 @@ export class ExplorarComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
-          console.log(`[loadInitialUsers] ${response.usuarios.length} usuarios recibidos`);
+
           this.allUsers = response.usuarios;
           this.filterUsersByRole();
           this.loadingUsers = false;
@@ -278,14 +278,14 @@ export class ExplorarComponent implements OnInit, OnDestroy {
     this.artists = allArtists.slice(0, 11);
     this.listeners = allListeners.slice(0, 11);
 
-    console.log(`[filterUsersByRole] Artistas: ${this.artists.length}, Oyentes: ${this.listeners.length}`);
+
   }
 
   /**
    * Busca usuarios según el término de búsqueda
    */
   private searchUsers() {
-    console.log('[searchUsers] Iniciando búsqueda de usuarios');
+
 
     if (!this.searchTerm.trim()) {
       // Si no hay término de búsqueda, mostrar todos los usuarios
@@ -311,14 +311,14 @@ export class ExplorarComponent implements OnInit, OnDestroy {
     this.artists = filteredArtists.slice(0, 11);
     this.listeners = filteredListeners.slice(0, 11);
 
-    console.log(`[searchUsers] Resultados - Artistas: ${this.artists.length}, Oyentes: ${this.listeners.length}`);
+
   }
 
   /**
    * Carga álbumes iniciales (populares)
    */
   private loadInitialAlbums() {
-    console.log('[loadInitialAlbums] Cargando álbumes iniciales');
+
     this.loadingAlbums = true;
     this.albumsError = null;
 
@@ -326,7 +326,7 @@ export class ExplorarComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (albums) => {
-          console.log(`[loadInitialAlbums] ${albums.length} álbumes recibidos`);
+
           this.albums = albums;
           this.cargarPortadasDeAlbumes(albums);
         },
@@ -342,7 +342,7 @@ export class ExplorarComponent implements OnInit, OnDestroy {
    * Carga canciones iniciales (populares)
    */
   private loadInitialSongs() {
-    console.log('[loadInitialSongs] Cargando canciones iniciales');
+
     this.loadingSongs = true;
     this.songsError = null;
 
@@ -350,7 +350,7 @@ export class ExplorarComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (songs) => {
-          console.log(`[loadInitialSongs] ${songs.length} canciones recibidas`);
+
           this.songs = songs;
           this.isInitialLoad = false;
           this.cargarPortadasDeCanciones(songs);
@@ -368,7 +368,7 @@ export class ExplorarComponent implements OnInit, OnDestroy {
    * Busca álbumes según los filtros aplicados
    */
   private searchAlbums() {
-    console.log('[searchAlbums] Iniciando búsqueda de álbumes');
+
     this.loadingAlbums = true;
     this.albumsError = null;
 
@@ -379,7 +379,7 @@ export class ExplorarComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (albums) => {
-          console.log(`[searchAlbums] ${albums.length} álbumes encontrados`);
+
           this.albums = albums;
           this.hasSearched = true;
           this.cargarPortadasDeAlbumes(albums);
@@ -397,7 +397,7 @@ export class ExplorarComponent implements OnInit, OnDestroy {
    * Busca canciones según los filtros aplicados
    */
   private searchSongs() {
-    console.log('[searchSongs] Iniciando búsqueda de canciones');
+
     this.loadingSongs = true;
     this.songsError = null;
 
@@ -408,7 +408,7 @@ export class ExplorarComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (songs) => {
-          console.log(`[searchSongs] ${songs.length} canciones encontradas`);
+
           this.songs = songs;
           this.hasSearched = true;
           this.cargarPortadasDeCanciones(songs);
@@ -426,7 +426,7 @@ export class ExplorarComponent implements OnInit, OnDestroy {
    * Carga las portadas de los álbumes
    */
   private cargarPortadasDeAlbumes(albums: ResponseAlbumDto[]) {
-    console.log('[cargarPortadasDeAlbumes] Iniciando carga de portadas');
+
 
     if (albums.length === 0) {
       this.loadingAlbums = false;
@@ -461,7 +461,7 @@ export class ExplorarComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe({
       next: (results) => {
-        console.log(`[cargarPortadasDeAlbumes] Portadas cargadas: ${results.length}`);
+
         results.forEach(result => {
           if (result) {
             this.albumCovers.set(result.albumId, result.portadaUrl);
@@ -478,7 +478,7 @@ export class ExplorarComponent implements OnInit, OnDestroy {
    * Carga las portadas de las canciones
    */
   private cargarPortadasDeCanciones(songs: ResponseSongPortadaDto[]) {
-    console.log('[cargarPortadasDeCanciones] Iniciando carga de portadas de canciones');
+
 
     if (songs.length === 0) {
       this.loadingSongs = false;
@@ -519,13 +519,13 @@ export class ExplorarComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe({
       next: (results) => {
-        console.log(`[cargarPortadasDeCanciones] Portadas de canciones procesadas: ${results.length}`);
+
         results.forEach(result => {
           if (result) {
             this.songCovers.set(result.songId, result.portadaUrl);
           }
         });
-        console.log(`[cargarPortadasDeCanciones] ${this.songCovers.size} portadas de canciones cargadas exitosamente`);
+
       },
       error: (error) => {
         console.error('[cargarPortadasDeCanciones] Error general cargando portadas de canciones:', error);
@@ -565,7 +565,7 @@ export class ExplorarComponent implements OnInit, OnDestroy {
    * Reproduce una canción usando el PlayerService
    */
   playSong(song: ResponseSongPortadaDto): void {
-    console.log('[playSong] Reproduciendo canción:', song.name);
+
 
     // Convertir ResponseSongPortadaDto a ResponseSongDto para el player
     const songForPlayer = {
@@ -803,7 +803,7 @@ export class ExplorarComponent implements OnInit, OnDestroy {
       this.selectedGenre = parseInt(value, 10);
     }
 
-    console.log('[onGenreChange] Genre changed to:', this.selectedGenre);
+
     this.onSearch();
   }
 
@@ -815,10 +815,10 @@ export class ExplorarComponent implements OnInit, OnDestroy {
   }
 
   onSearch() {
-    console.log('[onSearch] Iniciando búsqueda');
-    console.log('[onSearch] Término:', this.searchTerm);
-    console.log('[onSearch] Filtros activos:', this.activeFilters);
-    console.log('[onSearch] Género seleccionado:', this.selectedGenre);
+
+
+
+
 
     // Buscar álbumes si el filtro está activo
     if (this.isAlbumsActive) {

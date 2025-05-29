@@ -174,7 +174,6 @@ export class PerfilComponent implements OnInit {
         this.router.navigate(['/album', album.slug]);
       } else {
         // Si no hay slug disponible, devolver un error o algo mas ameno para decir que el album con ese slug no existe
-        console.log("no tiene un slug disponible el dto del album")
       }
     }
   }

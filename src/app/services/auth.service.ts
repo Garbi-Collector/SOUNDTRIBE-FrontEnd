@@ -78,8 +78,6 @@ export class AuthService {
         localStorage.setItem('rol', decodedToken.role);
       }
 
-      // Puedes almacenar otras propiedades del token según sea necesario
-      console.log('Token decodificado correctamente:', decodedToken);
 
       // Actualizar el estado de autenticación
       this.isAuthenticatedSubject.next(true);

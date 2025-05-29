@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ModalService, ModalType } from "./services/modal.service";
 import { PlayerService, PlayerState } from "./services/player.service";
+import {HomeService} from "./services/home.service";
 
 @Component({
   selector: 'app-root',
@@ -23,7 +24,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor(
     private modalService: ModalService,
-    private playerService: PlayerService
+    private playerService: PlayerService,
+    private homeService: HomeService
   ) {
     this.modalService.modalType$.subscribe(type => {
       this.modalType = type;
@@ -31,6 +33,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.homeService.startAutoClearCache();
     document.body.classList.add('dark-theme');
     document.body.classList.remove('light-theme');
 

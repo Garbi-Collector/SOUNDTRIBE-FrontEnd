@@ -18,7 +18,6 @@ export class AuthModalComponent implements OnInit {
 
   sacarUrl(): string {
     const urlActual = this.router.url;
-    console.log('URL actual:', urlActual); // Opcional: para depurar
     return urlActual;
   }
 

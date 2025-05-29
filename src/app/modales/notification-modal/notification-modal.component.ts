@@ -68,8 +68,6 @@ export class NotificationModalComponent implements OnInit {
       });
     }
 
-    console.log('Slug de notificación:', notification.slug);
-    console.log('Tipo de notificación:', notification.type);
 
     this.redirectBasedOnNotification(notification);
 
@@ -87,10 +85,8 @@ export class NotificationModalComponent implements OnInit {
 
     try {
       if (typesThatGoToProfile.includes(notification.type)) {
-        console.log('Redirigiendo a perfil:', notification.slug);
         this.router.navigate(['/perfil', notification.slug]);
       } else {
-        console.log('Redirigiendo a álbum:', notification.slug);
         this.router.navigate(['/album', notification.slug]);
       }
     } catch (error) {

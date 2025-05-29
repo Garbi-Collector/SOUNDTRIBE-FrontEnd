@@ -85,15 +85,15 @@ export class SongsService {
     const token = localStorage.getItem('auth_token');
     const baseUrl = `${this.filesUrl}/stream/${id}`;
 
-    console.log('🌐 SongsService: Generando URL de streaming para canción', id);
-    console.log('🔗 SongsService: URL base:', baseUrl);
-    console.log('🔑 SongsService: Token disponible:', !!token);
+
+
+
 
     // Si tu backend requiere autenticación para el streaming, descomenta la siguiente línea:
     // return token ? `${baseUrl}?token=${token}` : baseUrl;
 
     const finalUrl = baseUrl;
-    console.log('✅ SongsService: URL final de streaming:', finalUrl);
+
     return finalUrl;
   }
 

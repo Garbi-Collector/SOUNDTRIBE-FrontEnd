@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of, timer } from 'rxjs';
-import { catchError, shareReplay, switchMap, tap } from 'rxjs/operators';
-import { ResponseAlbumDto, ResponseSongDto } from '../dtos/albumes/musics.response.dto';
+import { HttpClient } from '@angular/common/http';
+import { Observable, of, from } from 'rxjs';
+import { switchMap, tap, shareReplay } from 'rxjs/operators';
 import { BackEndRoutesService } from '../back-end.routes.service';
+import { PersistentCacheService } from './persistent-cache.service'; // <-- nuevo
+import { ResponseAlbumDto, ResponseSongDto } from '../dtos/albumes/musics.response.dto';
 
 interface CacheEntry<T> {
   data: T;
@@ -14,53 +15,51 @@ interface CacheEntry<T> {
   providedIn: 'root'
 })
 export class HomeService {
-  private cache = new Map<string, CacheEntry<any>>();
-  private readonly CACHE_DURATION = 60 * 60 * 1000; // 1 hora en milisegundos
+  private memoryCache = new Map<string, CacheEntry<any>>();
 
   constructor(
     private http: HttpClient,
-    private backEndRoutes: BackEndRoutesService
+    private backEndRoutes: BackEndRoutesService,
+    private persistentCache: PersistentCacheService
   ) {}
 
-  /**
-   * Método genérico para manejar el cache
-   */
-  private getCachedData<T>(key: string, apiCall: () => Observable<T>): Observable<T> {
-    const cachedEntry = this.cache.get(key);
-    const now = Date.now();
+  private getDuration(key: string): number {
+    return key === 'albumes-recientes' ? 5 * 60 * 1000 : 60 * 60 * 1000;
+  }
 
-    // Si existe en cache y no ha expirado, devolver datos cacheados
-    if (cachedEntry && (now - cachedEntry.timestamp) < this.CACHE_DURATION) {
-      return of(cachedEntry.data);
+  private getCachedData<T>(key: string, apiCall: () => Observable<T>): Observable<T> {
+    const now = Date.now();
+    const duration = this.getDuration(key);
+
+    // 1. Ver memoria
+    const memoryEntry = this.memoryCache.get(key);
+    if (memoryEntry && (now - memoryEntry.timestamp) < duration) {
+      return of(memoryEntry.data);
     }
 
-    // Si no existe o ha expirado, hacer la llamada a la API
-    return apiCall().pipe(
-      tap(data => {
-        // Guardar en cache
-        this.cache.set(key, {
-          data: data,
-          timestamp: now
-        });
+    // 2. Ver IndexedDB
+    return from(this.persistentCache.get<T>(key)).pipe(
+      switchMap(persistentEntry => {
+        if (persistentEntry && (now - persistentEntry.timestamp) < duration) {
+          // Guardar en memoria para la próxima vez
+          this.memoryCache.set(key, persistentEntry);
+          return of(persistentEntry.data);
+        }
+
+        // 3. Llamada HTTP si no está en cache o expiró
+        return apiCall().pipe(
+          tap(data => {
+            const newEntry: CacheEntry<T> = { data, timestamp: now };
+            this.memoryCache.set(key, newEntry);
+            this.persistentCache.set<T>(key, newEntry);
+          })
+        );
       }),
-      shareReplay(1) // Compartir el resultado para evitar múltiples llamadas simultáneas
+      shareReplay(1)
     );
   }
 
-  /**
-   * Limpiar cache manualmente (opcional)
-   */
-  clearCache(key?: string): void {
-    if (key) {
-      this.cache.delete(key);
-    } else {
-      this.cache.clear();
-    }
-  }
-
-  /**
-   * Obtener los 10 álbumes más recientes
-   */
+  // Métodos públicos (sin cambios excepto el uso del nuevo cache)
   getAlbumesRecientes(): Observable<ResponseAlbumDto[]> {
     return this.getCachedData(
       'albumes-recientes',
@@ -68,9 +67,6 @@ export class HomeService {
     );
   }
 
-  /**
-   * Obtener los 10 álbumes más votados
-   */
   getAlbumesMasVotados(): Observable<ResponseAlbumDto[]> {
     return this.getCachedData(
       'albumes-mas-votados',
@@ -78,9 +74,6 @@ export class HomeService {
     );
   }
 
-  /**
-   * Obtener los 10 álbumes más escuchados
-   */
   getAlbumesMasEscuchados(): Observable<ResponseAlbumDto[]> {
     return this.getCachedData(
       'albumes-mas-escuchados',
@@ -88,9 +81,6 @@ export class HomeService {
     );
   }
 
-  /**
-   * Obtener 10 canciones "on fire"
-   */
   getCancionesOnFire(): Observable<ResponseSongDto[]> {
     return this.getCachedData(
       'canciones-onfire',
@@ -98,9 +88,6 @@ export class HomeService {
     );
   }
 
-  /**
-   * Obtener 10 canciones más likeadas
-   */
   getCancionesMasLikeadas(): Observable<ResponseSongDto[]> {
     return this.getCachedData(
       'canciones-mas-likeadas',
@@ -108,14 +95,29 @@ export class HomeService {
     );
   }
 
-  /**
-   * Obtener el álbum al que pertenece una canción específica
-   * @param idSong ID de la canción
-   */
   getAlbumBySong(idSong: number): Observable<ResponseAlbumDto> {
     return this.getCachedData(
       `album-song-${idSong}`,
       () => this.http.get<ResponseAlbumDto>(`${this.backEndRoutes.musicServiceUrl}/api/home/album-de-cancion/${idSong}`)
     );
   }
+
+  async clearAllCache() {
+    this.memoryCache.clear();
+    await this.persistentCache.clear();
+  }
+
+  startAutoClearCache() {
+    const fiveHours = 2 * 60 * 60 * 1000; // 5 horas en milisegundos
+
+    setInterval(() => {
+      this.clearAllCache().then(() => {
+
+      }).catch(err => {
+        console.error('Error eliminando cache automáticamente:', err);
+      });
+    }, fiveHours);
+  }
+
+
 }

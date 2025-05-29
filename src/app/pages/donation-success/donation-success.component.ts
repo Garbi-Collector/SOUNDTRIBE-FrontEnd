@@ -22,12 +22,6 @@ export class DonationSuccessComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       this.donationId = params['donationId'];
 
-      // Mostrar URL relativa
-      console.log('URL relativa:', this.router.url);
-
-      // Mostrar URL completa (incluye protocolo, host, etc.)
-      console.log('URL completa:', window.location.href);
-
       if (this.donationId) {
         setTimeout(() => {
           this.isLoading = false;

@@ -78,7 +78,6 @@ export class EliminarCuentaComponent implements OnInit {
 
     this.deletingAccountService.eliminarCuenta(token).subscribe({
       next: (response) => {
-        console.log('Cuenta eliminada exitosamente:', response);
 
         // Cerrar sesión y limpiar datos
         this.authService.logout();

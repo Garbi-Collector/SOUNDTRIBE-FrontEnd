@@ -62,14 +62,6 @@ export class AlbumService {
       formData.append('files', song.file);
     });
 
-    // Logs de depuración (pueden quedarse si querés)
-    console.log('Token enviado:', token);
-    console.log('Headers enviados:', headers);
-    console.log('FormData enviado:');
-    formData.forEach((value, key) => {
-      console.log(`Campo '${key}':`, value);
-    });
-
 
     // Hacemos la llamada
     return this.http.post<ResponseAlbumDto>(`${this.backEndRoutes.musicServiceUrl}/album/upload`, formData, { headers });

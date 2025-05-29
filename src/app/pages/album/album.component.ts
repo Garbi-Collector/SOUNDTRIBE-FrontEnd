@@ -78,30 +78,30 @@ export class AlbumComponent implements OnInit {
 
   // Cargar album por slug
   loadAlbumBySlug(slug: string): void {
-    console.log(`[loadAlbumBySlug] Iniciando carga del álbum con slug: ${slug}`);
+
     console.time('loadAlbumBySlug');
     this.isLoading = true;
     this.error = null;
-    console.log('[loadAlbumBySlug] Solicitando álbum al servicio...');
+
     console.time('getAlbumBySlug');
     this.albumService.getAlbumBySlug(slug).pipe(
       tap(() => {
         console.timeEnd('getAlbumBySlug');
-        console.log('[loadAlbumBySlug] Álbum obtenido del servicio');
+
       }),
       switchMap(album => {
-        console.log('[loadAlbumBySlug] Procesando álbum:', album.name, 'ID:', album.id);
+
         this.album = album;
         // Cargar portada del álbum
-        console.log('[loadAlbumBySlug] Solicitando portada del álbum...');
+
         console.time('obtenerPortada');
         const coverObservable = this.songsService.obtenerPortadaPorId(album.id).pipe(
           tap(() => {
             console.timeEnd('obtenerPortada');
-            console.log('[loadAlbumBySlug] Portada recibida');
+
           }),
           map(blob => {
-            console.log('[loadAlbumBySlug] Creando URL para la portada', { blobSize: blob.size });
+
             const objectUrl = URL.createObjectURL(blob);
             return this.sanitizer.bypassSecurityTrustUrl(objectUrl);
           }),
@@ -111,12 +111,12 @@ export class AlbumComponent implements OnInit {
           })
         );
         // Cargar información del propietario
-        console.log('[loadAlbumBySlug] Solicitando datos del propietario ID:', album.owner);
+
         console.time('getUserDescription');
         const ownerObservable = this.userService.getUserDescription(album.owner).pipe(
           tap(owner => {
             console.timeEnd('getUserDescription');
-            console.log('[loadAlbumBySlug] Datos del propietario recibidos:', owner?.username);
+
           }),
           catchError(error => {
             console.error('[loadAlbumBySlug] Error cargando datos del artista:', error);
@@ -124,23 +124,23 @@ export class AlbumComponent implements OnInit {
           })
         );
         // Cargar artistas invitados en las canciones
-        console.log('[loadAlbumBySlug] Procesando artistas invitados...');
+
         const uniqueFeaturedArtistIds = new Set<number>();
         album.songs.forEach(song => {
           if (song.artistasFt && song.artistasFt.length > 0) {
-            console.log(`[loadAlbumBySlug] Canción "${song.name}" tiene ${song.artistasFt.length} artistas invitados`);
+
             song.artistasFt.forEach(artistId => uniqueFeaturedArtistIds.add(artistId));
           }
         });
-        console.log(`[loadAlbumBySlug] Total de artistas invitados únicos: ${uniqueFeaturedArtistIds.size}`);
+
         console.time('getFeaturedArtists');
         const featuredArtistsObservables: Observable<UserDescription | null>[] = [];
         uniqueFeaturedArtistIds.forEach(artistId => {
-          console.log(`[loadAlbumBySlug] Solicitando datos del artista invitado ID: ${artistId}`);
+
           featuredArtistsObservables.push(
             this.userService.getUserDescription(artistId).pipe(
               tap(artist => {
-                console.log(`[loadAlbumBySlug] Datos del artista ${artistId} recibidos:`, artist?.username);
+
               }),
               catchError(error => {
                 console.error(`[loadAlbumBySlug] Error cargando artista con ID ${artistId}:`, error);
@@ -150,7 +150,7 @@ export class AlbumComponent implements OnInit {
           );
         });
         // Inicializar mapas de votos
-        console.log('[loadAlbumBySlug] Inicializando mapas de votos para', album.songs.length, 'canciones');
+
         album.songs.forEach(song => {
           this.songVotes.set(song.id, null);
           this.songVotesLoading.set(song.id, false);
@@ -163,7 +163,7 @@ export class AlbumComponent implements OnInit {
 
         // Si el usuario está autenticado, cargar los votos actuales y el estado de like del álbum
         if (this.isAuthenticated) {
-          console.log('[loadAlbumBySlug] Usuario autenticado, cargando votos y estado del álbum...');
+
           console.time('loadUserVotes');
           userVotesObservable = this.loadUserVotes(album.songs);
 
@@ -172,7 +172,7 @@ export class AlbumComponent implements OnInit {
           albumLikedObservable = this.albumService.isAlbumLiked(album.id).pipe(
             tap(isLiked => {
               console.timeEnd('checkAlbumLiked');
-              console.log('[loadAlbumBySlug] Estado de like del álbum:', isLiked);
+
               this.albumLiked = isLiked;
             }),
             catchError(error => {
@@ -181,13 +181,13 @@ export class AlbumComponent implements OnInit {
             })
           );
         } else {
-          console.log('[loadAlbumBySlug] Usuario no autenticado, omitiendo carga de votos y estado de like');
+
         }
 
         // NUEVO: Cargar el conteo de likes siempre (autenticado o no)
         likesCountObservable = this.albumService.getLikesCount(album.id).pipe(
           tap(count => {
-            console.log('[loadAlbumBySlug] Conteo de likes:', count);
+
             // Actualizar directamente el álbum
             this.album!.likeCount = count;
           }),
@@ -200,27 +200,27 @@ export class AlbumComponent implements OnInit {
         // Crea un observable para los artistas invitados que siempre emite (incluso con array vacío)
         const featuredArtistsObservable = featuredArtistsObservables.length > 0
           ? forkJoin(featuredArtistsObservables).pipe(
-            tap(() => console.log('[forkJoin] featuredArtists completado')),
+
             tap(() => {
               console.timeEnd('getFeaturedArtists');
-              console.log('[loadAlbumBySlug] Todos los artistas invitados recibidos');
+
             })
           )
           : of([]).pipe(
-            tap(() => console.log('[forkJoin] No hay artistas invitados que cargar')),
+
             tap(() => {
               console.timeEnd('getFeaturedArtists');
-              console.log('[loadAlbumBySlug] No hay artistas invitados que procesar');
+
             })
           );
 
-        console.log('[loadAlbumBySlug] Ejecutando forkJoin para todas las solicitudes paralelas');
+
         return forkJoin({
           cover: coverObservable.pipe(
-            tap(() => console.log('[forkJoin] coverObservable completado'))
+
           ),
           owner: ownerObservable.pipe(
-            tap(() => console.log('[forkJoin] ownerObservable completado'))
+
           ),
           featuredArtists: featuredArtistsObservable,
           userVotes: userVotesObservable,
@@ -230,35 +230,35 @@ export class AlbumComponent implements OnInit {
       })
     ).subscribe({
       next: (results) => {
-        console.log('[loadAlbumBySlug] Todas las solicitudes completadas correctamente');
+
         this.albumCover = results.cover;
-        console.log('[loadAlbumBySlug] Portada asignada:', results.cover ? 'Disponible' : 'No disponible');
+
         this.owner = results.owner;
-        console.log('[loadAlbumBySlug] Propietario asignado:', this.owner?.username);
+
         // Filtrar artistas nulos del resultado
         this.featuredArtists = results.featuredArtists.filter(artist => artist !== null) as UserDescription[];
-        console.log('[loadAlbumBySlug] LikeCount final:', this.album?.likeCount);
-        console.log('[loadAlbumBySlug] Artistas invitados procesados:', this.featuredArtists.length);
+
+
         if (this.isAuthenticated) {
           console.timeEnd('loadUserVotes');
         }
         this.isLoading = false;
         console.timeEnd('loadAlbumBySlug');
-        console.log('[loadAlbumBySlug] Proceso completado');
+
       },
       error: (err) => {
         console.error('[loadAlbumBySlug] Error cargando el álbum:', err);
         this.error = 'No se pudo cargar el álbum. Por favor, intenta nuevamente.';
         this.isLoading = false;
         console.timeEnd('loadAlbumBySlug');
-        console.log('[loadAlbumBySlug] Proceso terminado con error');
+
       }
     });
   }
 
   // Cargar los votos actuales del usuario para cada canción
   loadUserVotes(songs: ResponseSongDto[]): Observable<any> {
-    console.log('[loadUserVotes] Cargando votos para', songs.length, 'canciones');
+
 
     // Crear observables para verificar cada tipo de voto para cada canción
     const songVoteObservables: Observable<any>[] = [];
@@ -269,7 +269,7 @@ export class AlbumComponent implements OnInit {
         this.songsService.isVoted(song.id, VoteType.LIKE).pipe(
           tap(isLiked => {
             if (isLiked) {
-              console.log(`[loadUserVotes] Canción ${song.id} tiene LIKE del usuario`);
+
               this.songVotes.set(song.id, VoteType.LIKE);
             }
           }),
@@ -285,7 +285,7 @@ export class AlbumComponent implements OnInit {
         this.songsService.isVoted(song.id, VoteType.DISLIKE).pipe(
           tap(isDisliked => {
             if (isDisliked) {
-              console.log(`[loadUserVotes] Canción ${song.id} tiene DISLIKE del usuario`);
+
               this.songVotes.set(song.id, VoteType.DISLIKE);
             }
           }),
@@ -299,7 +299,7 @@ export class AlbumComponent implements OnInit {
 
     return songVoteObservables.length > 0
       ? forkJoin(songVoteObservables).pipe(
-        tap(() => console.log('[loadUserVotes] Todos los votos cargados'))
+
       )
       : of(null);
   }
@@ -418,7 +418,7 @@ export class AlbumComponent implements OnInit {
 
     this.albumService.likeOrUnlikeAlbum(this.album.id).subscribe({
       next: (message) => {
-        console.log('Respuesta del backend:', message);
+
         // Invertir el estado de like del álbum
         this.albumLiked = !this.albumLiked;
 
@@ -437,7 +437,7 @@ export class AlbumComponent implements OnInit {
       }
     });
 
-    console.log('Toggle like álbum:', this.album.name);
+
   }
 
   // Verificar si el usuario ha dado like al álbum

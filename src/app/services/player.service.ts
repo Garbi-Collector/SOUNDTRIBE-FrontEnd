@@ -19,6 +19,8 @@ export interface PlayerState {
   bufferedTime: number;
   volume: number; // Añadido: nivel de volumen (0-100)
   isMuted: boolean; // Añadido: estado de silencio
+  isFromCache: boolean; // Nuevo: indica si la canción actual viene del caché
+  cacheStatus: 'loading' | 'cached' | 'streaming' | 'error'; // Nuevo: estado del caché
 }
 
 @Injectable({
@@ -44,7 +46,9 @@ export class PlayerService {
     isLoading: false,
     bufferedTime: 0,
     volume: 50, // Volumen inicial al 50%
-    isMuted: false
+    isMuted: false,
+    isFromCache: false,
+    cacheStatus: 'streaming'
   };
 
   // BehaviorSubject para mantener y emitir el estado del reproductor
@@ -90,7 +94,7 @@ export class PlayerService {
   setVolume(volume: number): void {
     // Validar rango
     const clampedVolume = Math.max(0, Math.min(100, volume));
-    console.log('🔊 PlayerService: Cambiando volumen a:', clampedVolume + '%');
+
 
     // Actualizar el elemento de audio (HTMLAudioElement usa 0-1)
     this.audio.volume = clampedVolume / 100;
@@ -111,7 +115,7 @@ export class PlayerService {
   increaseVolume(increment: number = 10): void {
     const currentVolume = this.currentState.volume;
     const newVolume = Math.min(100, currentVolume + increment);
-    console.log('🔊+ PlayerService: Aumentando volumen de', currentVolume + '% a', newVolume + '%');
+
     this.setVolume(newVolume);
   }
 
@@ -119,22 +123,22 @@ export class PlayerService {
   decreaseVolume(increment: number = 10): void {
     const currentVolume = this.currentState.volume;
     const newVolume = Math.max(0, currentVolume - increment);
-    console.log('🔊- PlayerService: Disminuyendo volumen de', currentVolume + '% a', newVolume + '%');
+
     this.setVolume(newVolume);
   }
 
   // Alternar silencio
   toggleMute(): void {
-    console.log('🔇 PlayerService: Toggle mute solicitado');
+
 
     if (this.currentState.isMuted) {
       // Restaurar volumen anterior
-      console.log('🔊 PlayerService: Restaurando volumen a:', this.previousVolume + '%');
+
       this.setVolume(this.previousVolume);
     } else {
       // Guardar volumen actual y silenciar
       this.previousVolume = this.currentState.volume;
-      console.log('🔇 PlayerService: Silenciando, volumen guardado:', this.previousVolume + '%');
+
       this.audio.volume = 0;
       this.updateState({ isMuted: true });
     }
@@ -143,7 +147,7 @@ export class PlayerService {
   // Silenciar
   mute(): void {
     if (!this.currentState.isMuted) {
-      console.log('🔇 PlayerService: Silenciando audio');
+
       this.previousVolume = this.currentState.volume;
       this.audio.volume = 0;
       this.updateState({ isMuted: true });
@@ -153,7 +157,7 @@ export class PlayerService {
   // Quitar silencio
   unmute(): void {
     if (this.currentState.isMuted) {
-      console.log('🔊 PlayerService: Quitando silencio');
+
       this.setVolume(this.previousVolume);
     }
   }
@@ -161,7 +165,7 @@ export class PlayerService {
   // Event handler para cambios de volumen
   private handleVolumeChange(): void {
     const audioVolume = Math.round(this.audio.volume * 100);
-    console.log('🔊 PlayerService: [EVENTO] volumechange - Volumen:', audioVolume + '%');
+
 
     // Sincronizar estado si cambió externamente
     if (audioVolume !== this.currentState.volume) {
@@ -181,7 +185,7 @@ export class PlayerService {
     queue: ResponseSongDto[] = [],
     currentIndex: number = 0
   ): void {
-    console.log('🎵 PlayerService: Iniciando reproducción de canción:', song.name);
+
 
     // Marcar que estamos cambiando de canción
     this.isChangingSong = true;
@@ -214,17 +218,17 @@ export class PlayerService {
     // Marcar que ya no estamos en proceso de cambio después de un pequeño delay
     setTimeout(() => {
       this.isChangingSong = false;
-      console.log('✅ PlayerService: Cambio de canción completado');
-    }, 100);
+
+    }, 10);
   }
 
   // Reproducir
   play(): void {
-    console.log('▶️ PlayerService: Intentando reproducir audio...');
+
     if (this.audio.src) {
-      console.log('🎯 PlayerService: Audio src disponible, ejecutando play()');
+
       this.audio.play().then(() => {
-        console.log('✅ PlayerService: Audio reproduciendo exitosamente');
+
         this.updateState({ isPlaying: true, isLoading: false });
       }).catch(error => {
         console.error('❌ PlayerService: Error al reproducir:', error);
@@ -237,7 +241,7 @@ export class PlayerService {
 
   // Pausar
   pause(): void {
-    console.log('⏸️ PlayerService: Pausando reproducción');
+
     this.audio.pause();
     this.updateState({ isPlaying: false });
   }
@@ -252,15 +256,15 @@ export class PlayerService {
     });
 
     if (this.currentState.isLoading || this.isChangingSong) {
-      console.log('⏳ PlayerService: No se puede hacer toggle, está cargando o cambiando canción');
+
       return;
     }
 
     if (this.currentState.isPlaying) {
-      console.log('⏸️ PlayerService: Pausando desde toggle');
+
       this.pause();
     } else {
-      console.log('▶️ PlayerService: Reproduciendo desde toggle');
+
       this.play();
     }
   }
@@ -268,11 +272,11 @@ export class PlayerService {
   // Detener la canción actual
   private stopCurrentSong(): void {
     if (!this.audio.src) {
-      console.log('ℹ️ PlayerService: No hay canción actual para detener');
+
       return;
     }
 
-    console.log('🛑 PlayerService: Deteniendo canción actual');
+
     this.audio.pause();
     this.audio.currentTime = 0;
     this.updateState({
@@ -281,26 +285,26 @@ export class PlayerService {
       currentTime: 0,
       bufferedTime: 0
     });
-    console.log('✅ PlayerService: Canción detenida y estado limpiado');
+
   }
 
   // Ir a la canción anterior
   previousTrack(): void {
     const { queue, currentIndex } = this.currentState;
-    console.log('⏮️ PlayerService: Previous track solicitado', { currentIndex, queueLength: queue.length });
+
 
     if (queue.length === 0 || this.isChangingSong) {
-      console.log('⚠️ PlayerService: No se puede cambiar - sin cola o ya cambiando');
+
       return;
     }
 
     if (this.audio.currentTime > 3) {
-      console.log('🔄 PlayerService: Reiniciando canción actual (más de 3 segundos)');
+
       this.audio.currentTime = 0;
     } else if (currentIndex > 0) {
       const previousIndex = currentIndex - 1;
       const previousSong = queue[previousIndex];
-      console.log('⏮️ PlayerService: Yendo a canción anterior:', { previousIndex, title: previousSong.name });
+
       this.playSong(
         previousSong,
         this.currentState.albumCover,
@@ -310,24 +314,24 @@ export class PlayerService {
         previousIndex
       );
     } else {
-      console.log('⚠️ PlayerService: Ya estamos en la primera canción');
+
     }
   }
 
   // Ir a la siguiente canción
   nextTrack(): void {
     const { queue, currentIndex } = this.currentState;
-    console.log('⏭️ PlayerService: Next track solicitado', { currentIndex, queueLength: queue.length });
+
 
     if (queue.length === 0 || this.isChangingSong) {
-      console.log('⚠️ PlayerService: No se puede cambiar - sin cola o ya cambiando');
+
       return;
     }
 
     if (currentIndex < queue.length - 1) {
       const nextIndex = currentIndex + 1;
       const nextSong = queue[nextIndex];
-      console.log('⏭️ PlayerService: Yendo a siguiente canción:', { nextIndex, title: nextSong.name });
+
       this.playSong(
         nextSong,
         this.currentState.albumCover,
@@ -337,7 +341,7 @@ export class PlayerService {
         nextIndex
       );
     } else {
-      console.log('🔄 PlayerService: Volviendo a la primera canción (comportamiento circular)');
+
       this.playSong(
         queue[0],
         this.currentState.albumCover,
@@ -351,10 +355,10 @@ export class PlayerService {
 
   // Buscar a una posición específica
   seek(percentage: number): void {
-    console.log('🎯 PlayerService: Seek solicitado al', percentage + '%');
+
     if (this.audio.duration) {
       const seekTime = (percentage / 100) * this.audio.duration;
-      console.log('⏱️ PlayerService: Saltando a tiempo:', seekTime, 'segundos');
+
       this.audio.currentTime = seekTime;
     } else {
       console.warn('⚠️ PlayerService: No se puede hacer seek, duration no disponible');
@@ -363,19 +367,19 @@ export class PlayerService {
 
   // Event Handlers para streaming
   private handleLoadStart(): void {
-    console.log('🔄 PlayerService: [EVENTO] loadstart - Iniciando carga de audio');
+
     this.updateState({ isLoading: true });
   }
 
   private handleCanPlay(): void {
-    console.log('✅ PlayerService: [EVENTO] canplay - Audio listo para reproducir');
-    console.log('📊 PlayerService: Audio readyState:', this.audio.readyState);
-    console.log('📊 PlayerService: Audio duration:', this.audio.duration);
-    console.log('🔍 PlayerService: Estado actual - isChangingSong:', this.isChangingSong, 'isPlaying:', this.currentState.isPlaying);
+
+
+
+
 
     this.updateState({ isLoading: false });
 
-    console.log('🚀 PlayerService: Auto-reproduciendo tras canplay');
+
     setTimeout(() => {
       if (!this.isChangingSong && !this.currentState.isPlaying) {
         this.play();
@@ -384,14 +388,14 @@ export class PlayerService {
   }
 
   private handleWaiting(): void {
-    console.log('⏳ PlayerService: [EVENTO] waiting - Esperando más datos...');
+
     if (!this.isChangingSong) {
       this.updateState({ isLoading: true });
     }
   }
 
   private handlePlaying(): void {
-    console.log('🎵 PlayerService: [EVENTO] playing - Audio reproduciéndose');
+
     this.updateState({ isLoading: false, isPlaying: true });
   }
 
@@ -433,7 +437,7 @@ export class PlayerService {
 
   // Manejar el final de la canción
   private handleSongEnd(): void {
-    console.log('🏁 PlayerService: [EVENTO] ended - Canción terminada, yendo a siguiente');
+
     this.nextTrack();
   }
 

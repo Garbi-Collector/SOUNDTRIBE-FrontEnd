@@ -100,10 +100,9 @@ export class InicioComponent implements OnInit {
    */
   checkAllSectionsLoaded(): void {
     this.loadingSectionsCompleted++;
-    console.log(`[checkAllSectionsLoaded] Secciones cargadas: ${this.loadingSectionsCompleted}/${this.loadingSectionsTotal}`);
 
     if (this.loadingSectionsCompleted >= this.loadingSectionsTotal) {
-      console.log('[checkAllSectionsLoaded] Todas las secciones están cargadas. Mostrando página.');
+
       // Usar un setTimeout más largo para asegurar que los elementos estén renderizados
       setTimeout(() => {
         this.isPageLoading = false;
@@ -119,7 +118,7 @@ export class InicioComponent implements OnInit {
    * Inicializa las posiciones máximas de scroll para todos los carruseles
    */
   initializeScrollPositions(): void {
-    console.log('[initializeScrollPositions] Inicializando posiciones de scroll');
+
     this.updateMaxScrollPosition();
     this.updateMaxScrollPositionVotados();
     this.updateMaxScrollPositionEscuchados();
@@ -160,14 +159,14 @@ export class InicioComponent implements OnInit {
    * Carga los álbumes más recientes desde el servicio
    */
   cargarAlbumesRecientes(): void {
-    console.log('[cargarAlbumesRecientes] Iniciando carga de álbumes recientes');
+
     this.updateLoadingMessage('Cargando álbumes recientes...');
     this.isLoading = true;
     this.error = null;
 
     this.homeService.getAlbumesRecientes().subscribe({
       next: (albumes) => {
-        console.log(`[cargarAlbumesRecientes] ${albumes.length} álbumes recibidos`);
+
         this.albumesRecientes = albumes;
 
         // Una vez que tenemos los álbumes, cargamos las portadas
@@ -186,14 +185,14 @@ export class InicioComponent implements OnInit {
    * Carga los álbumes más votados desde el servicio
    */
   cargarAlbumesMasVotados(): void {
-    console.log('[cargarAlbumesMasVotados] Iniciando carga de álbumes más votados');
+
     this.updateLoadingMessage('Cargando álbumes más votados...');
     this.isLoadingVotados = true;
     this.errorVotados = null;
 
     this.homeService.getAlbumesMasVotados().subscribe({
       next: (albumes) => {
-        console.log(`[cargarAlbumesMasVotados] ${albumes.length} álbumes más votados recibidos`);
+
         this.albumesMasVotados = albumes;
 
         // Una vez que tenemos los álbumes, cargamos las portadas
@@ -212,14 +211,14 @@ export class InicioComponent implements OnInit {
    * Carga los álbumes más escuchados desde el servicio
    */
   cargarAlbumesMasEscuchados(): void {
-    console.log('[cargarAlbumesMasEscuchados] Iniciando carga de álbumes más escuchados');
+
     this.updateLoadingMessage('Cargando álbumes más escuchados...');
     this.isLoadingescuchados = true;
     this.errorescuchados = null;
 
     this.homeService.getAlbumesMasEscuchados().subscribe({
       next: (albumes) => {
-        console.log(`[cargarAlbumesMasEscuchados] ${albumes.length} álbumes más escuchados recibidos`);
+
         this.albumesMasescuchados = albumes;
 
         // Una vez que tenemos los álbumes, cargamos las portadas
@@ -238,14 +237,14 @@ export class InicioComponent implements OnInit {
    * Carga las canciones onfire desde el servicio y sus álbumes correspondientes
    */
   cargarCancionesOnfire(): void {
-    console.log('[cargarCancionesOnfire] Iniciando carga de canciones onfire');
+
     this.updateLoadingMessage('Cargando canciones populares...');
     this.isLoadingOnfire = true;
     this.errorOnfire = null;
 
     this.homeService.getCancionesOnFire().subscribe({
       next: (canciones) => {
-        console.log(`[cargarCancionesOnfire] ${canciones.length} canciones onfire recibidas`);
+
         this.cancionesOnfire = canciones;
 
         // Una vez que tenemos las canciones, obtenemos los álbumes correspondientes
@@ -264,7 +263,7 @@ export class InicioComponent implements OnInit {
    * @param canciones Lista de canciones onfire
    */
   cargarAlbumesDeCanciones(canciones: ResponseSongDto[]): void {
-    console.log('[cargarAlbumesDeCanciones] Iniciando carga de álbumes para canciones onfire');
+
 
     if (canciones.length === 0) {
       this.isLoadingOnfire = false;
@@ -290,7 +289,7 @@ export class InicioComponent implements OnInit {
     // Ejecutar todas las solicitudes en paralelo
     forkJoin(albumObservables).subscribe({
       next: (results) => {
-        console.log(`[cargarAlbumesDeCanciones] Álbumes para canciones onfire cargados:`, results.length);
+
 
         // Almacenar los álbumes en el array de álbumes por canción onfire
         this.AlbumesByOnfire = results
@@ -320,7 +319,7 @@ export class InicioComponent implements OnInit {
     if (tipo === 'votados') seccion = 'más votados';
     if (tipo === 'escuchados') seccion = 'más escuchados';
 
-    console.log(`[cargarPortadasDeAlbumes] Iniciando carga de portadas de álbumes ${seccion}`);
+
 
     if (albumes.length === 0) {
       this.finalizarCargaSeccion(tipo);
@@ -353,7 +352,7 @@ export class InicioComponent implements OnInit {
       })
     ).subscribe({
       next: (results) => {
-        console.log(`[cargarPortadasDeAlbumes] Portadas de álbumes ${seccion} cargadas:`, results.length);
+
 
         // Almacenar las URLs de las portadas en el mapa
         results.forEach(result => {
@@ -401,7 +400,7 @@ export class InicioComponent implements OnInit {
     if (this.albumsCarousel?.nativeElement) {
       const element = this.albumsCarousel.nativeElement;
       this.maxScrollPosition = Math.max(0, element.scrollWidth - element.clientWidth);
-      console.log(`[updateMaxScrollPosition] Max scroll position recientes: ${this.maxScrollPosition}`);
+
     }
   }
 
@@ -412,7 +411,7 @@ export class InicioComponent implements OnInit {
     if (this.votedAlbumsCarousel?.nativeElement) {
       const element = this.votedAlbumsCarousel.nativeElement;
       this.maxScrollPositionVotados = Math.max(0, element.scrollWidth - element.clientWidth);
-      console.log(`[updateMaxScrollPositionVotados] Max scroll position votados: ${this.maxScrollPositionVotados}`);
+
     }
   }
 
@@ -423,7 +422,7 @@ export class InicioComponent implements OnInit {
     if (this.escuchadosAlbumsCarousel?.nativeElement) {
       const element = this.escuchadosAlbumsCarousel.nativeElement;
       this.maxScrollPositionEscuchados = Math.max(0, element.scrollWidth - element.clientWidth);
-      console.log(`[updateMaxScrollPositionEscuchados] Max scroll position escuchados: ${this.maxScrollPositionEscuchados}`);
+
     }
   }
 
@@ -434,7 +433,7 @@ export class InicioComponent implements OnInit {
     if (this.onFireCancionesCarousel?.nativeElement) {
       const element = this.onFireCancionesCarousel.nativeElement;
       this.maxScrollPositionOnfire = Math.max(0, element.scrollWidth - element.clientWidth);
-      console.log(`[updateMaxScrollPositionOnfire] Max scroll position onfire: ${this.maxScrollPositionOnfire}`);
+
     }
   }
 
@@ -450,7 +449,7 @@ export class InicioComponent implements OnInit {
         behavior: 'smooth'
       });
       this.scrollPosition = newPosition;
-      console.log(`[scrollLeft] Nueva posición: ${newPosition}`);
+
     }
   }
 
@@ -466,7 +465,7 @@ export class InicioComponent implements OnInit {
         behavior: 'smooth'
       });
       this.scrollPosition = newPosition;
-      console.log(`[scrollRight] Nueva posición: ${newPosition}`);
+
     }
   }
 
@@ -482,7 +481,7 @@ export class InicioComponent implements OnInit {
         behavior: 'smooth'
       });
       this.scrollPositionVotados = newPosition;
-      console.log(`[scrollLeftVotados] Nueva posición: ${newPosition}`);
+
     }
   }
 
@@ -498,7 +497,7 @@ export class InicioComponent implements OnInit {
         behavior: 'smooth'
       });
       this.scrollPositionVotados = newPosition;
-      console.log(`[scrollRightVotados] Nueva posición: ${newPosition}`);
+
     }
   }
 
@@ -514,7 +513,7 @@ export class InicioComponent implements OnInit {
         behavior: 'smooth'
       });
       this.scrollPositionEscuchados = newPosition;
-      console.log(`[scrollLeftEscuchados] Nueva posición: ${newPosition}`);
+
     }
   }
 
@@ -530,7 +529,7 @@ export class InicioComponent implements OnInit {
         behavior: 'smooth'
       });
       this.scrollPositionEscuchados = newPosition;
-      console.log(`[scrollRightEscuchados] Nueva posición: ${newPosition}`);
+
     }
   }
 
@@ -546,7 +545,7 @@ export class InicioComponent implements OnInit {
         behavior: 'smooth'
       });
       this.scrollPositionOnfire = newPosition;
-      console.log(`[scrollLeftOnfire] Nueva posición: ${newPosition}`);
+
     }
   }
 
@@ -562,7 +561,7 @@ export class InicioComponent implements OnInit {
         behavior: 'smooth'
       });
       this.scrollPositionOnfire = newPosition;
-      console.log(`[scrollRightOnfire] Nueva posición: ${newPosition}`);
+
     }
   }
 

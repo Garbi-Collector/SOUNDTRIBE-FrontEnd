@@ -1,19 +1,21 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { NotificationGet, NotificationType } from '../../dtos/noti/NotificationsDto';
 import { NotificationService } from '../../services/notification.service';
 import { AuthService } from '../../services/auth.service';
-import { forkJoin } from "rxjs";
+import { forkJoin, Subject } from "rxjs";
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-notification-modal',
   templateUrl: './notification-modal.component.html',
   styleUrls: ['./notification-modal.component.css']
 })
-export class NotificationModalComponent implements OnInit {
+export class NotificationModalComponent implements OnInit, OnDestroy {
   notifications: NotificationGet[] = [];
   isOpen = false;
   unreadCount = 0;
+  private destroy$ = new Subject<void>();
 
   constructor(
     private notificationService: NotificationService,
@@ -23,28 +25,37 @@ export class NotificationModalComponent implements OnInit {
 
   ngOnInit(): void {
     // Suscribirse al estado de autenticación
-    this.authService.isAuthenticated$.subscribe(isAuth => {
-      if (isAuth) {
-        this.loadNotifications();
-      } else {
-        this.notifications = [];
-        this.unreadCount = 0;
-      }
-    });
+    this.authService.isAuthenticated$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(isAuth => {
+        if (isAuth) {
+          this.loadNotifications();
+        } else {
+          this.notifications = [];
+          this.unreadCount = 0;
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadNotifications(): void {
     const token = this.authService.getToken();
     if (token) {
-      this.notificationService.getMyNotifications(token).subscribe(
-        (notifications) => {
-          this.notifications = notifications;
-          this.calculateUnreadCount();
-        },
-        (error) => {
-          console.error('Error al cargar notificaciones:', error);
-        }
-      );
+      this.notificationService.getMyNotifications(token)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(
+          (notifications) => {
+            this.notifications = notifications;
+            this.calculateUnreadCount();
+          },
+          (error) => {
+            console.error('Error al cargar notificaciones:', error);
+          }
+        );
     }
   }
 
@@ -61,13 +72,28 @@ export class NotificationModalComponent implements OnInit {
 
   onNotificationClick(notification: NotificationGet): void {
     const token = this.authService.getToken();
-    if (!notification.isRead && token) {
-      this.notificationService.markAsRead(notification.id, token).subscribe(() => {
-        notification.isRead = true;
-        this.calculateUnreadCount();
-      });
-    }
 
+    if (!notification.isRead && token) {
+      // Actualizar inmediatamente el estado local
+      notification.isRead = true;
+      this.calculateUnreadCount();
+
+      // Enviar la petición al servidor
+      this.notificationService.markAsRead(notification.id, token)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            // La actualización ya se hizo localmente, solo confirmamos
+            console.log('Notificación marcada como leída en el servidor');
+          },
+          error: (error) => {
+            // Si falla, revertir el cambio local
+            console.error('Error al marcar como leída:', error);
+            notification.isRead = false;
+            this.calculateUnreadCount();
+          }
+        });
+    }
 
     this.redirectBasedOnNotification(notification);
 
@@ -168,9 +194,9 @@ export class NotificationModalComponent implements OnInit {
     }
   }
 
-  calculateUnreadCount(): number {
-    this.unreadCount = this.notifications.filter(n => !n.isRead).length;
-    return this.unreadCount;
+  calculateUnreadCount(): void {
+    const newCount = this.notifications.filter(n => !n.isRead).length;
+    this.unreadCount = newCount;
   }
 
   markAllAsRead(): void {
@@ -180,16 +206,29 @@ export class NotificationModalComponent implements OnInit {
     const unreadNotifications = this.notifications.filter(n => !n.isRead);
     if (unreadNotifications.length === 0) return;
 
+    // Actualizar inmediatamente el estado local
+    unreadNotifications.forEach(n => n.isRead = true);
+    this.calculateUnreadCount();
+
     const requests = unreadNotifications.map(n =>
       this.notificationService.markAsRead(n.id, token)
     );
 
-    forkJoin(requests).subscribe({
-      next: () => {
-        this.loadNotifications();
-      },
-      error: err => console.error('Error al marcar como leídas', err)
-    });
+    forkJoin(requests)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          console.log('Todas las notificaciones marcadas como leídas');
+          // Opcional: recargar desde el servidor para confirmar
+          this.loadNotifications();
+        },
+        error: err => {
+          console.error('Error al marcar como leídas', err);
+          // Revertir cambios locales si falla
+          unreadNotifications.forEach(n => n.isRead = false);
+          this.calculateUnreadCount();
+        }
+      });
   }
 
   @HostListener('document:click', ['$event'])

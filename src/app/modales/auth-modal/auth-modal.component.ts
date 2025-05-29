@@ -6,6 +6,7 @@ import { AuthService } from '../../services/auth.service';
 import {ModalService, ModalType} from '../../services/modal.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { RegisterRequestDto, LoginRequestDto } from '../../dtos/usuarios/auth.dto';
+import {passwordComplexityValidator} from "../../validators/passwordComplexityValidator";
 
 @Component({
   selector: 'app-auth-modal',
@@ -69,7 +70,13 @@ export class AuthModalComponent implements OnInit {
     this.registerForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      password: [
+        '',
+        [
+          Validators.required,
+          passwordComplexityValidator
+        ]
+      ],
       confirmPassword: ['', Validators.required],
       rol: ['OYENTE', Validators.required],
       termsAccepted: [false, [Validators.requiredTrue]] // Aceptación de términos y condiciones obligatoria

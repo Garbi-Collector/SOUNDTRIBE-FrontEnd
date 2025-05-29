@@ -84,6 +84,12 @@
           </form>
         </div>
 
+
+
+
+
+
+
         <!-- Formulario de Registro -->
         <div *ngIf="activeTab === 'register'" class="register-container">
           <h2>Crear Cuenta</h2>
@@ -109,8 +115,11 @@
             <div class="form-group mb-3">
               <label for="username" class="form-label">Nombre de usuario</label>
               <div class="input-group">
-                <input id="username" type="text" class="form-control" formControlName="username"
-                       [ngClass]="{'is-invalid': registerForm.get('username')?.invalid && registerForm.get('username')?.touched}">
+                <input
+                  id="username" type="text" class="form-control" formControlName="username"
+                  [ngClass]="{'is-invalid': registerForm.get('username')?.invalid && registerForm.get('username')?.touched}"
+                  maxlength="20"
+                >
                 <span class="input-group-text"><i class="bi bi-person"></i></span>
                 <div *ngIf="registerForm.get('username')?.hasError('required') && registerForm.get('username')?.touched" class="invalid-feedback">
                   Este campo es obligatorio
@@ -145,8 +154,15 @@
             <div class="form-group mb-3">
               <label for="register-password" class="form-label">Contraseña</label>
               <div class="input-group">
-                <input id="register-password" [type]="hideRegisterPassword ? 'password' : 'text'" class="form-control" formControlName="password"
-                       [ngClass]="{'is-invalid': registerForm.get('password')?.invalid && registerForm.get('password')?.touched}">
+
+                <input
+                  id="register-password"
+                  [type]="hideRegisterPassword ? 'password' : 'text'"
+                  class="form-control" formControlName="password"
+                  [ngClass]="{'is-invalid': registerForm.get('password')?.invalid && registerForm.get('password')?.touched}"
+                  maxlength="20"
+                >
+
                 <button type="button" class="input-group-text toggle-password" (click)="hideRegisterPassword = !hideRegisterPassword">
                   <i class="bi" [ngClass]="hideRegisterPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
                 </button>
@@ -156,6 +172,18 @@
                 <div *ngIf="registerForm.get('password')?.hasError('minlength') && registerForm.get('password')?.touched" class="invalid-feedback">
                   La contraseña debe tener al menos 6 caracteres
                 </div>
+
+                <div *ngIf="registerForm.get('password')?.hasError('passwordComplexity') && registerForm.get('password')?.touched" class="invalid-feedback">
+                  La contraseña debe tener:
+                  <ul class="mb-0">
+                    <li *ngIf="!registerForm.get('password')?.errors?.['passwordComplexity']?.['hasUpperCase']">Al menos una mayúscula</li>
+                    <li *ngIf="!registerForm.get('password')?.errors?.['passwordComplexity']?.['hasLowerCase']">Al menos una minúscula</li>
+                    <li *ngIf="!registerForm.get('password')?.errors?.['passwordComplexity']?.['hasSpecialChar']">Un carácter especial (.-_#$%&*)</li>
+                    <li *ngIf="!registerForm.get('password')?.errors?.['passwordComplexity']?.['isValidLength']">Entre 6 y 20 caracteres</li>
+                  </ul>
+                </div>
+
+
               </div>
             </div>
 

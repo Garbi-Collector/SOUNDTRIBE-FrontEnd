@@ -1,14 +1,71 @@
 <div class="content-card">
   <h2 class="mb-4">Subir Nuevo Álbum</h2>
 
-  <div *ngIf="isLoading" class="text-center my-4">
-    <div class="spinner-border" style="color: var(--color-purple);" role="status">
-      <span class="visually-hidden">Cargando...</span>
+  <!-- CARGA INICIAL: Grande y al medio -->
+  <div *ngIf="isLoading && !isUploadingAlbum" class="loading-overlay">
+    <div class="loading-container">
+      <div class="large-spinner-simple">
+        <div class="spinner-ring-simple"></div>
+      </div>
+      <p class="loading-text">Cargando...</p>
     </div>
-    <p class="mt-3" style="color: var(--color-purple);">Cargando...</p>
   </div>
 
-  <form [formGroup]="albumForm" *ngIf="!isLoading">
+  <!-- CARGA DE ÁLBUM: Grande y al medio con efecto typewriter -->
+  <div *ngIf="isUploadingAlbum && !isFinish" class="upload-loading-overlay">
+    <div class="upload-loading-container">
+      <div class="upload-loading-content">
+        <!-- Spinner animado más grande con múltiples anillos -->
+        <div class="large-spinner">
+          <div class="spinner-ring"></div>
+          <div class="spinner-ring"></div>
+          <div class="spinner-ring"></div>
+          <div class="music-note-animation">
+            <i class="bi bi-music-note-beamed"></i>
+          </div>
+        </div>
+
+        <!-- Mensaje principal -->
+        <h3 class="upload-title">Subiendo tu álbum...</h3>
+
+        <!-- Mensaje con efecto typewriter -->
+        <div class="typewriter-container">
+          <p class="upload-message typewriter-text">{{ currentLoadingMessage }}</p>
+        </div>
+
+        <!-- Progress bar animado -->
+        <div class="progress upload-progress">
+          <div class="progress-bar progress-bar-animated progress-bar-striped"
+               role="progressbar"
+               style="width: 100%;">
+          </div>
+        </div>
+
+        <!-- Mensaje adicional -->
+        <p class="upload-subtitle">¡Estamos creando algo increíble! 🎵</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MENSAJE FINAL: Con confetis de colores -->
+  <div *ngIf="isFinish" class="text-center my-4 finish-container">
+    <div class="confetti-container">
+      <!-- Los confetis se generarán aquí dinámicamente -->
+    </div>
+    <div class="finish-content">
+      <div class="finish-icon">
+        <i class="bi bi-check-circle-fill"></i>
+      </div>
+      <h3 class="finish-title">¡Álbum subido exitosamente!</h3>
+      <p class="finish-message">Tu música ya está lista para el mundo 🎵</p>
+    </div>
+  </div>
+
+
+
+
+
+  <form [formGroup]="albumForm" *ngIf="!isLoading && !isUploadingAlbum">
     <!-- Nav tabs para el wizard -->
     <ul class="nav nav-tabs mb-4" id="albumTabs" role="tablist" style="border-bottom: 1px solid var(--dark-border);">
       <li class="nav-item" role="presentation">
@@ -104,18 +161,18 @@
 
           <div class="mb-3">
             <label for="album-type" class="form-label" style="color: var(--dark-text-secondary);">Tipo de Álbum</label>
-            <select class="form-select" id="album-type" formControlName="typeAlbum" required
+            <select  class="form-select" id="album-type" formControlName="typeAlbum" required
                     style="background-color: var(--dark-component-bg-modal); border: 1px solid var(--dark-border); color: var(--dark-text); border-radius: 8px; padding: 10px 15px;">
               <option value="" disabled selected>Selecciona un tipo</option>
-              <option *ngFor="let option of typeAlbumOptions" [value]="option.value">
+              <option class="text-dark" *ngFor="let option of typeAlbumOptions" [value]="option.value">
                 {{ option.label }}
               </option>
             </select>
             <div class="form-text" *ngIf="albumType" style="color: var(--color-cyan);">
               <ng-container [ngSwitch]="albumType">
-                <span *ngSwitchCase="'SINGLE'">Un Single contiene exactamente 1 canción</span>
-                <span *ngSwitchCase="'EP'">Un EP contiene entre 3 y 6 canciones</span>
-                <span *ngSwitchCase="'LP'">Un LP contiene entre 5 y 12 canciones</span>
+                <span  *ngSwitchCase="'SINGLE'">Un Single contiene exactamente 1 canción</span>
+                <span  *ngSwitchCase="'EP'">Un EP contiene entre 3 y 6 canciones</span>
+                <span  *ngSwitchCase="'LP'">Un LP contiene entre 5 y 12 canciones</span>
               </ng-container>
             </div>
             <div class="invalid-feedback" *ngIf="albumForm.get('albumInfo.typeAlbum')?.touched && albumForm.get('albumInfo.typeAlbum')?.hasError('required')"
@@ -136,7 +193,7 @@
                   </button>
                   <input type="text" class="form-control" [value]="albumForm.get('albumInfo.portada')?.value?.name || 'Ningún archivo seleccionado'" disabled
                          style="background-color: var(--dark-component-bg-modal); border: 1px solid var(--dark-border); color: var(--dark-text); border-radius: 0 8px 8px 0;">
-                  <input hidden type="file" accept="image/png" #fileInput (change)="onPortadaSelected($event)">
+                  <input hidden type="file" accept="image/*" #fileInput (change)="onPortadaSelected($event)">
                 </div>
                 <div class="text-light small" style="color: var(--color-purple);">
                   Formatos: PNG. Tamaño máximo: 5MB
@@ -228,7 +285,7 @@
                           <select class="form-select" [id]="'song-genre-' + i" formControlName="genero" required (change)="onGeneroChange($event, i)"
                                   style="background-color: var(--dark-component-bg-modal); border: 1px solid var(--dark-border); color: var(--dark-text); border-radius: 8px; padding: 10px 15px;">
                             <option value="" disabled selected>Selecciona un género</option>
-                            <option *ngFor="let genero of generos" [value]="genero.id">
+                            <option class="text-dark" *ngFor="let genero of generos" [value]="genero.id">
                               {{ genero.name }}
                             </option>
                           </select>
@@ -273,7 +330,7 @@
                           <select class="form-select" [id]="'song-style-' + i" formControlName="estilo" required
                                   style="background-color: var(--dark-component-bg-modal); border: 1px solid var(--dark-border); color: var(--dark-text); border-radius: 8px; padding: 10px 15px;">
                             <option value="" disabled selected>Selecciona un estilo</option>
-                            <option *ngFor="let estilo of estilos" [value]="estilo.id">
+                            <option class="text-dark" *ngFor="let estilo of estilos" [value]="estilo.id">
                               {{ estilo.name }}
                             </option>
                           </select>
@@ -312,7 +369,7 @@
                               <input hidden type="file" accept="audio/wav" #audioInput (change)="onSongFileSelected($event, i)">
                             </div>
                             <div class="text-light small" style="color: var(--dark-text-secondary);">
-                              Formato: WAV. Tamaño máximo: 45MB
+                              Formato: WAV. Tamaño máximo: 60MB
                             </div>
                           </div>
 

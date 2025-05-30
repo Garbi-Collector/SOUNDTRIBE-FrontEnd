@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, FormArray, Validators, FormControl } from '@ang
 import { AlbumService } from '../../services/album.service';
 import { UserService } from '../../services/user.service';
 import { CategoriaService } from '../../services/categoria.service';
+import { ImageProcessingService } from '../../services/image-processing.service';
 import {
   RequestAlbumDto,
   RequestSongDto
@@ -37,13 +38,41 @@ export class SubirMusicaComponent implements OnInit {
   audioPreviews: Map<number, any> = new Map();
 
   // Estado de carga
+  isFinish = false;
   isLoading = false;
+  isUploadingAlbum = false; // Nueva propiedad para distinguir carga de subida
+  currentLoadingMessage = '';
+  loadingMessageInterval: any;
 
   // Enumeración para tipos de álbum
   typeAlbumOptions = [
     { value: TypeAlbum.SINGLE, label: 'Single (1 canción)' },
     { value: TypeAlbum.EP, label: 'EP (3-6 canciones)' },
     { value: TypeAlbum.LP, label: 'LP (5-12 canciones)' }
+  ];
+
+  // Mensajes de carga divertidos
+  loadingMessages = [
+    'Cargando bits musicales...',
+    'Dividiendo las canciones en notas...',
+    'Aprendiendo a sumar frecuencias...',
+    'Calibrando los sintetizadores...',
+    'Mezclando ingredientes secretos...',
+    'Dándole amor a cada beat...',
+    'Empaquetando la magia musical...',
+    'Conectando con las musas...',
+    'Puliendo cada segundo de audio...',
+    'Organizando el caos creativo...',
+    'Preparando el escenario digital...',
+    'Afinando los últimos detalles...',
+    'Convirtiendo sueños en realidad...',
+    'Despertando a los algoritmos...',
+    'Tejiendo melodías en el espacio...',
+    'Compilando vibraciones positivas...',
+    'Sincronizando con el universo...',
+    'Procesando ondas sonoras...',
+    'Optimizando la experiencia auditiva...',
+    'Creando momentos inolvidables...'
   ];
 
   get albumType() {
@@ -58,7 +87,8 @@ export class SubirMusicaComponent implements OnInit {
     private fb: FormBuilder,
     private albumService: AlbumService,
     private userService: UserService,
-    private categoriaService: CategoriaService
+    private categoriaService: CategoriaService,
+    private imageProcessingService: ImageProcessingService
   ) {
     this.albumForm = this.createForm();
   }
@@ -66,6 +96,22 @@ export class SubirMusicaComponent implements OnInit {
   ngOnInit(): void {
     this.loadInitialData();
     this.watchAlbumTypeChanges();
+  }
+
+  ngOnDestroy(): void {
+    // Limpiar interval al destruir el componente
+    if (this.loadingMessageInterval) {
+      clearInterval(this.loadingMessageInterval);
+    }
+    this.stopLoadingMessages();
+
+    if (this.confettiInterval) {
+      clearInterval(this.confettiInterval);
+    }
+
+    if (this.typewriterTimeout) {
+      clearTimeout(this.typewriterTimeout);
+    }
   }
 
   createForm(): FormGroup {
@@ -131,6 +177,170 @@ export class SubirMusicaComponent implements OnInit {
     });
   }
 
+
+
+
+
+
+  // Nuevos métodos para manejar mensajes de carga
+
+  private typewriterTimeout: any;
+  private confettiInterval: any;
+
+
+  startLoadingMessages(): void {
+    this.currentLoadingMessage = '';
+    this.typewriterEffect(this.getRandomLoadingMessage());
+
+    this.loadingMessageInterval = setInterval(() => {
+      this.typewriterEffect(this.getRandomLoadingMessage());
+    }, 4000); // Cambiar mensaje cada 4 segundos para dar tiempo al efecto
+  }
+
+
+  // Efecto typewriter para los mensajes
+  typewriterEffect(message: string): void {
+    this.currentLoadingMessage = '';
+    let i = 0;
+
+    // Velocidad variable para efecto más natural
+    const typeSpeed = () => Math.random() * 100 + 50; // Entre 50-150ms
+
+    const typeChar = () => {
+      if (i < message.length) {
+        this.currentLoadingMessage += message.charAt(i);
+        i++;
+        this.typewriterTimeout = setTimeout(typeChar, typeSpeed());
+      }
+    };
+
+    // Pequeña pausa antes de empezar a escribir
+    setTimeout(typeChar, 300);
+  }
+
+
+
+  // Método mejorado para detener mensajes
+  stopLoadingMessages(): void {
+    if (this.loadingMessageInterval) {
+      clearInterval(this.loadingMessageInterval);
+      this.loadingMessageInterval = null;
+    }
+
+    if (this.typewriterTimeout) {
+      clearTimeout(this.typewriterTimeout);
+      this.typewriterTimeout = null;
+    }
+
+    this.currentLoadingMessage = '';
+  }
+
+
+  // Método para crear confetis cuando termine la carga
+  createConfetti(): void {
+    const confettiContainer = document.querySelector('.confetti-container');
+    if (!confettiContainer) return;
+
+    // Limpiar confetis anteriores
+    confettiContainer.innerHTML = '';
+
+    // Crear confetis continuamente
+    this.confettiInterval = setInterval(() => {
+      this.generateConfetti(confettiContainer);
+    }, 200);
+
+    // Detener después de 8 segundos
+    setTimeout(() => {
+      if (this.confettiInterval) {
+        clearInterval(this.confettiInterval);
+        this.confettiInterval = null;
+      }
+    }, 8000);
+  }
+
+// Generar confetis individuales
+  generateConfetti(container: Element): void {
+    for (let i = 0; i < 5; i++) {
+      const confetti = document.createElement('div');
+      confetti.className = 'confetti';
+
+      // Posición aleatoria en X
+      const randomX = Math.random() * 100;
+      confetti.style.left = randomX + '%';
+
+      // Duración aleatoria de caída
+      const fallDuration = Math.random() * 2 + 3; // Entre 3-5 segundos
+      confetti.style.animationDuration = fallDuration + 's';
+
+      // Delay aleatorio
+      const delay = Math.random() * 2;
+      confetti.style.animationDelay = delay + 's';
+
+      container.appendChild(confetti);
+
+      // Remover el confeti después de la animación
+      setTimeout(() => {
+        if (confetti.parentNode) {
+          confetti.parentNode.removeChild(confetti);
+        }
+      }, (fallDuration + delay) * 1000);
+    }
+  }
+
+  // Método para mostrar el mensaje final con confetis
+  showFinishMessage(): void {
+    this.isFinish = true;
+    this.isUploadingAlbum = false;
+
+    // Crear confetis después de un pequeño delay
+    setTimeout(() => {
+      this.createConfetti();
+    }, 500);
+  }
+
+  getRandomLoadingMessage(): string {
+    // Obtener artistas featured de todas las canciones
+    const featuredArtists = this.getAllFeaturedArtists();
+
+    // Mensajes base
+    let messages = [...this.loadingMessages];
+
+    // Agregar mensajes personalizados con artistas
+    if (featuredArtists.length > 0) {
+      featuredArtists.forEach(artist => {
+        messages.push(`Maquillando a ${artist}...`);
+        messages.push(`Preparando el micrófono para ${artist}...`);
+        messages.push(`Dándole brillo a ${artist}...`);
+        messages.push(`Ajustando la iluminación para ${artist}...`);
+      });
+    }
+
+    // Agregar mensaje con el nombre del álbum si existe
+    const albumName = this.albumForm.get('albumInfo.name')?.value;
+    if (albumName) {
+      messages.push(`Puliendo "${albumName}"...`);
+      messages.push(`Dándole vida a "${albumName}"...`);
+      messages.push(`Creando magia con "${albumName}"...`);
+    }
+
+    const randomIndex = Math.floor(Math.random() * messages.length);
+    return messages[randomIndex];
+  }
+
+  getAllFeaturedArtists(): string[] {
+    const artists: string[] = [];
+    this.songs.controls.forEach(songControl => {
+      const artistIds = songControl.get('artistasFt')?.value || [];
+      artistIds.forEach((artistId: any) => {
+        const artistName = this.getArtistName(artistId);
+        if (artistName && !artists.includes(artistName)) {
+          artists.push(artistName);
+        }
+      });
+    });
+    return artists;
+  }
+
   watchAlbumTypeChanges(): void {
     const typeControl = this.albumForm.get('albumInfo.typeAlbum');
 
@@ -191,29 +401,50 @@ export class SubirMusicaComponent implements OnInit {
     this.songs.removeAt(index);
   }
 
-  onPortadaSelected(event: Event): void {
+  async onPortadaSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
 
-      // Validar tamaño y tipo de archivo
+      // Validar que sea una imagen (ahora aceptamos más formatos)
       if (!this.isValidImageFile(file)) {
-        alert('La portada debe ser una imagen (PNG) y menor a 7MB');
+        alert('El archivo debe ser una imagen válida y menor a 7MB');
         this.albumForm.get('albumInfo.portada')?.setValue(null);
         return;
       }
 
-      // Actualizar el valor del formulario
-      this.albumForm.get('albumInfo.portada')?.setValue(file);
+      try {
+        this.isLoading = true;
 
-      // Crear preview
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.portadaPreview = reader.result as string;
-      };
-      reader.readAsDataURL(file);
+        // Procesar la imagen: convertir a cuadrado y formato PNG
+        let processedFile = await this.imageProcessingService.cropToSquare(file);
+
+        // Si no era PNG originalmente, ya se convirtió en cropToSquare
+        // Si quieres asegurar la conversión a PNG incluso si ya era cuadrado:
+        if (file.type !== 'image/png') {
+          processedFile = await this.imageProcessingService.convertToPng(processedFile);
+        }
+
+        // Actualizar el valor del formulario con el archivo procesado
+        this.albumForm.get('albumInfo.portada')?.setValue(processedFile);
+
+        // Crear preview con el archivo procesado
+        const reader = new FileReader();
+        reader.onload = () => {
+          this.portadaPreview = reader.result as string;
+          this.isLoading = false;
+        };
+        reader.readAsDataURL(processedFile);
+
+      } catch (error) {
+        console.error('Error al procesar la imagen:', error);
+        alert('Error al procesar la imagen. Por favor, intenta con otro archivo.');
+        this.albumForm.get('albumInfo.portada')?.setValue(null);
+        this.isLoading = false;
+      }
     }
   }
+
 
   onSongFileSelected(event: Event, index: number): void {
     const input = event.target as HTMLInputElement;
@@ -222,7 +453,7 @@ export class SubirMusicaComponent implements OnInit {
 
       // Validar formato y tamaño
       if (!this.isValidAudioFile(file)) {
-        alert('El archivo debe ser formato .wav y menor a 45MB');
+        alert('El archivo debe ser formato .wav y menor a 60MB');
         this.songs.at(index).get('file')?.setValue(null);
         return;
       }
@@ -313,16 +544,18 @@ export class SubirMusicaComponent implements OnInit {
   }
 
   isValidImageFile(file: File): boolean {
-    const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+    const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp', 'image/bmp', 'image/gif'];
     const maxSize = 7 * 1024 * 1024; // 7MB
     return validTypes.includes(file.type) && file.size <= maxSize;
   }
+
 
   isValidAudioFile(file: File): boolean {
     const validTypes = ['audio/wav', 'audio/x-wav'];
     const maxSize = 60 * 1024 * 1024; // 60MB
     return validTypes.includes(file.type) && file.size <= maxSize;
   }
+
 
   formatTime(seconds: number): string {
     if (!seconds || isNaN(seconds)) return '0:00';
@@ -366,7 +599,9 @@ export class SubirMusicaComponent implements OnInit {
       return;
     }
 
-    this.isLoading = true;
+    // Iniciar carga especial para subida de álbum
+    this.isUploadingAlbum = true;
+    this.startLoadingMessages();
 
     // Preparar datos para enviar
     const albumDto: RequestAlbumDto = {
@@ -387,10 +622,13 @@ export class SubirMusicaComponent implements OnInit {
 
     // Enviar al servicio
     this.albumService.uploadAlbum(albumDto)
-      .pipe(finalize(() => this.isLoading = false))
+      .pipe(finalize(() => {
+        this.isUploadingAlbum = false;
+        this.stopLoadingMessages();
+      }))
       .subscribe({
         next: (response) => {
-          alert('¡Álbum subido con éxito!');
+          this.isFinish = true;
           // Resetear formulario
           this.albumForm = this.createForm();
           this.portadaPreview = null;
@@ -478,10 +716,7 @@ export class SubirMusicaComponent implements OnInit {
   // Mapa para rastrear la carga de subgéneros
   loadingSubgeneros: Map<number, boolean> = new Map();
 
-
-
-
-// Método para obtener subgéneros basados en el ID del género
+  // Método para obtener subgéneros basados en el ID del género
   getSubgeneros(generoId: any): ResponseSubgeneroDto[] {
     if (!generoId) return [];
 
@@ -511,11 +746,10 @@ export class SubirMusicaComponent implements OnInit {
     return this.subgeneros.get(id) || [];
   }
 
-// Verificar si los subgéneros están cargando
+  // Verificar si los subgéneros están cargando
   isLoadingSubgeneros(generoId: any): boolean {
     if (!generoId) return false;
     const id = typeof generoId === 'string' ? parseInt(generoId, 10) : generoId;
     return !!this.loadingSubgeneros.get(id);
   }
-
 }

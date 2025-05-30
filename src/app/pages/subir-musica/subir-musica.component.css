@@ -1,4 +1,346 @@
-/* En tu archivo CSS */
-select option {
-  color: black; /* Color de texto negro */
+/* Variables de colores de la plataforma */
+:root {
+  --primary-blue: #34B0FF;
+  --primary-purple: #A64DFF;
+  --primary-pink: #FF34D2;
+  --gradient-primary: linear-gradient(135deg, #34B0FF 0%, #A64DFF 50%, #FF34D2 100%);
+  --gradient-secondary: linear-gradient(45deg, #34B0FF, #A64DFF, #FF34D2);
+}
+
+/* === CARGA INICIAL === */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.loading-container {
+  text-align: center;
+  color: white;
+}
+
+.large-spinner-simple {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 30px;
+  position: relative;
+}
+
+.spinner-ring-simple {
+  width: 100%;
+  height: 100%;
+  border: 6px solid rgba(255, 255, 255, 0.1);
+  border-top: 6px solid var(--primary-blue);
+  border-right: 6px solid var(--primary-purple);
+  border-radius: 50%;
+  animation: spin-simple 1.5s linear infinite;
+}
+
+@keyframes spin-simple {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin: 0;
+  color: #fff;
+}
+
+/* === CARGA DE ÁLBUM === */
+.upload-loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, rgba(52, 176, 255, 0.1) 0%, rgba(166, 77, 255, 0.1) 50%, rgba(255, 52, 210, 0.1) 100%);
+  backdrop-filter: blur(15px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.upload-loading-container {
+  text-align: center;
+  max-width: 500px;
+  padding: 40px;
+}
+
+.upload-loading-content {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 50px 40px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.large-spinner {
+  width: 150px;
+  height: 150px;
+  margin: 0 auto 40px;
+  position: relative;
+}
+
+.spinner-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 4px solid transparent;
+}
+
+.spinner-ring:nth-child(1) {
+  border-top: 4px solid var(--primary-blue);
+  animation: spin-ring-1 2s linear infinite;
+}
+
+.spinner-ring:nth-child(2) {
+  border-right: 4px solid var(--primary-purple);
+  animation: spin-ring-2 1.5s linear infinite reverse;
+  width: 80%;
+  height: 80%;
+  top: 10%;
+  left: 10%;
+}
+
+.spinner-ring:nth-child(3) {
+  border-bottom: 4px solid var(--primary-pink);
+  animation: spin-ring-3 2.5s linear infinite;
+  width: 60%;
+  height: 60%;
+  top: 20%;
+  left: 20%;
+}
+
+@keyframes spin-ring-1 {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes spin-ring-2 {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes spin-ring-3 {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.music-note-animation {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2.5rem;
+  color: var(--primary-blue);
+  animation: pulse-note 2s ease-in-out infinite;
+}
+
+@keyframes pulse-note {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    color: var(--primary-blue);
+  }
+  33% {
+    transform: translate(-50%, -50%) scale(1.1);
+    color: var(--primary-purple);
+  }
+  66% {
+    transform: translate(-50%, -50%) scale(1.05);
+    color: var(--primary-pink);
+  }
+}
+
+.upload-title {
+  color: #fff;
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  background: var(--gradient-primary);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* === EFECTO TYPEWRITER === */
+.typewriter-container {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.typewriter-text {
+  font-size: 1.1rem;
+  color: #fff;
+  margin: 0;
+  min-height: 1.5em;
+  border-right: 2px solid var(--primary-blue);
+  padding-right: 5px;
+  animation: blink-cursor 1s infinite;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+@keyframes blink-cursor {
+  0%, 50% { border-color: var(--primary-blue); }
+  51%, 100% { border-color: transparent; }
+}
+
+/* Animación de escritura */
+.typewriter-text.typing {
+  animation: typing 2s steps(40) 1s both, blink-cursor 1s infinite;
+}
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+.upload-progress {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  margin: 20px 0;
+  overflow: hidden;
+}
+
+.progress-bar {
+  background: var(--gradient-primary) !important;
+  border-radius: 10px;
+  animation: progress-glow 2s ease-in-out infinite;
+}
+
+@keyframes progress-glow {
+  0%, 100% { box-shadow: 0 0 10px rgba(52, 176, 255, 0.5); }
+  50% { box-shadow: 0 0 20px rgba(166, 77, 255, 0.8); }
+}
+
+.upload-subtitle {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
+  margin: 20px 0 0 0;
+}
+
+/* === MENSAJE FINAL CON CONFETIS === */
+.finish-container {
+  position: relative;
+  padding: 60px 20px;
+  text-align: center;
+  background: linear-gradient(135deg, rgba(52, 176, 255, 0.05) 0%, rgba(166, 77, 255, 0.05) 50%, rgba(255, 52, 210, 0.05) 100%);
+  border-radius: 20px;
+  margin: 40px auto;
+  max-width: 500px;
+  overflow: hidden;
+}
+
+.confetti-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: var(--primary-blue);
+  animation: confetti-fall linear infinite;
+}
+
+.confetti:nth-child(odd) {
+  background: var(--primary-purple);
+}
+
+.confetti:nth-child(3n) {
+  background: var(--primary-pink);
+}
+
+.confetti:nth-child(4n) {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.confetti:nth-child(5n) {
+  width: 12px;
+  height: 6px;
+  border-radius: 3px;
+}
+
+.confetti:nth-child(6n) {
+  background: linear-gradient(45deg, var(--primary-blue), var(--primary-purple));
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-100vh) rotateX(0deg) rotateY(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotateX(720deg) rotateY(360deg);
+    opacity: 0;
+  }
+}
+
+.finish-content {
+  position: relative;
+  z-index: 2;
+}
+
+.finish-icon {
+  font-size: 4rem;
+  color: var(--primary-blue);
+  margin-bottom: 20px;
+  animation: success-bounce 1s ease-out;
+}
+
+@keyframes success-bounce {
+  0% {
+    transform: scale(0) rotate(180deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(360deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 1;
+  }
+}
+
+.finish-title {
+  color: #333;
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  background: var(--gradient-primary);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.finish-message {
+  color: #666;
+  font-size: 1.1rem;
+  margin: 0;
 }

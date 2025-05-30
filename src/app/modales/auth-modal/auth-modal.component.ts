@@ -3,10 +3,11 @@ import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/fo
 import { Router, ActivatedRoute } from '@angular/router';
 import { debounceTime, switchMap, of, catchError } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
-import {ModalService, ModalType} from '../../services/modal.service';
+import { ModalService, ModalType } from '../../services/modal.service';
+import { ImageProcessingService } from '../../services/image-processing.service'; // Importar el servicio
 import { HttpErrorResponse } from '@angular/common/http';
 import { RegisterRequestDto, LoginRequestDto } from '../../dtos/usuarios/auth.dto';
-import {passwordComplexityValidator} from "../../validators/passwordComplexityValidator";
+import { passwordComplexityValidator } from "../../validators/passwordComplexityValidator";
 
 @Component({
   selector: 'app-auth-modal',
@@ -14,8 +15,6 @@ import {passwordComplexityValidator} from "../../validators/passwordComplexityVa
   styleUrls: ['./auth-modal.component.css']
 })
 export class AuthModalComponent implements OnInit {
-
-
 
   sacarUrl(): string {
     const urlActual = this.router.url;
@@ -53,12 +52,17 @@ export class AuthModalComponent implements OnInit {
   selectedFile: File | null = null;
   previewUrl: string | ArrayBuffer | null = null;
 
+  // Nuevas propiedades para el procesamiento de imágenes
+  imageProcessing = false;
+  imageProcessingMessage = '';
+
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
-    private modalService: ModalService
+    private modalService: ModalService,
+    private imageProcessingService: ImageProcessingService // Inyectar el servicio
   ) {
     // Inicializar formulario de login
     this.loginForm = this.fb.group({
@@ -79,7 +83,7 @@ export class AuthModalComponent implements OnInit {
       ],
       confirmPassword: ['', Validators.required],
       rol: ['OYENTE', Validators.required],
-      termsAccepted: [false, [Validators.requiredTrue]] // Aceptación de términos y condiciones obligatoria
+      termsAccepted: [false, [Validators.requiredTrue]]
     }, { validators: this.passwordMatchValidator });
   }
 
@@ -128,8 +132,6 @@ export class AuthModalComponent implements OnInit {
         }
       });
   }
-
-
 
   // Métodos de navegación entre pestañas
   setActiveTab(tab: 'login' | 'register'): void {
@@ -194,24 +196,87 @@ export class AuthModalComponent implements OnInit {
       });
   }
 
-  // Métodos del formulario de registro
-  onFileSelected(event: Event): void {
+  // Métodos del formulario de registro - MÉTODO ACTUALIZADO
+  async onFileSelected(event: Event): Promise<void> {
     const element = event.target as HTMLInputElement;
     if (element.files && element.files.length > 0) {
-      this.selectedFile = element.files[0];
+      const originalFile = element.files[0];
 
-      // Crear preview de la imagen
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.previewUrl = reader.result;
-      };
-      reader.readAsDataURL(this.selectedFile);
+      // Validar que sea una imagen
+      if (!originalFile.type.startsWith('image/')) {
+        this.registerErrorMessage = 'Por favor, selecciona un archivo de imagen válido.';
+        return;
+      }
+
+      // Validar tamaño máximo (por ejemplo, 5MB)
+      const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
+      if (originalFile.size > maxSizeInBytes) {
+        this.registerErrorMessage = 'La imagen es demasiado grande. El tamaño máximo permitido es 5MB.';
+        return;
+      }
+
+      try {
+        this.imageProcessing = true;
+        this.imageProcessingMessage = 'Procesando imagen...';
+        this.registerErrorMessage = '';
+
+        let processedFile = originalFile;
+
+        // Solo procesar si no es PNG o si no es cuadrada
+        if (originalFile.type !== 'image/png') {
+          this.imageProcessingMessage = 'Convirtiendo imagen a PNG...';
+          processedFile = await this.imageProcessingService.convertToPng(originalFile);
+        }
+
+        // Verificar si la imagen es cuadrada
+        const isSquare = await this.checkIfImageIsSquare(processedFile);
+        if (!isSquare) {
+          this.imageProcessingMessage = 'Recortando imagen a formato cuadrado...';
+          processedFile = await this.imageProcessingService.cropToSquare(processedFile);
+        }
+
+        this.selectedFile = processedFile;
+
+        // Crear preview de la imagen procesada
+        const reader = new FileReader();
+        reader.onload = () => {
+          this.previewUrl = reader.result;
+        };
+        reader.readAsDataURL(this.selectedFile);
+
+        this.imageProcessingMessage = 'Imagen procesada correctamente';
+
+        // Limpiar el mensaje después de 2 segundos
+        setTimeout(() => {
+          this.imageProcessingMessage = '';
+        }, 2000);
+
+      } catch (error) {
+        console.error('Error al procesar la imagen:', error);
+        this.registerErrorMessage = 'Error al procesar la imagen. Por favor, intenta con otra imagen.';
+      } finally {
+        this.imageProcessing = false;
+      }
     }
+  }
+
+  // Método auxiliar para verificar si una imagen es cuadrada
+  private async checkIfImageIsSquare(file: File): Promise<boolean> {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        resolve(img.width === img.height);
+      };
+      img.onerror = () => resolve(false);
+      img.src = URL.createObjectURL(file);
+    });
   }
 
   removeFile(): void {
     this.selectedFile = null;
     this.previewUrl = null;
+    this.imageProcessingMessage = '';
+    this.registerErrorMessage = '';
   }
 
   onRegisterSubmit(): void {
@@ -240,6 +305,7 @@ export class AuthModalComponent implements OnInit {
           });
           this.selectedFile = null;
           this.previewUrl = null;
+          this.imageProcessingMessage = '';
         },
         error: (error) => {
           this.registerLoading = false;
@@ -259,9 +325,4 @@ export class AuthModalComponent implements OnInit {
   openResetPasswordModal(): void {
     this.modalService.openModal(ModalType.ResetPassword);
   }
-
 }
-
-
-
-

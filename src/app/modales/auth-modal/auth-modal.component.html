@@ -95,22 +95,54 @@
           <h2>Crear Cuenta</h2>
 
           <form [formGroup]="registerForm" (ngSubmit)="onRegisterSubmit()">
+
+            <!-- Sección de la subida de fotos en el formulario de registro -->
             <div class="photo-upload-container">
               <div class="photo-preview" [class.has-image]="previewUrl">
                 <img *ngIf="previewUrl" [src]="previewUrl" alt="Preview" class="preview-image">
                 <i *ngIf="!previewUrl" class="bi bi-person-circle"></i>
+
+                <!-- Overlay de procesamiento -->
+                <div *ngIf="imageProcessing" class="processing-overlay">
+                  <div class="spinner-border text-light" role="status">
+                    <span class="visually-hidden">Procesando...</span>
+                  </div>
+                </div>
               </div>
+
               <div class="photo-actions">
-                <button class="btn btn-outline-gradient" type="button" (click)="fileInput.click()">
-                  <i class="bi bi-camera "></i>
-                  <span class="ms-2">Subir Foto</span>
+                <button
+                  class="btn btn-outline-gradient"
+                  type="button"
+                  (click)="fileInput.click()"
+                  [disabled]="imageProcessing">
+                  <i class="bi bi-camera"></i>
+                  <span class="ms-2">{{ imageProcessing ? 'Procesando...' : 'Subir Foto' }}</span>
                 </button>
-                <button *ngIf="previewUrl" class="btn btn-outline-danger btn-icon ms-2" type="button" (click)="removeFile()">
+                <button
+                  *ngIf="previewUrl && !imageProcessing"
+                  class="btn btn-outline-danger btn-icon ms-2"
+                  type="button"
+                  (click)="removeFile()">
                   <i class="bi bi-trash"></i>
                 </button>
               </div>
-              <input #fileInput type="file" accept="image/*" style="display:none" (change)="onFileSelected($event)">
+
+              <!-- Mensaje de procesamiento -->
+              <div *ngIf="imageProcessingMessage" class="alert alert-info mt-2 small">
+                <i class="bi bi-info-circle me-1"></i>
+                {{ imageProcessingMessage }}
+              </div>
+
+              <input
+                #fileInput
+                type="file"
+                accept="image/*"
+                style="display:none"
+                (change)="onFileSelected($event)"
+                [disabled]="imageProcessing">
             </div>
+
 
             <div class="form-group mb-3">
               <label for="username" class="form-label">Nombre de usuario</label>

@@ -1,21 +1,26 @@
-# Etapa 1: Imagen base mínima para servir contenido estático
-FROM nginx:alpine
+# Etapa 1: Build Angular
+FROM node:18-alpine AS builder
 
-# Elimina la configuración por defecto de Nginx
-RUN rm -rf /usr/share/nginx/html/*
+WORKDIR /app
 
-# Copia los archivos estáticos del build de Angular al directorio de Nginx
-COPY dist/soundtribe-front-end/ /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY package*.json ./
+RUN npm install
 
-# Opcional: Copiar una configuración personalizada de Nginx (para redirecciones por ejemplo)
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY . .
+RUN npm run build -- --configuration production
 
-# Expone el puerto 80
-EXPOSE 80
+# Etapa 2: Servidor Express
+FROM node:18-alpine
 
-# El contenedor se ejecuta con Nginx por defecto, no hace falta CMD
+WORKDIR /app
 
+# Copiamos solo lo necesario
+COPY --from=builder /app/dist/soundtribe-front-end ./dist/soundtribe-front-end
+COPY server.js ./
+COPY package*.json ./
 
+# Instalamos solo lo que se necesita para producción (express, etc)
+RUN npm install --only=production
 
-# garbi21/soundtribe-users-api
+EXPOSE 4200
+CMD ["node", "server.js"]

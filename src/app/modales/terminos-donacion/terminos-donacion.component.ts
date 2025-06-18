@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ModalService } from '../../services/modal.service';
+import {ModalService, ModalType} from '../../services/modal.service';
 
 @Component({
   selector: 'app-terminos-donacion',
@@ -7,9 +7,13 @@ import { ModalService } from '../../services/modal.service';
   styleUrls: ['./terminos-donacion.component.css']
 })
 export class TerminosDonacionComponent {
-  constructor(private modalService: ModalService) {}
+  constructor(
+    private modalService: ModalService) {}
 
   closeModal(): void {
     this.modalService.closeModal();
+  }
+  openTerminosCondicionesModal():void{
+    this.modalService.openModal(ModalType.TermsAndConditions);
   }
 }

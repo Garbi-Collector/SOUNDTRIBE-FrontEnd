@@ -20,6 +20,7 @@ declare var bootstrap: any;
 })
 export class HeaderComponent implements OnInit, AfterViewInit {
   isUserArtist: boolean = false;
+  isUserAdmin: boolean = false;
 
   dropdownOpen = false;
   isLightTheme = false;
@@ -175,6 +176,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
 
           // Verificar si el usuario es artista
           this.isUserArtist = this.authService.isArtista();
+          this.isUserAdmin = this.authService.isAdmin();
         });
 
         // Obtener todos los usuarios con JWT solo si el usuario está autenticado

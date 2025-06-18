@@ -151,12 +151,11 @@
 
     <!-- Sección de términos y condiciones -->
     <div *ngIf="activeSection === 'terminos'" class="doc-section">
-      <h2>Términos y Condiciones</h2>
+      <h2>Términos y Condiciones Generales</h2>
       <div class="section-divider"></div>
 
       <div class="terms-content">
-        <p>Última actualización: 20 de Mayo 2025</p>
-
+        <p>Última actualización: 17 de Junio 2025</p>
 
         <h6>1. Aceptación de los Términos</h6>
         <p>
@@ -173,13 +172,23 @@
           Usted tiene el derecho de decidir y autorizar, de forma libre, previa, expresa e informada, la recolección, uso y tratamiento de sus datos personales para los fines de la plataforma.
           Los datos personales que usted proporcione serán utilizados para ofrecer y mejorar el servicio, incluyendo análisis estadísticos anónimos sobre la actividad en SOUNDTRIBE.
           <br><br>
-          No obstante, la información que usted publique en la plataforma podrá ser utilizada para fines estadísticos y analíticos de la misma plataforma, y no podrá ser deshabilitada individualmente.
-          Si usted desea eliminar por completo sus datos personales y su contenido, deberá proceder a eliminar su cuenta, momento en el cual se borrará toda la información vinculada a usted.
+          No obstante, la información que usted publique en la plataforma podrá ser utilizada para fines estadísticos y analíticos de la misma plataforma, y no podrá ser deshabilitada individualmente.<br>
+          Si usted desea eliminar por completo sus datos personales y su contenido, deberá proceder a eliminar su cuenta, momento en el cual se borrará toda la información vinculada a usted.<br>
+          Revisar punto 4.
         </p>
 
         <h6>4. Eliminación de Cuenta y Datos</h6>
         <p>
-          En caso de que usted decida eliminar su cuenta, SOUNDTRIBE procederá a borrar toda la información personal y el contenido que haya subido a la plataforma, incluyendo su usuario, notificaciones, votos, likes/dislikes y cualquier otro dato asociado. Esta acción es irreversible y se realiza para proteger su privacidad.
+          En caso de que usted decida eliminar su cuenta, SOUNDTRIBE procederá a borrar toda la información personal y el contenido que haya subido a la plataforma, incluyendo su usuario, notificaciones, votos, likes/dislikes y cualquier otro dato asociado. Esta acción es irreversible y se realiza para proteger su privacidad.<br>
+          Existirán ciertas excepciones donde no se borrarán datos estadísticos donde su usuario eliminado no influirá ya que son datos contables y no datos personales de usted. Algunos de estos ejemplos son:
+        </p>
+        <ul>
+          <li>Las donaciones que ha hecho se podrán usar como estadística pero no figurará su nombre ni ninguno de sus datos ya borrados.</li>
+          <li>Las escuchas contabilizadas a una canción no serán eliminadas.</li>
+          <li>Entre otros ejemplos similares en los cuales son datos contables y no sensibles de usted y su persona.</li>
+        </ul>
+        <p>
+          En caso de que desee eliminar estos datos por cualquier razón, le solicitamos que se comunique al correo que encontrará al final de los términos y condiciones. La solicitud será evaluada y se tomará una decisión en función del caso particular.
         </p>
 
 
@@ -190,10 +199,31 @@
 
         <h6>6. Modificaciones de los Términos</h6>
         <p>
-          Puede que hagamos cambios a estos términos en cualquier momento. No es muy común, pero para evitar sorpresas, te aconsejamos echarles un ojo de vez en cuando.
+          Puede que hagamos cambios a estos términos en cualquier momento. No es muy común, pero para evitar sorpresas, te aconsejamos echarles un ojo de vez en cuando.<br>
+          SOUNDTRIBE hará todo lo posible por informarle de los cambios relevantes mediante los medios disponibles, incluyendo notificaciones en la plataforma o comunicaciones a través de nuestras redes sociales.
         </p>
 
-        <h6>7. Contacto</h6>
+        <h6>7. Normas de Buena Conducta y Buenos Modales</h6>
+        <p>
+          En SOUNDTRIBE promovemos un espacio de respeto, inclusión y convivencia armoniosa. Nuestra comunidad está abierta a todos los usuarios, sin importar sus diferencias y particularidades. Por eso, no se tolerarán actos de <strong>bullying</strong>, <strong>troleos</strong> ni ningún tipo de comportamiento que busque molestar, ofender o discriminar a otros usuarios o a cualquier persona ajena a la comunidad de SOUNDTRIBE.<br><br>
+          Las notificaciones, nombres de usuario o cualquier contenido que incluya palabras ofensivas, discriminatorias o que promuevan el odio podrán ser eliminados <strong>sin previo aviso</strong> por el equipo de moderación.<br><br>
+          Si estos actos se repitieran de forma reiterada, el equipo de moderación podrá optar por <strong>eliminar la cuenta del usuario infractor</strong>. Lamentamos tener que recurrir a estas medidas, pero es lo que consideramos necesario para proteger a nuestra imagen, comunidad y sus valores.<br><br>
+          Todos los tipos de contenidos son bienvenidos en SOUNDTRIBE, siempre y cuando se compartan <strong>desde el respeto</strong> y la buena intención, manteniendo el espíritu inclusivo y amigable que nos caracteriza.<br><br>
+          SOUNDTRIBE pretende ser una comunidad <strong>amistosa</strong>, donde todas las personas se sientan bienvenidas, seguras y valoradas. Burlarse de las personas o molestarlas no forma parte de nuestra identidad ni de nuestra forma de ser como comunidad.
+        </p>
+
+        <h6>8. Propiedad Intelectual</h6>
+        <p>
+          SOUNDTRIBE es un proyecto desarrollado por <strong>garbi.dev</strong>. El código fuente del software se encuentra liberado bajo la licencia <strong>MIT</strong>, lo cual permite su uso, modificación y distribución con fines personales o comerciales, siempre que se mantenga el aviso de copyright y la licencia correspondiente.
+          <br><br>
+          Sin embargo, el diseño visual, las imágenes, el nombre SOUNDTRIBE y otros contenidos gráficos y de marca utilizados en esta plataforma están protegidos por la
+          <a href="https://www.ign.gob.ar/descargas/biblioteca/ley11723.pdf" target="_blank" rel="noopener noreferrer">
+            ley 11.723
+          </a> de Propiedad Intelectual de la República Argentina, y no podrán ser reutilizados sin autorización expresa.
+        </p>
+
+
+        <h6>9. Contacto</h6>
         <p>
           Para consultas sobre estos términos o para ejercer sus derechos sobre sus datos personales, puede contactarnos a través del correo:
         </p>
@@ -206,8 +236,66 @@
         <span *ngIf="copied" style="color: green; margin-left: 10px;">
           ¡Correo copiado al portapapeles!
         </span>
+
       </div>
-    </div>
+
+        <h2>Términos y Condiciones de las Donaciones</h2>
+        <div class="section-divider"></div>
+        <div class="terms-content">
+          <h6>1. Generalidades</h6>
+          <p>Bienvenido a <strong>SOUNDTRIBE</strong>, un producto digital proporcionado por <strong>garbi.dev</strong> (la "Compañía", "nosotros" o "nos"). Nos complace ofrecerle acceso a nuestro servicio, sujeto a los siguientes Términos de Donación y a nuestra Política de Privacidad. Al realizar una donación, usted acepta y entiende los presentes términos.</p>
+
+          <h6>2. Permiso para utilizar el Servicio</h6>
+          <p>Al acceder y utilizar el servicio de donaciones, usted confirma que tiene capacidad legal para hacerlo y acepta respetar todas las leyes aplicables. No debe utilizar el servicio con fines fraudulentos, ilegales o malintencionados.</p>
+
+          <h6>3. Descripción del Servicio</h6>
+          <p>Este sistema de donación permite a los usuarios apoyar voluntariamente el desarrollo, mantenimiento y expansión de SOUNDTRIBE. La donación se realiza a través de la plataforma Mercado Pago, en un entorno seguro y confiable.</p>
+
+          <h6>4. Operaciones habilitadas</h6>
+          <ul>
+            <li>Las donaciones son completamente <strong>voluntarias y no reembolsables</strong> bajo ninguna circunstancia.</li>
+            <li>Los fondos recaudados serán destinados exclusivamente al desarrollo, mantenimiento y mejora del proyecto SOUNDTRIBE.</li>
+            <li>Los usuarios podrán incluir un mensaje junto con su donación, el cual deberá respetar las normas de convivencia y decoro.</li>
+            <li>La Compañía se reserva el derecho de eliminar, sin previo aviso, cualquier mensaje que considere ofensivo, inapropiado o contrario a dichas normas.</li>
+            <li>Para realizar una donación, el usuario únicamente deberá contar con conexión a Internet y acceso a la plataforma de pagos Mercado Pago.</li>
+            <li>En caso de no disponer de una cuenta en Mercado Pago, se podrá completar la donación utilizando cualquier tarjeta de crédito o débito aceptada por dicha plataforma.</li>
+            <li>El modelo actual de pagos está sujeto a cambios conforme a las políticas y modalidades que establezca Mercado Pago en el futuro.</li>
+          </ul>
+
+          <h6>5. Identificación del Usuario</h6>
+          <p>Durante el proceso de donación podrá requerirse información como nombre, correo electrónico o mensaje personal. Esta información será tratada conforme a nuestra Política de Privacidad. En ningún caso se solicitarán datos sensibles como contraseñas o información bancaria directa.</p>
+
+          <h6>6. Costo del Servicio</h6>
+          <p>
+            La donación es un acto completamente voluntario y libre. No se aplicará ningún cargo adicional por el uso del servicio de donación, excepto por las comisiones propias de la plataforma Mercado Pago.
+            <br><br>
+            Con el fin de mantener la claridad y la transparencia, informamos que el único monto que usted decida aportar será el único costo que verá reflejado.
+            <br><br>
+            Todas las comisiones correspondientes a Mercado Pago serán absorbidas en su totalidad por SOUNDTRIBE (nosotros, el equipo de garbi.dev), por lo que usted no incurrirá en costos extra por ese concepto.
+            <br><br>
+            Este esquema puede estar sujeto a modificaciones según las políticas que Mercado Pago establezca en el futuro.
+          </p>
+
+          <h6>7. Vigencia</h6>
+          <p>El usuario puede dejar de usar este servicio en cualquier momento. La Compañía también se reserva el derecho de interrumpir el sistema de donaciones sin previo aviso.</p>
+
+          <h6>8. Validez de las operaciones</h6>
+          <p>Las transacciones confirmadas por la pasarela de pagos se considerarán válidas. SOUNDTRIBE no se hace responsable por errores derivados de operaciones canceladas o rechazadas por la entidad financiera del donante.</p>
+
+          <h6>9. Privacidad de la Información</h6>
+          <p>
+            En SOUNDTRIBE respetamos su privacidad. No almacenamos datos bancarios ni información sensible relacionada a los medios de pago utilizados. Solo se conserva la información mínima necesaria para fines estadísticos y de reconocimiento, como su nombre de usuario, el monto donado y el mensaje opcional que haya decidido incluir como parte de su aporte solidario.
+            <br><br>
+            Toda la información recolectada será protegida y almacenada en servidores seguros, y no será compartida con terceros sin su consentimiento, salvo requerimiento legal. Para más información, consulte nuestra Política de Privacidad.
+          </p>
+
+          <h6>11. Agradecimiento</h6>
+          <p>Una vez realizada la donación, garbi.dev podrá contactarlo de forma directa como forma de agradecimiento. Este contacto no requiere respuesta, aunque todo comentario será recibido con gratitud.</p>
+
+          <h6>12. Proceso de Donación</h6>
+          <p>Al enviar el formulario de donación, será redirigido a Mercado Pago. La transacción se completará allí bajo sus términos y políticas de seguridad.</p>
+        </div>
+      </div>
 
     <!-- Sección de política de privacidad -->
     <div *ngIf="activeSection === 'privacidad'" class="doc-section">
@@ -224,9 +312,6 @@
 
       <h3>Compartir información</h3>
       <p>No vendemos ni compartimos tu información personal con terceros sin tu consentimiento, excepto cuando sea necesario para proporcionar nuestros servicios o cumplir con requisitos legales.</p>
-
-      <h3>Seguridad de datos</h3>
-      <p>Implementamos medidas de seguridad técnicas y organizativas para proteger tus datos personales contra accesos no autorizados o pérdida.</p>
     </div>
 
     <!-- Sección de contacto -->

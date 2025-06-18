@@ -43,6 +43,7 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { ResetPasswordComponent } from './modales/reset-password/reset-password.component';
 import { RecoveryPasswordComponent } from './modales/recovery-password/recovery-password.component';
+import { IpMappingComponent } from './pages/ip-mapping/ip-mapping.component';
 
 
 
@@ -80,6 +81,7 @@ import { RecoveryPasswordComponent } from './modales/recovery-password/recovery-
     DashboardComponent,
     ResetPasswordComponent,
     RecoveryPasswordComponent,
+    IpMappingComponent,
   ],
   imports: [
     BrowserModule,

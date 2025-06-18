@@ -18,7 +18,8 @@ import { DocumentacionComponent } from "./pages/documentacion/documentacion.comp
 import {EliminarCuentaComponent} from "./pages/eliminar-cuenta/eliminar-cuenta.component";
 import {DashboardComponent} from "./pages/dashboard/dashboard.component";
 import {RecoveryPasswordComponent} from "./modales/recovery-password/recovery-password.component";
-import {AuthModalComponent} from "./modales/auth-modal/auth-modal.component"; // Importamos el componente de documentación
+import {AuthModalComponent} from "./modales/auth-modal/auth-modal.component";
+import {IpMappingComponent} from "./pages/ip-mapping/ip-mapping.component"; // Importamos el componente de documentación
 
 const routes: Routes = [
   { path: 'verificar-cuenta/:token', component: VerificarCuentaComponent },
@@ -37,6 +38,7 @@ const routes: Routes = [
   { path: 'my-dashboard', component: DashboardComponent },
   { path: 'recovery-password/:slugRecovery', component: RecoveryPasswordComponent },
   { path: 'auth', component: AuthModalComponent },
+  { path: 'ip-map', component: IpMappingComponent },
   {
     path: 'subir-musica',
     component: SubirMusicaComponent,

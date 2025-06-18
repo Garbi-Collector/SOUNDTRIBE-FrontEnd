@@ -1,0 +1,151 @@
+<!-- Non-Admin Access Denied -->
+<div *ngIf="!isUserAdmin" class="container-fluid unauthorized-access">
+  <div class="unauthorized-container">
+    <div class="unauthorized-content">
+      <i class="fas fa-exclamation-triangle unauthorized-icon"></i>
+      <h2 class="unauthorized-title">Acceso Denegado</h2>
+      <p class="unauthorized-message">No deberías estar en este lugar</p>
+    </div>
+  </div>
+</div>
+
+<!-- Admin Dashboard -->
+<div *ngIf="isUserAdmin" class="container-fluid">
+  <div class="dashboard-container">
+
+    <!-- Header -->
+    <div class="row mb-4">
+      <div class="col-12 text-center">
+        <h1 class="display-4 mb-0 dashboard-title">
+          <i class="fas fa-globe-americas me-3"></i>SoundTribe Dashboard
+        </h1>
+        <p class="lead text-muted">Monitor de tráfico y ubicaciones IP en tiempo real</p>
+      </div>
+    </div>
+
+    <!-- Main Dashboard View -->
+    <div *ngIf="!showDetailsView">
+
+      <!-- Refresh Button -->
+      <div class="row mb-3">
+        <div class="col-12 text-end">
+          <button class="btn refresh-btn" (click)="refreshData()" [disabled]="isLoading">
+            <i class="fas fa-sync-alt me-2" [class.fa-spin]="isLoading"></i>
+            Actualizar Datos
+          </button>
+        </div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="row mb-4">
+        <div class="col-md-4">
+          <div class="stats-card">
+            <div class="stats-number">{{ formatNumber(totalRequests) }}</div>
+            <div class="stats-label">
+              <i class="fas fa-chart-bar me-2"></i>Total Requests
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stats-card">
+            <div class="stats-number">{{ formatNumber(uniqueIps) }}</div>
+            <div class="stats-label">
+              <i class="fas fa-network-wired me-2"></i>IPs Únicas
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stats-card">
+            <div class="stats-number">{{ formatNumber(avgRequests) }}</div>
+            <div class="stats-label">
+              <i class="fas fa-calculator me-2"></i>Promedio por IP
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Map and Top IPs -->
+      <div class="row">
+        <div class="col-lg-8">
+          <h3 class="mb-3">
+            <i class="fas fa-map-marked-alt me-2"></i>Mapa de Ubicaciones
+          </h3>
+          <div id="map"></div>
+        </div>
+        <div class="col-lg-4">
+          <h3 class="mb-3">
+            <i class="fas fa-list-ol me-2"></i>Top IPs
+          </h3>
+          <div class="top-ips-list">
+            <div
+              *ngFor="let ipData of topIps; let i = index"
+              class="ip-card"
+              (click)="onIPCardClick(ipData.ip)">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <div class="ip-address">#{{ i + 1 }} {{ ipData.ip }}</div>
+                  <small><i class="fas fa-chart-line me-1"></i>Ranking</small>
+                </div>
+                <div class="text-end">
+                  <div class="request-count">{{ ipData.requests }}</div>
+                  <small>requests</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- IP Details View -->
+    <div *ngIf="showDetailsView" class="details-view">
+      <button class="btn back-btn mb-3" (click)="backToDashboard()">
+        <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard
+      </button>
+
+      <div class="details-section">
+        <h3>
+          <i class="fas fa-server me-2"></i>Detalles para IP: <code>{{ selectedIP }}</code>
+        </h3>
+
+        <div *ngIf="ipTimeline.length > 0">
+          <div class="mb-3">
+            <h5><i class="fas fa-clock me-2">Timeline de Requests ({{ ipTimeline.length }} grupos)</i></h5>
+            <small class="text-muted">Agrupado por hora</small>
+          </div>
+
+          <div
+            *ngFor="let timeItem of ipTimeline"
+            class="timeline-item">
+            <div class="d-flex justify-content-between">
+              <span><i class="fas fa-calendar-alt me-2"></i>{{ timeItem.formattedTime }}</span>
+              <span><strong>{{ timeItem.count }} requests</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="ipTimeline.length === 0" class="text-muted">
+          <p>No se encontraron requests para esta IP.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="mt-3">Cargando datos del dashboard...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="showError" class="error-message">
+      <h4><i class="fas fa-exclamation-triangle me-2"></i>Error al cargar los datos</h4>
+      <p>{{ errorMessage }}</p>
+      <button class="btn btn-light mt-2" (click)="refreshData()">
+        <i class="fas fa-redo me-2"></i>Reintentar
+      </button>
+    </div>
+
+  </div>
+</div>
